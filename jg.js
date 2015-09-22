@@ -1,23 +1,35 @@
+"use strick"
 /**
  * Created by yauheni.putsykovich on 22.09.2015.
  */
-"use strick"
 window.onload = function () {
-    var log = function (message) {
-        console.log(message);
-    };
+    var DEGREES_TO_RADIANS = (Math.PI / 180);
+
+    var log = console.log;
+    var cos = Math.cos;
+    var sin = Math.sin;
+
+    function $(selector){
+        return document.querySelector(selector);
+    }
 
     function Point(x, y, z) {
         this.x = x || 0;
         this.y = y || 0;
         this.z = z || 0;
-    };
 
+    };
     Point.prototype.shift = function (dx, dy, dz) {
         this.x += dx;
         this.y += dy;
         this.z += dz;
-    }
+    };
+
+    Point.prototype.multiple = function(matrix){
+        this.x = this.x * matrix[0][0] + this.y * matrix[0][1] + this.z * matrix[0][2] + matrix[0][3];
+        this.y = this.x * matrix[1][0] + this.y * matrix[1][1] + this.z * matrix[1][2] + matrix[1][3];
+        this.z = this.x * matrix[2][0] + this.y * matrix[2][1] + this.z * matrix[2][2] + matrix[2][3];
+    };
 
     Point.prototype.toString = function () {
         return "context.moveTo(" + this.x + ", " + this.y + ")";
@@ -43,7 +55,7 @@ window.onload = function () {
         this.height = parameters.height;
         this.sc = sc;
         this.points = [];
-        this.triangles = [];
+        this.segments = [];
     };
 
     /*
@@ -62,69 +74,97 @@ window.onload = function () {
             for (var angle = 0; angle <= 2 * Math.PI; angle += angleShift) {
                 current.x = this.sc.center.x + radius * Math.cos(angle);
                 current.y = this.sc.center.y + radius * Math.sin(angle);
-                this.points.push(new Point(current.x, current.y, current.z))
+                this.points.push(new Point(current.x, current.y, 250))
             }
-            this.points[quantityPoints] = new Point(this.sc.center.x + radius, this.sc.center.y, this.sc.center.z);
+            this.points.push(new Point(this.sc.center.x + radius, this.sc.center.y, 0))
         }
 
         generator.call(this, this.innerPoints, this.innerRadius);
         generator.call(this, this.outerPoints, this.outerRadius);
         this.points.push(new Point(this.sc.center.x, this.sc.center.y, this.sc.center.z));//peak
-        this.points.forEach(function (item, i) {
-            log(item.toSource());
-        });
+        //this.points.forEach(function (item, i) {
+        //    log("i:" + i + " " + item.toSource());
+        //});
     };
 
     Conus.prototype.draw = function (canvas) {
         var self = this;
         var previous = null, peak = this.points.pop();
-        var intervals = [
-            { start: 0, end: 0},
-            { start: 0, end: 0}
-        ];
-        intervals[0].end = self.innerPoints;
-        intervals[1].start = self.innerPoints + 1;
-        intervals[1].end = self.innerPoints + self.outerPoints + 2;
-
-        var interval = 0;
-        canvas.beginPath();
-        canvas.lineWidth = 1;
+        var delimiters = [0, self.innerPoints + 1];
+        var colors = ["red", "blue"];
+        var isStart = true;
+        var isLast = false;
         this.points.forEach(function (point, number) {
-            if(number > intervals[interval].end){
-                ++interval;
-                canvas.closePath();
-                canvas.beginPath();
-            }
-            if (number <= intervals[interval].end) {
-                if (number == intervals[interval].start) {
-                    canvas.moveTo(point.x, point.y);
-                    canvas.lineTo(peak.x, peak.y);
-                    canvas.moveTo(point.x, point.y);
-                    return;
+            if (delimiters.indexOf(number) != -1) {
+                if(isStart){
+                    canvas.beginPath();
+                    isStart = false;
+                }else{
+                    canvas.stroke();
+                    canvas.beginPath();
                 }
-                canvas.lineTo(point.x, point.y);
+                canvas.strokeStyle = colors[delimiters.indexOf(number)];
+                canvas.moveTo(point.x, point.y);
                 canvas.lineTo(peak.x, peak.y);
                 canvas.moveTo(point.x, point.y);
+                return;
             }
+            canvas.lineTo(point.x, point.y);
+            canvas.lineTo(peak.x, peak.y);
+            canvas.moveTo(point.x, point.y);
         });
         canvas.stroke();
         this.points.push(peak);
     };
 
-    var Jg = Object.create(null);
+    Conus.prototype.translate = function (pointShift) {
+        var matrix = [
+            [1, 0, 0, pointShift.x],
+            [0, 1, 0, pointShift.y],
+            [0, 0, 1, pointShift.z],
+            [0, 0, 0, 1],
+        ];
+        this.points.forEach(function(point){
+            point.multiple(matrix);
+        });
+    };
+
+    Conus.prototype.rotate = function (point, angle) {
+        angle *= DEGREES_TO_RADIANS;
+        this.translate(new Point(-this.sc.center.x, -this.sc.center.y, -this.sc.center.z));
+        var matrix = [
+            [1, 0,          0,           0],
+            [0, cos(angle), -sin(angle), 0],
+            [0, sin(angle), cos(angle),  0],
+            [0, 0,          0,           1]
+        ];
+        this.points.forEach(function(point){
+            point.multiple(matrix);
+        });
+        this.translate(new Point(this.sc.center.x, this.sc.center.y, this.sc.center.z));
+    };
+
+    var canvas = $("#jg-canvas");
+    var context = canvas.getContext('2d');
 
     var conus = new Conus({
-        innerRadius: 50,
-        outerRadius: 100,
+        innerRadius: 100,
+        outerRadius: 200,
         height: 50
     }, {
-        center: new Point(100, 50, 0)
+        center: new Point(250, 250, 0)
     });
 
     conus.generatePoints({
         innerPoints: 50,
-        outerPoints: 125
+        outerPoints: 100
     });
 
-    conus.draw(document.querySelector("#jg-canvas").getContext("2d"));
+    conus.draw(context);
+
+    $("#rotate-button").addEventListener("click", function () {
+        conus.rotate(new Point(50, 50), 30);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        conus.draw(context);
+    });
 };
