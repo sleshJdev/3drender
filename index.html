@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <title>3D Modeling</title>
     <script src="jg.js"></script>
+    <script src="main.js"></script>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-<canvas height='500' width='500' style="border: solid 1px black;" id='jg-canvas'>Обновите браузер</canvas>
-<input type="button" value="Rotate" id="rotate-button">
+<div style="width: 1000px; height: 500px; margin: auto auto;">
+    <canvas height='500' width='1000' style="border: solid 1px black;" id='jg-canvas'>Обновите браузер</canvas>
+    <div class="slide-panel">
+        <div id="rotate-slider" class="slider"></div>
+    </div>
+    <div class="buttons-panel">
+        <input type="button" value="Rotate" id="rotate-button">
+    </div>
+</div>
 </body>
 </html>

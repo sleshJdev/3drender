@@ -2,169 +2,147 @@
 /**
  * Created by yauheni.putsykovich on 22.09.2015.
  */
-window.onload = function () {
-    var DEGREES_TO_RADIANS = (Math.PI / 180);
+function Point(x, y, z, number) {
+    this.x = x || 0;
+    this.y = y || 0;
+    this.z = z || 0;
+    this.number = number;
 
-    var log = console.log;
-    var cos = Math.cos;
-    var sin = Math.sin;
+};
+Point.prototype.shift = function (dx, dy, dz) {
+    this.x += dx;
+    this.y += dy;
+    this.z += dz;
+};
 
-    function $(selector){
-        return document.querySelector(selector);
-    }
+Point.prototype.transform = function (matrix) {
+    this.x = this.x * matrix[0][0] + this.y * matrix[0][1] + this.z * matrix[0][2] + matrix[0][3];
+    this.y = this.x * matrix[1][0] + this.y * matrix[1][1] + this.z * matrix[1][2] + matrix[1][3];
+    this.z = this.x * matrix[2][0] + this.y * matrix[2][1] + this.z * matrix[2][2] + matrix[2][3];
+};
 
-    function Point(x, y, z) {
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
+Point.prototype.clone = function () {
+    return new Point(this.x, this.y, this.z);
+};
 
-    };
-    Point.prototype.shift = function (dx, dy, dz) {
-        this.x += dx;
-        this.y += dy;
-        this.z += dz;
-    };
+Point.prototype.toString = function () {
+    return this.number + ": {x:" + this.x + ",y:" + this.y + ",z:" + this.z + "}";
+};
 
-    Point.prototype.multiple = function(matrix){
-        this.x = this.x * matrix[0][0] + this.y * matrix[0][1] + this.z * matrix[0][2] + matrix[0][3];
-        this.y = this.x * matrix[1][0] + this.y * matrix[1][1] + this.z * matrix[1][2] + matrix[1][3];
-        this.z = this.x * matrix[2][0] + this.y * matrix[2][1] + this.z * matrix[2][2] + matrix[2][3];
-    };
+/*
+ parameter - object properties.
+ him structure looks as: {
+ innerRadius: value of number,
+ outerRadius: value of number,
+ height: value of number
+ }
 
-    Point.prototype.toString = function () {
-        return "context.moveTo(" + this.x + ", " + this.y + ")";
-        //return "{x:" + this.x + ",y:" + this.y + ",z:" + this.z + "}";
-    };
+ sc - object, which represent system of coordinates.
+ him structure looks as: {
+ center - object of Point type
+ }
+ */
+function Conus(parameters, sc) {
+    this.innerRadius = parameters.innerRadius;
+    this.outerRadius = parameters.outerRadius;
+    this.height = parameters.height;
+    this.sc = sc;
+    this.points = [];
+};
 
-    /*
-     parameter - object properties.
-     him structure looks as: {
-     innerRadius: value of number,
-     outerRadius: value of number,
-     height: value of number
-     }
-
-     sc - object, which represent system of coordinates.
-     him structure looks as: {
-     center - object of Point type
-     }
-     */
-    function Conus(parameters, sc) {
-        this.innerRadius = parameters.innerRadius;
-        this.outerRadius = parameters.outerRadius;
-        this.height = parameters.height;
-        this.sc = sc;
-        this.points = [];
-        this.segments = [];
-    };
-
-    /*
-     parameter - object properties.
-     him structure looks as: {
-     outerPoints: [value of number], - the quantity of pointer on outer radius
-     innerPoint: [value of number] the quantity of pointer on outer radius [value of number]
-     }
-     */
-    Conus.prototype.generatePoints = function (parameters) {
-        this.innerPoints = parameters.innerPoints;
-        this.outerPoints = parameters.outerPoints;
-        function generator(quantityPoints, radius) {
-            var current = new Point();
-            var angleShift = 2 * Math.PI / quantityPoints;
-            for (var angle = 0; angle <= 2 * Math.PI; angle += angleShift) {
-                current.x = this.sc.center.x + radius * Math.cos(angle);
-                current.y = this.sc.center.y + radius * Math.sin(angle);
-                this.points.push(new Point(current.x, current.y, 250))
-            }
-            this.points.push(new Point(this.sc.center.x + radius, this.sc.center.y, 0))
+/*
+ parameter - object properties.
+ him structure looks as: {
+ outerPoints: [value of number], - the quantity of pointer on outer radius
+ innerPoint: [value of number] the quantity of pointer on outer radius [value of number]
+ }
+ */
+Conus.prototype.generatePoints = function (parameters) {
+    this.intervalsDelimiter = [0, parameters.innerPoints + 1];
+    this.innerPoints = parameters.innerPoints;
+    this.outerPoints = parameters.outerPoints;
+    var generator = function (quantityPoints, radius) {
+        var current = new Point(0, this.sc.center.y, 0);
+        var angleShift = (2 * Math.PI) / quantityPoints;
+        for (var angle = 0, i = 0; i <= quantityPoints; angle += angleShift, ++i) {
+            current.x = this.sc.center.x + radius * Math.cos(angle);
+            current.z = this.sc.center.z + radius * Math.sin(angle);
+            this.points.push(current.clone());
         }
+        this.points[this.points.length - 1] = this.points[this.points.length - quantityPoints - 1].clone();//closure: end = first
+    }
+    generator.call(this, this.innerPoints, this.innerRadius);
+    generator.call(this, this.outerPoints, this.outerRadius);
+    this.points.push(new Point(this.sc.center.x, this.sc.center.y - this.height, this.sc.center.z));//last point is peak of conus
+};
 
-        generator.call(this, this.innerPoints, this.innerRadius);
-        generator.call(this, this.outerPoints, this.outerRadius);
-        this.points.push(new Point(this.sc.center.x, this.sc.center.y, this.sc.center.z));//peak
-        //this.points.forEach(function (item, i) {
-        //    log("i:" + i + " " + item.toSource());
-        //});
-    };
-
-    Conus.prototype.draw = function (canvas) {
-        var self = this;
-        var previous = null, peak = this.points.pop();
-        var delimiters = [0, self.innerPoints + 1];
-        var colors = ["red", "blue"];
-        var isStart = true;
-        var isLast = false;
-        this.points.forEach(function (point, number) {
-            if (delimiters.indexOf(number) != -1) {
-                if(isStart){
-                    canvas.beginPath();
-                    isStart = false;
-                }else{
-                    canvas.stroke();
-                    canvas.beginPath();
-                }
-                canvas.strokeStyle = colors[delimiters.indexOf(number)];
-                canvas.moveTo(point.x, point.y);
-                canvas.lineTo(peak.x, peak.y);
-                canvas.moveTo(point.x, point.y);
-                return;
-            }
-            canvas.lineTo(point.x, point.y);
+Conus.prototype.draw = function (canvas) {
+    var self = this,
+        peak = this.points.pop(),
+        currentInterval = 0;
+    canvas.beginPath();
+    this.points.forEach(function (point, number) {
+        if ((currentInterval = self.intervalsDelimiter.indexOf(number)) != -1) {
+            canvas.moveTo(point.x, point.y);
             canvas.lineTo(peak.x, peak.y);
             canvas.moveTo(point.x, point.y);
-        });
-        canvas.stroke();
-        this.points.push(peak);
-    };
-
-    Conus.prototype.translate = function (pointShift) {
-        var matrix = [
-            [1, 0, 0, pointShift.x],
-            [0, 1, 0, pointShift.y],
-            [0, 0, 1, pointShift.z],
-            [0, 0, 0, 1],
-        ];
-        this.points.forEach(function(point){
-            point.multiple(matrix);
-        });
-    };
-
-    Conus.prototype.rotate = function (point, angle) {
-        angle *= DEGREES_TO_RADIANS;
-        this.translate(new Point(-this.sc.center.x, -this.sc.center.y, -this.sc.center.z));
-        var matrix = [
-            [1, 0,          0,           0],
-            [0, cos(angle), -sin(angle), 0],
-            [0, sin(angle), cos(angle),  0],
-            [0, 0,          0,           1]
-        ];
-        this.points.forEach(function(point){
-            point.multiple(matrix);
-        });
-        this.translate(new Point(this.sc.center.x, this.sc.center.y, this.sc.center.z));
-    };
-
-    var canvas = $("#jg-canvas");
-    var context = canvas.getContext('2d');
-
-    var conus = new Conus({
-        innerRadius: 100,
-        outerRadius: 200,
-        height: 50
-    }, {
-        center: new Point(250, 250, 0)
+            return;
+        }
+        canvas.lineTo(point.x, point.y);
+        canvas.lineTo(peak.x, peak.y);
+        canvas.moveTo(point.x, point.y);
     });
+    canvas.stroke();
+    this.points.push(peak);
+};
 
-    conus.generatePoints({
-        innerPoints: 50,
-        outerPoints: 100
+Conus.prototype.translate = function (pointShift) {
+    var matrix = [
+        [1, 0, 0, pointShift.x],
+        [0, 1, 0, pointShift.y],
+        [0, 0, 1, pointShift.z],
+        [0, 0, 0, 1],
+    ];
+    this.points.forEach(function (point) {
+        point.transform(matrix);
     });
+};
 
-    conus.draw(context);
+Conus.prototype.rotate = function (point, angle) {
 
-    $("#rotate-button").addEventListener("click", function () {
-        conus.rotate(new Point(50, 50), 30);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        conus.draw(context);
+    var matrix = [
+        [1, 0, 0, 0],
+        [0, cos(angle), sin(angle), 0],
+        [0, -sin(angle), cos(angle), 0],
+        [0, 0, 0, 1]
+    ];
+    //var matrix = [
+    //    [ cos(angle), 0, sin(angle),  0],
+    //    [          0, 1,          0,  0],
+    //    [-sin(angle), 0, cos(angle),  0],
+    //    [          0, 0,          0,  1]
+    //];
+    //var matrix = [
+    //    [  cos(angle), sin(angle), 0,  0],
+    //    [ -sin(angle), cos(angle), 0,  0],
+    //    [           0,          0, 1,  0],
+    //    [           0,          0, 0,  1]
+    //];
+    var matrix1 = [
+        [1, 0, 0, -this.sc.center.x],
+        [0, 1, 0, -this.sc.center.y],
+        [0, 0, 1, -this.sc.center.z],
+        [0, 0, 0, 1],
+    ];
+    var matrix2 = [
+        [1, 0, 0, this.sc.center.x],
+        [0, 1, 0, this.sc.center.y],
+        [0, 0, 1, this.sc.center.z],
+        [0, 0, 0, 1],
+    ];
+    this.points.forEach(function (point) {
+        point.transform(matrix1);
+        point.transform(matrix);
+        point.transform(matrix2);
     });
 };

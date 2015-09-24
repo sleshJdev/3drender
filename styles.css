@@ -1,0 +1,31 @@
+.slide-panel {
+    width: 500px;
+    height: 30px;
+    margin: 5px 0;
+    border: solid black 1px;
+    border-radius: 10px;
+}
+
+.slider {
+    position: relative;
+    background-color: black;
+    border-radius: 10px;
+    width: 50px;
+    height: 25px;
+    text-align: center;
+    padding-top: 5px;
+    color: white;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+.slider:hover {
+    background-color: gray;
+    cursor: pointer;
+}
+
+.buttons-panel {
+    margin-top: 20px;
+}
