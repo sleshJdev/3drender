@@ -26,22 +26,56 @@ window.onload = function () {
     });
 
     conus.generatePoints({
-        innerPoints: 5,
-        outerPoints: 10
+        innerPoints: 50,
+        outerPoints: 100
     });
 
     conus.draw(context);
 
 
-    //for(var i = 0; i < 3; ++i){
-    //    conus.rotate(new Point(50, 50), 30);
-    //    context.clearRect(0, 0, canvas.width, canvas.height);
-    //    conus.draw(context);
-    //}
+    //var cube = new Cube();
+    //cube.draw(context);
 
-    $("#rotate-button").addEventListener("click", function () {
-        conus.rotate(new Point(50, 50), 30);
+
+    $("#rotate-x-button").addEventListener("click", function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        var angleX = parseInt($("#rotate-x-angle").value) * DEGREES_TO_RADIANS;
+        var angleY = parseInt($("#rotate-y-angle").value) * DEGREES_TO_RADIANS;
+        var angleZ = parseInt($("#rotate-z-angle").value) * DEGREES_TO_RADIANS;
+        var cos, sin;
+
+        cos = Math.cos(angleX);
+        sin = Math.sin(angleX);
+        var rotateX = new Matrix();
+        rotateX.m[1][1] = rotateX.m[2][2] = cos;
+        rotateX.m[0][1] = -sin;
+        rotateX.m[1][0] = sin;
+
+        cos = Math.cos(angleY);
+        sin = Math.sin(angleY);
+        var rotateY = new Matrix();
+        rotateY.m[0][0] = rotateY.m[2][2] = cos;
+        rotateY.m[0][2] = sin;
+        rotateY.m[2][0] = -sin;
+
+        cos = Math.cos(angleZ);
+        sin = Math.sin(angleZ);
+        var rotateZ = new Matrix();
+        rotateZ.m[0][0] = rotateZ.m[1][1] = cos;
+        rotateZ.m[0][1] = -sin;
+        rotateZ.m[1][0] = sin;
+
+        console.log("rotateX: " + JSON.stringify(rotateX));
+        console.log("rotateY: " + JSON.stringify(rotateY));
+        console.log("rotateZ: " + JSON.stringify(rotateZ));
+
+        var rotate = rotateX.multiplyOnMatrix(rotateY).multiplyOnMatrix(rotateZ);
+        console.log("rotate: " + JSON.stringify(rotate));
+
+        var matrix = rotate;
+        console.log("matrixL " + JSON.stringify(matrix));
+
+        conus.rotate(matrix);
         conus.draw(context);
     });
 
@@ -61,7 +95,6 @@ window.onload = function () {
             left = parseInt(slider.style.left.slice(0, -2) || 0);
             offset = event.clientX - (parent.offsetLeft + left);
             angle = (left / (maxWidth + 25)) * 2 * Math.PI;
-            conus.rotate(new Point(50, 50), 30);
             context.clearRect(0, 0, canvas.width, canvas.height);
             conus.draw(context);
             slider.innerHTML = Math.round(RADIANS_TO_DEGREES * angle);

@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <title>3D Modeling</title>
     <script src="jg.js"></script>
-    <script src="main.js"></script>
+    <script src="actions.js"></script>
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
 <div style="width: 1000px; height: 500px; margin: auto auto;">
+    <div class="buttons-panel">
+        <div>
+            <label>Rotate by X</label>
+            <input type="text" placeholder="Angle..." id="rotate-x-angle">
+            <input type="button" value="RotateX" id="rotate-x-button">
+        </div>
+        <div>
+            <label>Rotate by Y</label>
+            <input type="text" placeholder="Angle..." id="rotate-y-angle">
+        </div>
+        <div>
+            <label>Rotate by Z</label>
+            <input type="text" placeholder="Angle..." id="rotate-z-angle">
+        </div>
+    </div>
     <canvas height='500' width='1000' style="border: solid 1px black;" id='jg-canvas'>Обновите браузер</canvas>
     <div class="slide-panel">
         <div id="rotate-slider" class="slider"></div>
-    </div>
-    <div class="buttons-panel">
-        <input type="button" value="Rotate" id="rotate-button">
     </div>
 </div>
 </body>
