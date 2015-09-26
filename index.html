@@ -10,50 +10,60 @@
     <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-<div style="width: 1000px; height: 500px; margin: auto auto;">
-    <canvas>Обновите браузер</canvas>
-    <div class="rotate slider-group">
-        <label>Rotation</label>
-
+<div id="content">
+    <div class="left-panel">
         <div>
-            <div class="slide-panel">
-                <div id="rotate-z-slider" class="slider"></div>
-            </div>
-            <div class="slide-panel">
-                <div id="rotate-y-slider" class="slider"></div>
-            </div>
-            <div class="slide-panel">
-                <div id="rotate-x-slider" class="slider"></div>
+            <label>Major number<br><span class="hint">(defines quantity points of cone)</span></label>
+            <div class="major-number slide-panel">
+                <div id="major-number-slider" class="slider"></div>
             </div>
         </div>
     </div>
-    <div class="translate slider-group">
-        <label>Translation</label>
+    <div class="right-box-canvas">
+        <canvas>Обновите браузер</canvas>
+        <div class="rotate slider-group">
+            <label>Rotation</label>
 
-        <div>
-            <div class="slide-panel">
-                <div id="translate-z-slider" class="slider"></div>
-            </div>
-            <div class="slide-panel">
-                <div id="translate-y-slider" class="slider"></div>
-            </div>
-            <div class="slide-panel">
-                <div id="translate-x-slider" class="slider"></div>
+            <div>
+                <div class="slide-panel">
+                    <div id="rotate-z-slider" class="slider"></div>
+                </div>
+                <div class="slide-panel">
+                    <div id="rotate-y-slider" class="slider"></div>
+                </div>
+                <div class="slide-panel">
+                    <div id="rotate-x-slider" class="slider"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="scaling slider-group">
-        <label>Scaling</label>
+        <div class="translate slider-group">
+            <label>Translation</label>
 
-        <div>
-            <div class="slide-panel">
-                <div id="scale-z-slider" class="slider"></div>
+            <div>
+                <div class="slide-panel">
+                    <div id="translate-z-slider" class="slider"></div>
+                </div>
+                <div class="slide-panel">
+                    <div id="translate-y-slider" class="slider"></div>
+                </div>
+                <div class="slide-panel">
+                    <div id="translate-x-slider" class="slider"></div>
+                </div>
             </div>
-            <div class="slide-panel">
-                <div id="scale-y-slider" class="slider"></div>
-            </div>
-            <div class="slide-panel">
-                <div id="scale-x-slider" class="slider"></div>
+        </div>
+        <div class="scaling slider-group">
+            <label>Scaling</label>
+
+            <div>
+                <div class="slide-panel">
+                    <div id="scale-z-slider" class="slider"></div>
+                </div>
+                <div class="slide-panel">
+                    <div id="scale-y-slider" class="slider"></div>
+                </div>
+                <div class="slide-panel">
+                    <div id="scale-x-slider" class="slider"></div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,6 +1,45 @@
-canvas {
-    border: solid 1px black;
+body{
+    background-color: white;
+    font-style: italic;
+    font-family: monospace;
+}
+
+.hint{
+    font-size: small;
+
+}
+
+#content {
+    width: 100%;
+}
+
+
+.left-panel{
+    float: left;
+    width: 20%;
+    padding-right: 10px;
+    border-right: 1px solid black;
     border-radius: 10px;
+    /*background-color: lightgray;*/
+}
+
+.left-panel .slide-panel{
+    width: 100%;
+}
+
+.right-box-canvas{
+    width: 75%;
+    float: right;
+}
+
+.right-box-canvas .slide-panel{
+    width: 30%;
+}
+
+canvas {
+    /*border: solid 1px black;*/
+    /*border-radius: 10px;*/
+    /*background-color: black;*/
 }
 
 .slider-group {
@@ -9,16 +48,16 @@ canvas {
 }
 
 .slider-group > label {
-    width: 10%;
+    width: 15%;
 }
 
 .slider-group > div {
-    width: 90%;
+    width: 85%;
     float: right;
 }
 
 .slide-panel {
-    width: 30%;
+    /*width: 30%;*/
     height: 20px;
     margin: 5px 0;
     border: solid black 1px;
@@ -40,11 +79,6 @@ canvas {
     -o-user-select: none;
 }
 
-.slider:hover {
-    background-color: gray;
-    cursor: pointer;
-}
-
 .rotate .slider {
     background-color: red;
 }
@@ -55,4 +89,13 @@ canvas {
 
 .scaling .slider {
     background-color: blue;
+}
+
+.major-number .slider{
+    background-color: coral;
+}
+
+.slider:hover {
+    background-color: lightgray;
+    cursor: pointer;
 }

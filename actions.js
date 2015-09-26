@@ -6,7 +6,7 @@
 window.onload = function () {
     var DEGREES_TO_RADIANS = Math.PI / 180;
     var RADIANS_TO_DEGREES = 180 / Math.PI;
-    var CANVAS_WIDTH = 1000;
+    var CANVAS_WIDTH = 900;
     var CANVAS_HEIGHT = 500;
 
     var log = console.log;
@@ -20,28 +20,35 @@ window.onload = function () {
     var canvas = $("canvas");
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext("2d");
 
     var sc = Object.create(null);//system of coordinates
     sc.center = new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200, 0);
-
-    var parameters = Object.create(null);//parameters for model of conus
-    parameters.innerRadius = 100;
-    parameters.outerRadius = 200;
-    parameters.height = 250
-    parameters.innerPoints = 10;
-    parameters.outerPoints = 20;
 
     var settings = Object.create(null);//settings to rendering of conus
     settings.angle = new Vector(0, 0, 0);
     settings.scale = new Vector(1, 1, 1);
     settings.translate = sc.center.clone();
+    settings.isUpdateGeometry = true;
+
+    var parameters = Object.create(null);//parameters for model of conus
+    parameters.innerRadius = 100;
+    parameters.outerRadius = 200;
+    parameters.height = 250
+    parameters.majorNumber = 8;
+    parameters.colors = Object.create(null);
+    parameters.colors.outer = "darkred";
+    parameters.colors.inner = "darkgreen";
+    parameters.colors.base = "darkblue";
 
     var cone = new Cone(parameters, sc);
-    cone.generatePoints(parameters);
+    cone.generateGeometry(parameters);
     transform(settings);
 
     function transform(settings) {
+        if(settings.isUpdateGeometry){
+            cone.generateGeometry(parameters);
+        }
         var rotateX = Matrix.prototype.getRotateXMatrix(settings.angle.x);
         var rotateY = Matrix.prototype.getRotateYMatrix(settings.angle.y);
         var rotateZ = Matrix.prototype.getRotateZMatrix(settings.angle.z);
@@ -55,55 +62,62 @@ window.onload = function () {
         cone.draw(context);
     };
 
-    initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 360, function (angle) {
+    initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 0, 360, function (angle) {
         return "&ang;X: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.x = angle * DEGREES_TO_RADIANS;
     });
-    initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y,  360, function (angle) {
+    initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y,  0, 360, function (angle) {
         return "&ang;Y: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.y = angle * DEGREES_TO_RADIANS;
     });
-    initializeListenerForSlider($("#rotate-z-slider"), settings.angle.z, 360, function (angle) {
+    initializeListenerForSlider($("#rotate-z-slider"), settings.angle.z, 0, 360, function (angle) {
         return "&ang;Z: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.z = angle * DEGREES_TO_RADIANS;
     });
 
-    initializeListenerForSlider($("#translate-x-slider"), settings.translate.x,  CANVAS_WIDTH, function (translate) {
+    initializeListenerForSlider($("#translate-x-slider"), settings.translate.x, 0, CANVAS_WIDTH, function (translate) {
         return "&Delta;X:" + translate + "px";
     }, function (translate) {
         settings.translate.x = translate;
     });
-    initializeListenerForSlider($("#translate-y-slider"), settings.translate.y, CANVAS_HEIGHT, function (translate) {
+    initializeListenerForSlider($("#translate-y-slider"), settings.translate.y, 0, CANVAS_HEIGHT, function (translate) {
         return "&Delta;Y:" + translate + "px";
     }, function (translate) {
         settings.translate.y = translate;
     });
-    initializeListenerForSlider($("#translate-z-slider"), settings.translate.z, 300, function (translate) {
+    initializeListenerForSlider($("#translate-z-slider"), settings.translate.z, 0, 300, function (translate) {
         return "&Delta;Z:" + translate + "px";
     }, function (translate) {
         settings.translate.z = translate;
     });
 
-    initializeListenerForSlider($("#scale-x-slider"), settings.scale.x, 5, function (scale) {
-        return "&times;" + scale;
+    initializeListenerForSlider($("#scale-x-slider"), settings.scale.x, 0, 5, function (scale) {
+        return "&times;" + scale + "X";
     }, function (scale) {
         settings.scale.x = scale;
     });
-    initializeListenerForSlider($("#scale-y-slider"), settings.scale.y, 5, function (scale) {
-        return "&times;" + scale;
+    initializeListenerForSlider($("#scale-y-slider"), settings.scale.y, 0, 5, function (scale) {
+        return "&times;" + scale + "Y";
     }, function (scale) {
         settings.scale.y = scale;
     });
-    initializeListenerForSlider($("#scale-z-slider"), settings.scale.z, 5, function (scale) {
-        return "&times;" + scale;
+    initializeListenerForSlider($("#scale-z-slider"), settings.scale.z, 0, 5, function (scale) {
+        return "&times;" + scale + "Z";
     }, function (scale) {
         settings.scale.z = scale;
     });
 
-    function initializeListenerForSlider(slider, initialValue, maxValue, messageCreator, valueProcessor) {
+    initializeListenerForSlider($("#major-number-slider"), parameters.majorNumber, 3, 300, function (number) {
+        return number;
+    }, function (number) {
+        settings.isUpdateGeometry = parameters.majorNumber != number;
+        parameters.majorNumber = number;
+    });
+
+    function initializeListenerForSlider(slider, initialValue, minValue,  maxValue, messageCreator, valueProcessor) {
         var isDown = false;
         var parent = slider.parentNode;
         var size = slider.clientWidth
@@ -126,9 +140,9 @@ window.onload = function () {
                 x += event.clientX - (parent.offsetLeft + x + size / 2);
                 percent = x / width;
                 value = Math.round(percent * maxValue);
-                if (x < 0) {
+                if (x < minValue) {
                     x = 0;
-                    value = 0;
+                    value = minValue;
                 } else if (x > width) {
                     x = width;
                     value = maxValue;

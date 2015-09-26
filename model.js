@@ -2,101 +2,10 @@
 /**
  * Created by yauheni.putsykovich on 22.09.2015.
  */
-//var m1 = new Matrix(0);
-//m1.v00 = 2;
-//m1.v01 = 1;
-//m1.v02 = 4;
-//m1.v10 = -4;
-//m1.v11 = 1 / 2;
-//m1.v12 = 3;
-//
-//var m2 = new Matrix(0);
-//m2.v00 = 0;
-//m2.v01 = 1;
-//m2.v10 = -2;
-//m2.v11 = 5;
-//m2.v20 = -1;
-//m2.v21 = 9;
-//
-//var v3 = m1.multiplyOnMatrix(m2);
-//console.log(v3.toString());
-
-
-//function Cube() {
-//    this.points = [];
-//
-//    this.center = new Vector(200, 200, 200);
-//
-//    var size = 100;
-//
-//    this.points.push(new Vector(0, 0, 0));
-//    this.points.push(new Vector(size, 0, 0));
-//    this.points.push(new Vector(size, 0, size));
-//    this.points.push(new Vector(0, 0, size));
-//
-//    this.points.push(new Vector(0, size, 0));
-//    this.points.push(new Vector(size, size, 0));
-//    this.points.push(new Vector(size, size, size));
-//    this.points.push(new Vector(0, size, size));
-//}
-//
-//Cube.prototype.draw = function (canvas) {
-//    var self = this;
-//    this.points.forEach(function (point) {
-//        point.shift(self.center);
-//    });
-//
-//    canvas.beginPath();
-//    canvas.strokeStyle = "red";
-//    canvas.moveTo(this.points[0].x, this.points[0].y);
-//    canvas.lineTo(this.points[1].x, this.points[1].y);
-//    canvas.lineTo(this.points[2].x, this.points[2].y);
-//    canvas.lineTo(this.points[3].x, this.points[3].y);
-//    canvas.lineTo(this.points[0].x, this.points[0].y);
-//    canvas.stroke();
-//
-//    canvas.beginPath();
-//    canvas.strokeStyle = "green";
-//    canvas.moveTo(this.points[4].x, this.points[4].y);
-//    canvas.lineTo(this.points[5].x, this.points[5].y);
-//    canvas.lineTo(this.points[6].x, this.points[6].y);
-//    canvas.lineTo(this.points[7].x, this.points[7].y);
-//    canvas.lineTo(this.points[4].x, this.points[4].y);
-//    canvas.stroke();
-//
-//    canvas.beginPath();
-//    canvas.strokeStyle = "blue";
-//    canvas.lineTo(this.points[4].x, this.points[4].y);
-//    canvas.moveTo(this.points[0].x, this.points[0].y);
-//
-//    canvas.lineTo(this.points[4].x, this.points[4].y);
-//    canvas.moveTo(this.points[1].x, this.points[1].y);
-//
-//    canvas.lineTo(this.points[5].x, this.points[5].y);
-//    canvas.moveTo(this.points[2].x, this.points[2].y);
-//
-//    canvas.lineTo(this.points[6].x, this.points[6].y);
-//    canvas.moveTo(this.points[3].x, this.points[3].y);
-//
-//    canvas.lineTo(this.points[7].x, this.points[7].y);
-//
-//    canvas.stroke();
-//};
-//
-//Cube.prototype.rotate = function (matrix) {
-//    this.points.forEach(function (point) {
-//        console.log(JSON.stringify(point));
-//        point.reset();
-//        point.transform(matrix);
-//    });
-//};
-
-
 /*
  parameter - object properties.
  him structure looks as: {
- innerRadius: value of number,
- outerRadius: value of number,
+ majorNumber: number of point on outer and inner on base circle,
  height: value of number
  }
 
@@ -106,10 +15,9 @@
  }
  */
 function Cone(parameters) {
-    this.innerRadius = parameters.innerRadius;
-    this.outerRadius = parameters.outerRadius;
+    this.majorNumber = parameters.majorNumber;
     this.height = parameters.height;
-    this.points = [];
+    this.colors = parameters.colors;
 };
 
 /*
@@ -119,10 +27,11 @@ function Cone(parameters) {
  innerPoint: [value of number] the quantity of pointer on outer radius [value of number]
  }
  */
-Cone.prototype.generatePoints = function (parameters) {
-    this.intervalsDelimiter = [0, parameters.innerPoints + 1];
-    this.innerPoints = parameters.innerPoints;
-    this.outerPoints = parameters.outerPoints;
+Cone.prototype.generateGeometry = function (parameters) {
+    this.points = [];
+    this.majorNumber = this.majorNumber;
+    this.innerRadius = parameters.innerRadius;
+    this.outerRadius = parameters.outerRadius;
     var generator = function (quantityPoints, radius) {
         var current = new Vector(0, 0, 0);
         var angleShift = (2 * Math.PI) / quantityPoints;
@@ -133,19 +42,45 @@ Cone.prototype.generatePoints = function (parameters) {
         }
         this.points[this.points.length - 1] = this.points[this.points.length - quantityPoints - 1].clone();//closure: end = first
     }
-    generator.call(this, this.innerPoints, this.innerRadius);
-    generator.call(this, this.outerPoints, this.outerRadius);
-    this.points.push(new Vector(0, -this.height, 0));//last point is peak of conus
+    generator.call(this, this.majorNumber, this.innerRadius);
+    generator.call(this, this.majorNumber, this.outerRadius);
+    this.points.push(new Vector(0, -this.height, 0));//last point is peak of cone
+};
+
+Cone.prototype.drawBase = function (canvas) {
+    canvas.beginPath();
+    canvas.strokeStyle = this.colors.base;
+    var opCurrent, ipCurrent, ipPrevious;//outer point and inner point
+    for(var i = 0; i <= this.majorNumber; ++i){
+        ipCurrent = this.points[i]
+        opCurrent = this.points[i + this.majorNumber];
+        canvas.moveTo(ipCurrent.x, ipCurrent.y);
+        canvas.lineTo(opCurrent.x, opCurrent.y);
+        if(i == 0){
+            ipPrevious = ipCurrent;
+            continue;
+        }
+        canvas.lineTo(ipPrevious.x, ipPrevious.y);
+        ipPrevious = ipCurrent;
+    }
+    canvas.stroke();
 };
 
 Cone.prototype.draw = function (canvas) {
     var self = this,
         peak = this.points.pop(),
         currentInterval = 0;
-    canvas.beginPath();
-    canvas.strokeStyle = "black";
+    canvas.strokeStyle = "white";
     this.points.forEach(function (point, number) {
-        if ((currentInterval = self.intervalsDelimiter.indexOf(number)) != -1) {
+        if (number == 0 || number == (self.majorNumber + 1)) {
+            if(number == 0){
+                canvas.beginPath();
+                canvas.strokeStyle = self.colors.inner;
+            }else if(number == (self.majorNumber + 1)){
+                canvas.stroke();
+                canvas.beginPath();
+                canvas.strokeStyle = self.colors.outer;
+            }
             canvas.moveTo(point.x, point.y);
             canvas.lineTo(peak.x, peak.y);
             canvas.moveTo(point.x, point.y);
@@ -157,6 +92,7 @@ Cone.prototype.draw = function (canvas) {
     });
     canvas.stroke();
     this.points.push(peak);
+    this.drawBase(canvas);
 };
 
 Cone.prototype.transform = function (matrix) {
