@@ -37,8 +37,8 @@ window.onload = function () {
     settings.scale = new Vector(1, 1, 1);
     settings.translate = sc.center.clone();
 
-    var conus = new Conus(parameters, sc);
-    conus.generatePoints(parameters);
+    var cone = new Cone(parameters, sc);
+    cone.generatePoints(parameters);
     transform(settings);
 
     function transform(settings) {
@@ -48,10 +48,10 @@ window.onload = function () {
         var translateToOrigin = Matrix.prototype.getTranslateMatrix(settings.translate.clone().reverse());
         var translateFromOrigin = Matrix.prototype.getTranslateMatrix(settings.translate);
         var transform = Matrix.prototype.multiplyAll(translateFromOrigin, rotateX, rotateY, rotateZ);
-        conus.transform(translateToOrigin);
-        conus.transform(transform);
+        cone.transform(translateToOrigin);
+        cone.transform(transform);
         context.clearRect(0, 0, canvas.width, canvas.height);
-        conus.draw(context);
+        cone.draw(context);
     };
 
     initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 360, function (angle) {

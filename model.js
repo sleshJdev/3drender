@@ -105,7 +105,7 @@
  center - object of Vector type
  }
  */
-function Conus(parameters) {
+function Cone(parameters) {
     this.innerRadius = parameters.innerRadius;
     this.outerRadius = parameters.outerRadius;
     this.height = parameters.height;
@@ -119,7 +119,7 @@ function Conus(parameters) {
  innerPoint: [value of number] the quantity of pointer on outer radius [value of number]
  }
  */
-Conus.prototype.generatePoints = function (parameters) {
+Cone.prototype.generatePoints = function (parameters) {
     this.intervalsDelimiter = [0, parameters.innerPoints + 1];
     this.innerPoints = parameters.innerPoints;
     this.outerPoints = parameters.outerPoints;
@@ -138,7 +138,7 @@ Conus.prototype.generatePoints = function (parameters) {
     this.points.push(new Vector(0, -this.height, 0));//last point is peak of conus
 };
 
-Conus.prototype.draw = function (canvas) {
+Cone.prototype.draw = function (canvas) {
     var self = this,
         peak = this.points.pop(),
         currentInterval = 0;
@@ -159,7 +159,7 @@ Conus.prototype.draw = function (canvas) {
     this.points.push(peak);
 };
 
-Conus.prototype.transform = function (matrix) {
+Cone.prototype.transform = function (matrix) {
     this.points.forEach(function (point) {
         point.reset();
         point.transform(matrix);
