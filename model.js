@@ -15,8 +15,6 @@
  }
  */
 function Cone(parameters) {
-    this.majorNumber = parameters.majorNumber;
-    this.height = parameters.height;
     this.colors = parameters.colors;
 };
 
@@ -29,7 +27,8 @@ function Cone(parameters) {
  */
 Cone.prototype.generateGeometry = function (parameters) {
     this.points = [];
-    this.majorNumber = this.majorNumber;
+    this.height = parameters.height;
+    this.majorNumber = parameters.majorNumber;
     this.innerRadius = parameters.innerRadius;
     this.outerRadius = parameters.outerRadius;
     var generator = function (quantityPoints, radius) {

@@ -1,10 +1,10 @@
-body{
+body {
     background-color: white;
     font-style: italic;
     font-family: monospace;
 }
 
-.hint{
+.hint {
     font-size: small;
 
 }
@@ -13,8 +13,7 @@ body{
     width: 100%;
 }
 
-
-.left-panel{
+.left-box-geometry {
     float: left;
     width: 20%;
     padding-right: 10px;
@@ -23,16 +22,16 @@ body{
     /*background-color: lightgray;*/
 }
 
-.left-panel .slide-panel{
+.left-box-geometry .slide-panel {
     width: 100%;
 }
 
-.right-box-canvas{
+.right-box-canvas {
     width: 75%;
     float: right;
 }
 
-.right-box-canvas .slide-panel{
+.right-box-canvas .slide-panel {
     width: 30%;
 }
 
@@ -91,7 +90,7 @@ canvas {
     background-color: blue;
 }
 
-.major-number .slider{
+.geometry-parameter .slider {
     background-color: coral;
 }
 

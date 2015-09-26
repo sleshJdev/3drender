@@ -25,13 +25,13 @@ window.onload = function () {
     var sc = Object.create(null);//system of coordinates
     sc.center = new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200, 0);
 
-    var settings = Object.create(null);//settings to rendering of conus
+    var settings = Object.create(null);//settings to rendering of cone
     settings.angle = new Vector(0, 0, 0);
     settings.scale = new Vector(1, 1, 1);
     settings.translate = sc.center.clone();
     settings.isUpdateGeometry = true;
 
-    var parameters = Object.create(null);//parameters for model of conus
+    var parameters = Object.create(null);//parameters for model of cone
     parameters.innerRadius = 100;
     parameters.outerRadius = 200;
     parameters.height = 250
@@ -46,16 +46,17 @@ window.onload = function () {
     transform(settings);
 
     function transform(settings) {
-        if(settings.isUpdateGeometry){
+        if (settings.isUpdateGeometry) {
             cone.generateGeometry(parameters);
         }
-        var rotateX = Matrix.prototype.getRotateXMatrix(settings.angle.x);
-        var rotateY = Matrix.prototype.getRotateYMatrix(settings.angle.y);
-        var rotateZ = Matrix.prototype.getRotateZMatrix(settings.angle.z);
-        var scale   = Matrix.prototype.getScaleMatrix(settings.scale);
-        var translateToOrigin = Matrix.prototype.getTranslateMatrix(settings.translate.clone().reverse());
-        var translateFromOrigin = Matrix.prototype.getTranslateMatrix(settings.translate);
-        var transform = Matrix.prototype.multiplyAll(translateFromOrigin, scale, rotateX, rotateY, rotateZ);
+        var rotateX, rotateY, rotateZ, scale, translateToOrigin, translateFromOrigin, transform;//matrices
+        rotateX = Matrix.prototype.getRotateXMatrix(settings.angle.x);
+        rotateY = Matrix.prototype.getRotateYMatrix(settings.angle.y);
+        rotateZ = Matrix.prototype.getRotateZMatrix(settings.angle.z);
+        scale = Matrix.prototype.getScaleMatrix(settings.scale);
+        translateToOrigin = Matrix.prototype.getTranslateMatrix(settings.translate.clone().reverse());
+        translateFromOrigin = Matrix.prototype.getTranslateMatrix(settings.translate);
+        transform = Matrix.prototype.multiplyAll(translateFromOrigin, scale, rotateX, rotateY, rotateZ);
         cone.transform(translateToOrigin);
         cone.transform(transform);
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -67,7 +68,7 @@ window.onload = function () {
     }, function (angle) {
         settings.angle.x = angle * DEGREES_TO_RADIANS;
     });
-    initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y,  0, 360, function (angle) {
+    initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y, 0, 360, function (angle) {
         return "&ang;Y: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.y = angle * DEGREES_TO_RADIANS;
@@ -116,8 +117,18 @@ window.onload = function () {
         settings.isUpdateGeometry = parameters.majorNumber != number;
         parameters.majorNumber = number;
     });
+    initializeListenerForSlider($("#inner-radius-slider"), 2 * parameters.innerRadius, 10, 250, function (radius) {
+        return "&Oslash; " + radius + "px";
+    }, function (radius) {
+        parameters.innerRadius = Math.round(radius / 2);
+    });
+    initializeListenerForSlider($("#outer-radius-slider"), 2 * parameters.outerRadius, 20, 500, function (radius) {
+        return "&Oslash; " + radius + "px";
+    }, function (radius) {
+        parameters.outerRadius = Math.round(radius / 2);
+    });
 
-    function initializeListenerForSlider(slider, initialValue, minValue,  maxValue, messageCreator, valueProcessor) {
+    function initializeListenerForSlider(slider, initialValue, minValue, maxValue, messageCreator, valueProcessor) {
         var isDown = false;
         var parent = slider.parentNode;
         var size = slider.clientWidth
