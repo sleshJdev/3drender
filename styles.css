@@ -1,18 +1,18 @@
-canvas{
+canvas {
     border: solid 1px black;
     border-radius: 10px;
 }
 
-.slider-group{
+.slider-group {
     clear: both;
     margin: 10px;
 }
 
-.slider-group > label{
+.slider-group > label {
     width: 10%;
 }
 
-.slider-group > div{
+.slider-group > div {
     width: 90%;
     float: right;
 }
@@ -27,7 +27,7 @@ canvas{
     margin-left: 10px;
 }
 
-.slider{
+.slider {
     position: relative;
     border-radius: 10px;
     width: 80px;
@@ -45,10 +45,14 @@ canvas{
     cursor: pointer;
 }
 
-.rotate .slider{
+.rotate .slider {
     background-color: red;
 }
 
-.translate .slider{
+.translate .slider {
     background-color: green;
+}
+
+.scaling .slider {
+    background-color: blue;
 }

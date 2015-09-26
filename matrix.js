@@ -43,42 +43,47 @@ Matrix.prototype.multiplyOnVector = function (vector) {
 
 Matrix.prototype.getRotateXMatrix = function(angleXRadians){
     var sin = Math.sin(angleXRadians);
-    var rotateXMatrix = new Matrix();
-    rotateXMatrix.v11 = rotateXMatrix.v22 = Math.cos(angleXRadians);
-    rotateXMatrix.v12 = -sin;
-    rotateXMatrix.v21 = sin;
+    this.rotateXMatrix.v11 = this.rotateXMatrix.v22 = Math.cos(angleXRadians);
+    this.rotateXMatrix.v12 = -sin;
+    this.rotateXMatrix.v21 = sin;
 
-    return rotateXMatrix;
+    return this.rotateXMatrix;
 };
 
 Matrix.prototype.getRotateYMatrix = function(angleYRadians){
     var sin = Math.sin(angleYRadians);
-    var rotateYMatrix = new Matrix();
-    rotateYMatrix.v00 = rotateYMatrix.v22 = Math.cos(angleYRadians);
-    rotateYMatrix.v02 = sin;
-    rotateYMatrix.v20 = -sin;
+    this.rotateYMatrix.v00 = this.rotateYMatrix.v22 = Math.cos(angleYRadians);
+    this.rotateYMatrix.v02 = sin;
+    this.rotateYMatrix.v20 = -sin;
 
-    return rotateYMatrix;
+    return this.rotateYMatrix;
 }
 
 Matrix.prototype.getRotateZMatrix = function (angleZRadians) {
     var sin = Math.sin(angleZRadians);
-    var rotateZMatrix = new Matrix();
-    rotateZMatrix.v00 = rotateZMatrix.v11 = Math.cos(angleZRadians);
-    rotateZMatrix.v01 = -sin;
-    rotateZMatrix.v10 = sin;
+    this.rotateZMatrix.v00 = this.rotateZMatrix.v11 = Math.cos(angleZRadians);
+    this. rotateZMatrix.v01 = -sin;
+    this.rotateZMatrix.v10 = sin;
 
-    return rotateZMatrix;
+    return this.rotateZMatrix;
 };
 
 Matrix.prototype.getTranslateMatrix = function(vector){
     var translateMatrix = new Matrix();
-    translateMatrix.v03 = vector.x;
-    translateMatrix.v13 = vector.y;
-    translateMatrix.v23 = vector.z;
+    this.translateMatrix.v03 = vector.x;
+    this.translateMatrix.v13 = vector.y;
+    this.translateMatrix.v23 = vector.z;
 
-    return translateMatrix;
+    return this.translateMatrix;
 }
+
+Matrix.prototype.getScaleMatrix = function (vector) {
+    this.scaleMatrix.v00 = vector.x;
+    this.scaleMatrix.v11 = vector.y;
+    this.scaleMatrix.v22 = vector.z;
+
+    return this.scaleMatrix;
+};
 
 Matrix.prototype.multiplyAll = function(){
     var result = new Matrix();
@@ -90,6 +95,12 @@ Matrix.prototype.multiplyAll = function(){
 
     return result;
 };
+
+Matrix.prototype.rotateXMatrix = new Matrix();
+Matrix.prototype.rotateYMatrix = new Matrix();
+Matrix.prototype.rotateZMatrix = new Matrix();
+Matrix.prototype.translateMatrix = new Matrix();
+Matrix.prototype.scaleMatrix = new Matrix();
 
 Matrix.prototype.toString = function () {
     return "[[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +

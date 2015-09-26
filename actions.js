@@ -45,9 +45,10 @@ window.onload = function () {
         var rotateX = Matrix.prototype.getRotateXMatrix(settings.angle.x);
         var rotateY = Matrix.prototype.getRotateYMatrix(settings.angle.y);
         var rotateZ = Matrix.prototype.getRotateZMatrix(settings.angle.z);
+        var scale   = Matrix.prototype.getScaleMatrix(settings.scale);
         var translateToOrigin = Matrix.prototype.getTranslateMatrix(settings.translate.clone().reverse());
         var translateFromOrigin = Matrix.prototype.getTranslateMatrix(settings.translate);
-        var transform = Matrix.prototype.multiplyAll(translateFromOrigin, rotateX, rotateY, rotateZ);
+        var transform = Matrix.prototype.multiplyAll(translateFromOrigin, scale, rotateX, rotateY, rotateZ);
         cone.transform(translateToOrigin);
         cone.transform(transform);
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -55,17 +56,17 @@ window.onload = function () {
     };
 
     initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 360, function (angle) {
-        return "&alpha;X: " + angle + "&deg;";
+        return "&ang;X: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.x = angle * DEGREES_TO_RADIANS;
     });
     initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y,  360, function (angle) {
-        return "&beta;Y: " + angle + "&deg;";
+        return "&ang;Y: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.y = angle * DEGREES_TO_RADIANS;
     });
     initializeListenerForSlider($("#rotate-z-slider"), settings.angle.z, 360, function (angle) {
-        return "&gamma;Z: " + angle + "&deg;";
+        return "&ang;Z: " + angle + "&deg;";
     }, function (angle) {
         settings.angle.z = angle * DEGREES_TO_RADIANS;
     });
@@ -84,6 +85,22 @@ window.onload = function () {
         return "&Delta;Z:" + translate + "px";
     }, function (translate) {
         settings.translate.z = translate;
+    });
+
+    initializeListenerForSlider($("#scale-x-slider"), settings.scale.x, 5, function (scale) {
+        return "&times;" + scale;
+    }, function (scale) {
+        settings.scale.x = scale;
+    });
+    initializeListenerForSlider($("#scale-y-slider"), settings.scale.y, 5, function (scale) {
+        return "&times;" + scale;
+    }, function (scale) {
+        settings.scale.y = scale;
+    });
+    initializeListenerForSlider($("#scale-z-slider"), settings.scale.z, 5, function (scale) {
+        return "&times;" + scale;
+    }, function (scale) {
+        settings.scale.z = scale;
     });
 
     function initializeListenerForSlider(slider, initialValue, maxValue, messageCreator, valueProcessor) {
