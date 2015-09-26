@@ -1,6 +1,6 @@
 canvas{
     border: solid 1px black;
-    /*border-radius: 10px;*/
+    border-radius: 10px;
 }
 
 .slider-group{
@@ -20,16 +20,16 @@ canvas{
 .slide-panel {
     width: 30%;
     height: 20px;
-    /*margin: 5px 0;*/
+    margin: 5px 0;
     border: solid black 1px;
-    /*border-radius: 10px;*/
+    border-radius: 10px;
     float: right;
     margin-left: 10px;
 }
 
 .slider{
     position: relative;
-    /*border-radius: 10px;*/
+    border-radius: 10px;
     width: 80px;
     height: 20px;
     text-align: center;

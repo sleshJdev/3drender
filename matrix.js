@@ -71,14 +71,25 @@ Matrix.prototype.getRotateZMatrix = function (angleZRadians) {
     return rotateZMatrix;
 };
 
-Matrix.prototype.getTranslateMatrix = function(dx, dy, dz){
+Matrix.prototype.getTranslateMatrix = function(vector){
     var translateMatrix = new Matrix();
-    translateMatrix.v03 = dx;
-    translateMatrix.v13 = dy;
-    translateMatrix.v23 = dz;
+    translateMatrix.v03 = vector.x;
+    translateMatrix.v13 = vector.y;
+    translateMatrix.v23 = vector.z;
 
     return translateMatrix;
 }
+
+Matrix.prototype.multiplyAll = function(){
+    var result = new Matrix();
+    if(!!arguments){
+        for(var i = 0; i < arguments.length; ++i){
+            result = result.multiplyOnMatrix(arguments[i]);
+        }
+    }
+
+    return result;
+};
 
 Matrix.prototype.toString = function () {
     return "[[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +

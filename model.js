@@ -105,11 +105,10 @@
  center - object of Vector type
  }
  */
-function Conus(parameters, sc) {
+function Conus(parameters) {
     this.innerRadius = parameters.innerRadius;
     this.outerRadius = parameters.outerRadius;
     this.height = parameters.height;
-    this.sc = sc;
     this.points = [];
 };
 
@@ -140,11 +139,8 @@ Conus.prototype.generatePoints = function (parameters) {
 };
 
 Conus.prototype.draw = function (canvas) {
-    var self = this;
-    this.points.forEach(function (point) {
-        point.shift(self.sc.center);
-    });
-    var peak = this.points.pop(),
+    var self = this,
+        peak = this.points.pop(),
         currentInterval = 0;
     canvas.beginPath();
     canvas.strokeStyle = "black";
@@ -165,7 +161,6 @@ Conus.prototype.draw = function (canvas) {
 
 Conus.prototype.transform = function (matrix) {
     this.points.forEach(function (point) {
-        console.log(JSON.stringify(point));
         point.reset();
         point.transform(matrix);
     });

@@ -6,8 +6,8 @@
 window.onload = function () {
     var DEGREES_TO_RADIANS = Math.PI / 180;
     var RADIANS_TO_DEGREES = 180 / Math.PI;
-    var CANVAS_WIDTH = 500;
-    var CANVAS_HEIGHT = 1000;
+    var CANVAS_WIDTH = 1000;
+    var CANVAS_HEIGHT = 500;
 
     var log = console.log;
     var cos = Math.cos;
@@ -21,85 +21,86 @@ window.onload = function () {
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
     var context = canvas.getContext('2d');
-    //context.width = CANVAS_WIDTH;
-    //context.height = CANVAS_HEIGHT;
 
-    var conus = new Conus({
-        innerRadius: 100,
-        outerRadius: 200,
-        height: 250
-    }, {
-        center: new Vector(250, 400, 0)
-    });
+    var sc = Object.create(null);//system of coordinates
+    sc.center = new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200, 0);
 
-    conus.generatePoints({
-        innerPoints: 10,
-        outerPoints: 20
-    });
+    var parameters = Object.create(null);//parameters for model of conus
+    parameters.innerRadius = 100;
+    parameters.outerRadius = 200;
+    parameters.height = 250
+    parameters.innerPoints = 10;
+    parameters.outerPoints = 20;
 
-    conus.draw(context);
+    var settings = Object.create(null);//settings to rendering of conus
+    settings.angle = new Vector(0, 0, 0);
+    settings.scale = new Vector(1, 1, 1);
+    settings.translate = sc.center.clone();
+
+    var conus = new Conus(parameters, sc);
+    conus.generatePoints(parameters);
+    transform(settings);
 
     function transform(settings) {
-        var translate = Matrix.prototype.getTranslateMatrix(-settings.trnslate.x, -settings.trnslate.y, -settings.trnslate.z);
-        conus.transform(rotate);
         var rotateX = Matrix.prototype.getRotateXMatrix(settings.angle.x);
         var rotateY = Matrix.prototype.getRotateYMatrix(settings.angle.y);
         var rotateZ = Matrix.prototype.getRotateZMatrix(settings.angle.z);
-        translate = Matrix.prototype.getTranslateMatrix(settings.trnslate.x, settings.trnslate.y, settings.trnslate.z);
-        var transform = translate.multiplyOnMatrix(rotateY).multiplyOnMatrix(rotateZ);
-
+        var translateToOrigin = Matrix.prototype.getTranslateMatrix(settings.translate.clone().reverse());
+        var translateFromOrigin = Matrix.prototype.getTranslateMatrix(settings.translate);
+        var transform = Matrix.prototype.multiplyAll(translateFromOrigin, rotateX, rotateY, rotateZ);
+        conus.transform(translateToOrigin);
         conus.transform(transform);
-
-
         context.clearRect(0, 0, canvas.width, canvas.height);
         conus.draw(context);
     };
 
-    var settings = Object.create(null);
-    settings.angle = Object.create(null);
-    settings.angle.x = 0;
-    settings.angle.y = 0;
-    settings.angle.z = 0;
-    settings.translate = Object.create(null);
-    settings.translate.x = 0;
-    settings.translate.y = 0;
-    settings.translate.z = 0;
-    settings.scale = Object.create(null);
+    initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 360, function (angle) {
+        return "&alpha;X: " + angle + "&deg;";
+    }, function (angle) {
+        settings.angle.x = angle * DEGREES_TO_RADIANS;
+    });
+    initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y,  360, function (angle) {
+        return "&beta;Y: " + angle + "&deg;";
+    }, function (angle) {
+        settings.angle.y = angle * DEGREES_TO_RADIANS;
+    });
+    initializeListenerForSlider($("#rotate-z-slider"), settings.angle.z, 360, function (angle) {
+        return "&gamma;Z: " + angle + "&deg;";
+    }, function (angle) {
+        settings.angle.z = angle * DEGREES_TO_RADIANS;
+    });
 
-    initializeListenerForSlider($("#rotate-x-slider"), 360, function (value) {
-        return "&alpha;X: " + value + "&deg;";
-    }, function (value) {
-        settings.angle.x = value * DEGREES_TO_RADIANS;
-    });
-    initializeListenerForSlider($("#rotate-y-slider"), 360, function (value) {
-        return "&beta;Y: " + value + "&deg;";
-    }, function (value) {
-        settings.angle.y = value * DEGREES_TO_RADIANS;
-    });
-    initializeListenerForSlider($("#rotate-z-slider"), 360, function (value) {
-        return "&gamma;Z: " + value + "&deg;";
-    }, function (value) {
-        settings.angle.z = value * DEGREES_TO_RADIANS;
-    });
-    initializeListenerForSlider($("#translate-x-slider"), CANVAS_WIDTH, function (translate) {
-        return "&Delta;" + translate;
+    initializeListenerForSlider($("#translate-x-slider"), settings.translate.x,  CANVAS_WIDTH, function (translate) {
+        return "&Delta;X:" + translate + "px";
     }, function (translate) {
         settings.translate.x = translate;
     });
+    initializeListenerForSlider($("#translate-y-slider"), settings.translate.y, CANVAS_HEIGHT, function (translate) {
+        return "&Delta;Y:" + translate + "px";
+    }, function (translate) {
+        settings.translate.y = translate;
+    });
+    initializeListenerForSlider($("#translate-z-slider"), settings.translate.z, 300, function (translate) {
+        return "&Delta;Z:" + translate + "px";
+    }, function (translate) {
+        settings.translate.z = translate;
+    });
 
-    function initializeListenerForSlider(slider, maxValue, messageCreator, valueProcessor) {
+    function initializeListenerForSlider(slider, initialValue, maxValue, messageCreator, valueProcessor) {
         var isDown = false;
         var parent = slider.parentNode;
         var size = slider.clientWidth
         var width = parent.clientWidth - size;
         var x, value, percent;
+        slider.style.left = Math.round((initialValue / maxValue) * width) + "px";
+        slider.innerHTML = messageCreator(initialValue);
         slider.addEventListener("mousedown", function () {
             isDown = true;
         });
         slider.addEventListener("mouseup", function () {
             isDown = false;
         });
-        document.addEventListener("mouseup", function () {
+        parent.addEventListener("mouseup", function () {
             isDown = false;
         });
         slider.addEventListener("mousemove", function (event) {

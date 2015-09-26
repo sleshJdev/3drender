@@ -33,6 +33,8 @@ Vector.prototype.reverse = function () {
     this.x = -this.x;
     this.y = -this.y;
     this.z = -this.z;
+
+    return this;
 };
 
 Vector.prototype.transform = function (matrix) {
