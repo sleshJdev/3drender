@@ -50,12 +50,12 @@ Cone.prototype.drawBase = function (canvas) {
     canvas.beginPath();
     canvas.strokeStyle = this.colors.base;
     var opCurrent, ipCurrent, ipPrevious;//outer point and inner point
-    for(var i = 0; i <= this.majorNumber; ++i){
+    for (var i = 0; i <= this.majorNumber; ++i) {
         ipCurrent = this.points[i]
         opCurrent = this.points[i + this.majorNumber];
         canvas.moveTo(ipCurrent.x, ipCurrent.y);
         canvas.lineTo(opCurrent.x, opCurrent.y);
-        if(i == 0){
+        if (i == 0) {
             ipPrevious = ipCurrent;
             continue;
         }
@@ -72,10 +72,10 @@ Cone.prototype.draw = function (canvas) {
     canvas.strokeStyle = "white";
     this.points.forEach(function (point, number) {
         if (number == 0 || number == (self.majorNumber + 1)) {
-            if(number == 0){
+            if (number == 0) {
                 canvas.beginPath();
                 canvas.strokeStyle = self.colors.inner;
-            }else if(number == (self.majorNumber + 1)){
+            } else if (number == (self.majorNumber + 1)) {
                 canvas.stroke();
                 canvas.beginPath();
                 canvas.strokeStyle = self.colors.outer;
