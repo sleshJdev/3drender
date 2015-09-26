@@ -22,20 +22,24 @@ window.onload = function () {
         outerRadius: 200,
         height: 250
     }, {
-        center: new Point(250, 450, 0)
+        center: new Vector(250, 400, 0)
     });
 
     conus.generatePoints({
-        innerPoints: 50,
-        outerPoints: 100
+        innerPoints: 10,
+        outerPoints: 20
     });
 
-    conus.draw(context);
+    //conus.draw(context);
 
-
-    //var cube = new Cube();
-    //cube.draw(context);
-
+    var cube = new Cube();
+    cube.draw(context);
+    //
+    //context.beginPath();
+    //context.strokeStyle="blue";
+    //context.moveTo(50, 50);
+    //context.lineTo(200, 200);
+    //context.stroke();
 
     $("#rotate-x-button").addEventListener("click", function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -47,36 +51,36 @@ window.onload = function () {
         cos = Math.cos(angleX);
         sin = Math.sin(angleX);
         var rotateX = new Matrix();
-        rotateX.m[1][1] = rotateX.m[2][2] = cos;
-        rotateX.m[0][1] = -sin;
-        rotateX.m[1][0] = sin;
+        rotateX.v11 = rotateX.v22 = cos;
+        rotateX.v12 = -sin;
+        rotateX.v21 = sin;
 
         cos = Math.cos(angleY);
         sin = Math.sin(angleY);
         var rotateY = new Matrix();
-        rotateY.m[0][0] = rotateY.m[2][2] = cos;
-        rotateY.m[0][2] = sin;
-        rotateY.m[2][0] = -sin;
+        rotateY.v00 = rotateY.v22 = cos;
+        rotateY.v02 = sin;
+        rotateY.v20 = -sin;
 
         cos = Math.cos(angleZ);
         sin = Math.sin(angleZ);
         var rotateZ = new Matrix();
-        rotateZ.m[0][0] = rotateZ.m[1][1] = cos;
-        rotateZ.m[0][1] = -sin;
-        rotateZ.m[1][0] = sin;
+        rotateZ.v00 = rotateZ.v11 = cos;
+        rotateZ.v01 = -sin;
+        rotateZ.v10 = sin;
 
-        console.log("rotateX: " + JSON.stringify(rotateX));
-        console.log("rotateY: " + JSON.stringify(rotateY));
-        console.log("rotateZ: " + JSON.stringify(rotateZ));
+        console.log("rotateX: " + rotateX);
+        console.log("rotateY: " + rotateY);
+        console.log("rotateZ: " + rotateZ);
 
         var rotate = rotateX.multiplyOnMatrix(rotateY).multiplyOnMatrix(rotateZ);
-        console.log("rotate: " + JSON.stringify(rotate));
+        console.log("rotate: " + rotate);
 
         var matrix = rotate;
-        console.log("matrixL " + JSON.stringify(matrix));
+        console.log("matrix " + matrix);
 
-        conus.rotate(matrix);
-        conus.draw(context);
+        cube.rotate(matrix);
+        cube.draw(context);
     });
 
     var isDown = false;
