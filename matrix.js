@@ -40,10 +40,49 @@ Matrix.prototype.multiplyOnVector = function (vector) {
     return vector.clone().transform(this);
 };
 
+
+Matrix.prototype.getRotateXMatrix = function(angleXRadians){
+    var sin = Math.sin(angleXRadians);
+    var rotateXMatrix = new Matrix();
+    rotateXMatrix.v11 = rotateXMatrix.v22 = Math.cos(angleXRadians);
+    rotateXMatrix.v12 = -sin;
+    rotateXMatrix.v21 = sin;
+
+    return rotateXMatrix;
+};
+
+Matrix.prototype.getRotateYMatrix = function(angleYRadians){
+    var sin = Math.sin(angleYRadians);
+    var rotateYMatrix = new Matrix();
+    rotateYMatrix.v00 = rotateYMatrix.v22 = Math.cos(angleYRadians);
+    rotateYMatrix.v02 = sin;
+    rotateYMatrix.v20 = -sin;
+
+    return rotateYMatrix;
+}
+
+Matrix.prototype.getRotateZMatrix = function (angleZRadians) {
+    var sin = Math.sin(angleZRadians);
+    var rotateZMatrix = new Matrix();
+    rotateZMatrix.v00 = rotateZMatrix.v11 = Math.cos(angleZRadians);
+    rotateZMatrix.v01 = -sin;
+    rotateZMatrix.v10 = sin;
+
+    return rotateZMatrix;
+};
+
+Matrix.prototype.getTranslateMatrix = function(dx, dy, dz){
+    var translateMatrix = new Matrix();
+    translateMatrix.v03 = dx;
+    translateMatrix.v13 = dy;
+    translateMatrix.v23 = dz;
+
+    return translateMatrix;
+}
+
 Matrix.prototype.toString = function () {
     return "[[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +
            " [" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +
            " [" + this.v20 + ", " + this.v21 + ", " + this.v22 + ", " + this.v23 + "]\n" +
            " [" + this.v30 + ", " + this.v31 + ", " + this.v32 + ", " + this.v33 + "]]";
-
 };

@@ -1,3 +1,4 @@
+"use strict"
 /**
  * Created by slesh on 9/26/15.
  */
@@ -35,9 +36,9 @@ Vector.prototype.reverse = function () {
 };
 
 Vector.prototype.transform = function (matrix) {
-    this.x = this.x * matrix.v00 + this.y * matrix.v01 + this.z * matrix.v02 + matrix.v03;
-    this.y = this.x * matrix.v10 + this.y * matrix.v11 + this.z * matrix.v12 + matrix.v13;
-    this.z = this.x * matrix.v20 + this.y * matrix.v21 + this.z * matrix.v22 + matrix.v23;
+    this.x = this.x0 * matrix.v00 + this.y * matrix.v01 + this.z * matrix.v02 + matrix.v03;
+    this.y = this.x0 * matrix.v10 + this.y * matrix.v11 + this.z * matrix.v12 + matrix.v13;
+    this.z = this.x0 * matrix.v20 + this.y * matrix.v21 + this.z * matrix.v22 + matrix.v23;
 };
 
 Vector.prototype.clone = function () {

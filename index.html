@@ -11,24 +11,34 @@
 </head>
 <body>
 <div style="width: 1000px; height: 500px; margin: auto auto;">
-    <div class="buttons-panel">
+    <canvas>Обновите браузер</canvas>
+    <div class="rotate slider-group">
+        <label>Rotation</label>
         <div>
-            <label>Rotate by X</label>
-            <input type="text" placeholder="Angle..." id="rotate-x-angle">
-            <input type="button" value="RotateX" id="rotate-x-button">
-        </div>
-        <div>
-            <label>Rotate by Y</label>
-            <input type="text" placeholder="Angle..." id="rotate-y-angle">
-        </div>
-        <div>
-            <label>Rotate by Z</label>
-            <input type="text" placeholder="Angle..." id="rotate-z-angle">
+            <div class="slide-panel">
+                <div id="rotate-z-slider" class="slider"></div>
+            </div>
+            <div class="slide-panel">
+                <div id="rotate-y-slider" class="slider"></div>
+            </div>
+            <div class="slide-panel">
+                <div id="rotate-x-slider" class="slider"></div>
+            </div>
         </div>
     </div>
-    <canvas height='500' width='1000' style="border: solid 1px black;" id='jg-canvas'>Обновите браузер</canvas>
-    <div class="slide-panel">
-        <div id="rotate-slider" class="slider"></div>
+    <div class="translate slider-group">
+        <label>Translate</label>
+        <div>
+            <div class="slide-panel">
+                <div id="translate-x-slider" class="slider"></div>
+            </div>
+            <div class="slide-panel">
+                <div id="translate-y-slider" class="slider"></div>
+            </div>
+            <div class="slide-panel">
+                <div id="translate-z-slider" class="slider"></div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

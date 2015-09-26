@@ -1,19 +1,38 @@
-.slide-panel {
-    width: 500px;
-    height: 30px;
-    margin: 5px 0;
-    border: solid black 1px;
-    border-radius: 10px;
+canvas{
+    border: solid 1px black;
+    /*border-radius: 10px;*/
 }
 
-.slider {
+.slider-group{
+    clear: both;
+    margin: 10px;
+}
+
+.slider-group > label{
+    width: 10%;
+}
+
+.slider-group > div{
+    width: 90%;
+    float: right;
+}
+
+.slide-panel {
+    width: 30%;
+    height: 20px;
+    /*margin: 5px 0;*/
+    border: solid black 1px;
+    /*border-radius: 10px;*/
+    float: right;
+    margin-left: 10px;
+}
+
+.slider{
     position: relative;
-    background-color: black;
-    border-radius: 10px;
-    width: 50px;
-    height: 25px;
+    /*border-radius: 10px;*/
+    width: 80px;
+    height: 20px;
     text-align: center;
-    padding-top: 5px;
     color: white;
     -moz-user-select: none;
     -khtml-user-select: none;
@@ -26,6 +45,10 @@
     cursor: pointer;
 }
 
-.buttons-panel {
-    margin-top: 20px;
+.rotate .slider{
+    background-color: red;
+}
+
+.translate .slider{
+    background-color: green;
 }
