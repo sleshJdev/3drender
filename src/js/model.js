@@ -69,16 +69,18 @@ Cone.prototype.draw = function (canvas) {
     var self = this,
         peak = this.points.pop(),
         currentInterval = 0;
-    canvas.strokeStyle = "white";
     this.points.forEach(function (point, number) {
         if (number == 0 || number == (self.majorNumber + 1)) {
-            if (number == 0) {
-                canvas.beginPath();
-                canvas.strokeStyle = self.colors.inner;
-            } else if (number == (self.majorNumber + 1)) {
-                canvas.stroke();
-                canvas.beginPath();
-                canvas.strokeStyle = self.colors.outer;
+            switch (number) {
+                case 0:
+                    canvas.beginPath();
+                    canvas.strokeStyle = self.colors.inner;
+                    break;
+                case self.majorNumber + 1:
+                    canvas.stroke();
+                    canvas.beginPath();
+                    canvas.strokeStyle = self.colors.outer;
+                    break;
             }
             canvas.moveTo(point.x, point.y);
             canvas.lineTo(peak.x, peak.y);
@@ -96,7 +98,6 @@ Cone.prototype.draw = function (canvas) {
 
 Cone.prototype.transform = function (matrix) {
     this.points.forEach(function (point) {
-        point.reset();
-        point.transform(matrix);
+        point.reset().transform(matrix);
     });
 };

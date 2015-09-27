@@ -28,7 +28,7 @@ function Renderer(canvas, model, settings, parameters) {
 
 Renderer.prototype.rendering = function () {
     if (this.settings.isUpdateGeometry) {
-        cone.generateGeometry(parameters);
+        this.model.generateGeometry(this.parameters);
     }
     this.rotateX = Matrix.prototype.getRotateXMatrix(this.settings.angle.x);
     this.rotateY = Matrix.prototype.getRotateYMatrix(this.settings.angle.y);

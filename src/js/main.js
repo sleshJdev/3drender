@@ -7,7 +7,7 @@ window.onload = function () {
     var DEGREES_TO_RADIANS = Math.PI / 180;
     var RADIANS_TO_DEGREES = 180 / Math.PI;
     var CANVAS_WIDTH = 900;
-    var CANVAS_HEIGHT = 500;
+    var CANVAS_HEIGHT = 450;
 
     var log = console.log;
     var cos = Math.cos;
@@ -41,111 +41,70 @@ window.onload = function () {
     parameters.colors.base = "darkblue";
 
     var cone = new Cone(parameters, sc);
+    cone.generateGeometry(parameters);
     var renderer = new Renderer(canvas, cone, settings, parameters);
-    renderer.rendering();
 
-    initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 0, 360, function (angle) {
-        return "&ang;X: " + angle + "&deg;";
-    }, function (angle) {
-        settings.angle.x = angle * DEGREES_TO_RADIANS;
-    });
-    initializeListenerForSlider($("#rotate-y-slider"), settings.angle.y, 0, 360, function (angle) {
-        return "&ang;Y: " + angle + "&deg;";
-    }, function (angle) {
-        settings.angle.y = angle * DEGREES_TO_RADIANS;
-    });
-    initializeListenerForSlider($("#rotate-z-slider"), settings.angle.z, 0, 360, function (angle) {
-        return "&ang;Z: " + angle + "&deg;";
-    }, function (angle) {
-        settings.angle.z = angle * DEGREES_TO_RADIANS;
-    });
-
-    initializeListenerForSlider($("#translate-x-slider"), settings.translate.x, 0, CANVAS_WIDTH, function (translate) {
-        return "&Delta;X:" + translate + "px";
-    }, function (translate) {
-        settings.translate.x = translate;
-    });
-    initializeListenerForSlider($("#translate-y-slider"), settings.translate.y, 0, CANVAS_HEIGHT, function (translate) {
-        return "&Delta;Y:" + translate + "px";
-    }, function (translate) {
-        settings.translate.y = translate;
-    });
-    initializeListenerForSlider($("#translate-z-slider"), settings.translate.z, 0, 300, function (translate) {
-        return "&Delta;Z:" + translate + "px";
-    }, function (translate) {
-        settings.translate.z = translate;
-    });
-
-    initializeListenerForSlider($("#scale-x-slider"), settings.scale.x, 0, 5, function (scale) {
-        return "&times;" + scale + "X";
-    }, function (scale) {
-        settings.scale.x = scale;
-    });
-    initializeListenerForSlider($("#scale-y-slider"), settings.scale.y, 0, 5, function (scale) {
-        return "&times;" + scale + "Y";
-    }, function (scale) {
-        settings.scale.y = scale;
-    });
-    initializeListenerForSlider($("#scale-z-slider"), settings.scale.z, 0, 5, function (scale) {
-        return "&times;" + scale + "Z";
-    }, function (scale) {
-        settings.scale.z = scale;
-    });
-
-    initializeListenerForSlider($("#major-number-slider"), parameters.majorNumber, 3, 300, function (number) {
-        return number;
-    }, function (number) {
-        settings.isUpdateGeometry = parameters.majorNumber != number;
-        parameters.majorNumber = number;
-    });
-    initializeListenerForSlider($("#inner-radius-slider"), 2 * parameters.innerRadius, 10, 250, function (radius) {
-        return "&Oslash; " + radius + "px";
-    }, function (radius) {
-        parameters.innerRadius = Math.round(radius / 2);
-    });
-    initializeListenerForSlider($("#outer-radius-slider"), 2 * parameters.outerRadius, 20, 500, function (radius) {
-        return "&Oslash; " + radius + "px";
-    }, function (radius) {
-        parameters.outerRadius = Math.round(radius / 2);
-    });
-
-    function initializeListenerForSlider(slider, initialValue, minValue, maxValue, messageCreator, valueProcessor) {
-        var isDown = false;
-        var parent = slider.parentNode;
-        var size = slider.clientWidth
-        var width = parent.clientWidth - size;
-        var x, value, percent;
-        slider.style.left = Math.round((initialValue / maxValue) * width) + "px";
-        slider.innerHTML = messageCreator(initialValue);
-        slider.addEventListener("mousedown", function () {
-            isDown = true;
-        });
-        slider.addEventListener("mouseup", function () {
-            isDown = false;
-        });
-        parent.addEventListener("mouseup", function () {
-            isDown = false;
-        });
-        slider.addEventListener("mousemove", function (event) {
-            if (isDown) {
-                x = parseInt(slider.style.left.slice(0, -2) || 0);
-                x += event.clientX - (parent.offsetLeft + x + size / 2);
-                percent = x / width;
-                value = Math.round(percent * maxValue);
-                if (x < minValue) {
-                    x = 0;
-                    value = minValue;
-                } else if (x > width) {
-                    x = width;
-                    value = maxValue;
-                }
-                slider.style.left = x + "px";
-                slider.innerHTML = messageCreator(value);
-                valueProcessor(value);
-                renderer.rendering();
-            }
-        });
+    function redraw() {
+        renderer.rendering();
     };
+
+    new Slider($("#rotate-x-slider"), settings.angle.x, 0, 360, redraw).setChangeListener(function (slider, angleX) {
+        settings.angle.x = angleX * DEGREES_TO_RADIANS;
+        slider.innerHTML = "&ang;X: " + Math.round(angleX) + "&deg;";
+    });
+    new Slider($("#rotate-y-slider"), settings.angle.y, 0, 360, redraw).setChangeListener(function (slider, angleY) {
+        settings.angle.y = angleY * DEGREES_TO_RADIANS;
+        slider.innerHTML = "&ang;Y: " + Math.round(angleY) + "&deg;";
+    });
+    new Slider($("#rotate-z-slider"), settings.angle.z, 0, 360, redraw).setChangeListener(function (slider, angleZ) {
+        settings.angle.z = angleZ * DEGREES_TO_RADIANS;
+        slider.innerHTML = "&ang;Z: " + Math.round(angleZ) + "&deg;";
+    });
+
+    new Slider($("#translate-x-slider"), settings.translate.x, 0, CANVAS_WIDTH, redraw).setChangeListener(function (slider, translateX) {
+        settings.translate.x = translateX;
+        slider.innerHTML = "&Delta;X:" + Math.round(translateX) + "px";
+    });
+    new Slider($("#translate-y-slider"), settings.translate.y, 0, CANVAS_HEIGHT, redraw).setChangeListener(function (slider, translateY) {
+        settings.translate.y = translateY;
+        slider.innerHTML = "&Delta;Y:" + Math.round(translateY) + "px";
+    });
+    new Slider($("#translate-z-slider"), settings.translate.z, 0, 300, redraw).setChangeListener(function (slider, translateZ) {
+        settings.translate.z = translateZ;
+        slider.innerHTML = "&Delta;Z:" + Math.roundtranslateZ + "px";
+    });
+
+    new Slider($("#scale-x-slider"), settings.scale.x, 0, 5, redraw).setChangeListener(function (slider, scaleX) {
+        settings.scale.x = scaleX;
+        slider.innerHTML = "&times;" + scaleX.toFixed(2) + "X";
+    });
+    new Slider($("#scale-y-slider"), settings.scale.y, 0, 5, redraw).setChangeListener(function (slider, scaleY) {
+        settings.scale.y = scaleY;
+        slider.innerHTML = "&times;" + scaleY.toFixed(2) + "Y";
+    });
+    new Slider($("#scale-z-slider"), settings.scale.z, 0, 5, redraw).setChangeListener(function (slider, scaleZ) {
+        settings.scale.z = scaleZ;
+        slider.innerHTML = "&times;" + scaleZ.toFixed(2) + "Z";
+    });
+
+    new Slider($("#major-number-slider"), parameters.majorNumber, 3, 300, redraw).setChangeListener(function (slider, majorNumber) {
+        majorNumber = Math.round(majorNumber);
+        settings.isUpdateGeometry = parameters.majorNumber != majorNumber;
+        parameters.majorNumber = majorNumber;
+        slider.innerHTML = majorNumber;
+    });
+    new Slider($("#inner-radius-slider"), parameters.innerRadius, 5, 250, redraw).setChangeListener(function (slider, innerRadius) {
+        parameters.innerRadius = innerRadius;
+        slider.innerHTML = "&#8986;" + Math.round(innerRadius) + "px";
+    });
+    new Slider($("#outer-radius-slider"), parameters.outerRadius, 10, 500, redraw).setChangeListener(function (slider, outerRadius) {
+        parameters.outerRadius = outerRadius;
+        slider.innerHTML = "&#8986;" + Math.round(outerRadius) + "px";
+    });
+    new Slider($("#height-slider"), parameters.height, 10, CANVAS_HEIGHT, redraw).setChangeListener(function (slider, height) {
+        parameters.height = height;
+        slider.innerHTML = "&perp;" + Math.round(height) + "px";
+    });
 };
 
 
