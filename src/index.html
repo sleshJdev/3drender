@@ -3,30 +3,33 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>3D Modeling</title>
-    <script src="vector.js"></script>
-    <script src="matrix.js"></script>
-    <script src="model.js"></script>
-    <script src="renderer.js"></script>
-    <script src="main.js"></script>
-    <link href="styles.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <script src="js/vector.js"></script>
+    <script src="js/matrix.js"></script>
+    <script src="js/model.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/main.js"></script>
 </head>
 <body>
 <div id="content">
     <div class="left-box-geometry">
         <div>
             <label>Major number<br><span class="hint">(defines quantity points of cone)</span></label>
+
             <div class="geometry-parameter slide-panel">
                 <div id="major-number-slider" class="slider"></div>
             </div>
         </div>
         <div>
             <label>Inner diameter<br><span class="hint">(diameter of inner circle)</span></label>
+
             <div class="geometry-parameter slide-panel">
                 <div id="inner-radius-slider" class="slider"></div>
             </div>
         </div>
         <div>
             <label>Outer diameter<br><span class="hint">(radius of outer circle)</span></label>
+
             <div class="geometry-parameter slide-panel">
                 <div id="outer-radius-slider" class="slider"></div>
             </div>

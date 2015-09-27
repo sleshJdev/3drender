@@ -29,13 +29,21 @@ Vector.prototype.shift = function (vector) {
     this.z += vector.z;
 };
 
-Vector.prototype.reverse = function () {
-    this.x = -this.x;
-    this.y = -this.y;
-    this.z = -this.z;
+Vector.prototype.positive = function () {
+    this.x = thix.x < 0 ? -this.x : this.x;
+    this.y = thix.y < 0 ? -this.y : this.y;
+    this.z = thix.z < 0 ? -this.z : this.z;
 
     return this;
 };
+
+Vector.prototype.negative = function () {
+    this.x = thix.x > 0 ? -this.x : this.x;
+    this.y = thix.y > 0 ? -this.y : this.y;
+    this.z = thix.z > 0 ? -this.z : this.z;
+
+    return this;
+}
 
 Vector.prototype.transform = function (matrix) {
     this.x = this.x0 * matrix.v00 + this.y * matrix.v01 + this.z * matrix.v02 + matrix.v03;

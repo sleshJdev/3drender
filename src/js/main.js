@@ -20,7 +20,6 @@ window.onload = function () {
     var canvas = $("canvas");
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
-    var context = canvas.getContext("2d");
 
     var sc = Object.create(null);//system of coordinates
     sc.center = new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200, 0);
@@ -42,26 +41,8 @@ window.onload = function () {
     parameters.colors.base = "darkblue";
 
     var cone = new Cone(parameters, sc);
-    cone.generateGeometry(parameters);
-    transform(settings);
-
-    function transform(settings) {
-        if (settings.isUpdateGeometry) {
-            cone.generateGeometry(parameters);
-        }
-        var rotateX, rotateY, rotateZ, scale, translateToOrigin, translateFromOrigin, transform;//matrices
-        rotateX = Matrix.prototype.getRotateXMatrix(settings.angle.x);
-        rotateY = Matrix.prototype.getRotateYMatrix(settings.angle.y);
-        rotateZ = Matrix.prototype.getRotateZMatrix(settings.angle.z);
-        scale = Matrix.prototype.getScaleMatrix(settings.scale);
-        translateToOrigin = Matrix.prototype.getTranslateMatrix(settings.translate.clone().reverse());
-        translateFromOrigin = Matrix.prototype.getTranslateMatrix(settings.translate);
-        transform = Matrix.prototype.multiplyAll(translateFromOrigin, scale, rotateX, rotateY, rotateZ);
-        cone.transform(translateToOrigin);
-        cone.transform(transform);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        cone.draw(context);
-    };
+    var renderer = new Renderer(canvas, cone, settings, parameters);
+    renderer.rendering();
 
     initializeListenerForSlider($("#rotate-x-slider"), settings.angle.x, 0, 360, function (angle) {
         return "&ang;X: " + angle + "&deg;";
@@ -161,7 +142,7 @@ window.onload = function () {
                 slider.style.left = x + "px";
                 slider.innerHTML = messageCreator(value);
                 valueProcessor(value);
-                transform(settings);
+                renderer.rendering();
             }
         });
     };
