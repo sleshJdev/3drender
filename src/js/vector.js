@@ -23,6 +23,8 @@ Vector.prototype.move = function (vector) {
     this.x = vector.x;
     this.y = vector.y;
     this.z = vector.z;
+
+    return this;
 };
 
 Vector.prototype.shift = function (vector) {
@@ -50,11 +52,13 @@ Vector.prototype.negative = function () {
 }
 
 Vector.prototype.transform = function (matrix) {
-    this.x = this.x0 * matrix.v00 + this.y * matrix.v01 + this.z * matrix.v02 + matrix.v03;
-    this.y = this.x0 * matrix.v10 + this.y * matrix.v11 + this.z * matrix.v12 + matrix.v13;
-    this.z = this.x0 * matrix.v20 + this.y * matrix.v21 + this.z * matrix.v22 + matrix.v23;
+    var x = this.x * matrix.v00 + this.y * matrix.v01 + this.z * matrix.v02 + matrix.v03;
+    var y = this.x * matrix.v10 + this.y * matrix.v11 + this.z * matrix.v12 + matrix.v13;
+    var z = this.x * matrix.v20 + this.y * matrix.v21 + this.z * matrix.v22 + matrix.v23;
 
-    return this;
+    this.x = x;
+    this.y = y;
+    this.z = z;
 };
 
 Vector.prototype.clone = function () {

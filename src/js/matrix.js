@@ -81,6 +81,7 @@ Matrix.prototype.getScaleMatrix = function (vector) {
     this.scaleMatrix.v00 = vector.x;
     this.scaleMatrix.v11 = vector.y;
     this.scaleMatrix.v22 = vector.z;
+    this.scaleMatrix.v33 = 1;
 
     return this.scaleMatrix;
 };

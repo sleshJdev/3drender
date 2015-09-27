@@ -5,11 +5,9 @@
  */
 
 
-function Renderer(canvas, model, settings, parameters) {
+function Renderer(context, model, settings, parameters) {
     //canvas
-    this.context = canvas.getContext("2d");
-    this.width = canvas.width;
-    this.height = canvas.height;
+    this.context = context;
 
     //model
     this.model = model;
@@ -29,6 +27,7 @@ function Renderer(canvas, model, settings, parameters) {
 Renderer.prototype.rendering = function () {
     if (this.settings.isUpdateGeometry) {
         this.model.generateGeometry(this.parameters);
+        this.settings.isUpdateGeometry = false;
     }
     this.rotateX = Matrix.prototype.getRotateXMatrix(this.settings.angle.x);
     this.rotateY = Matrix.prototype.getRotateYMatrix(this.settings.angle.y);
@@ -39,7 +38,6 @@ Renderer.prototype.rendering = function () {
     this.transform = Matrix.prototype.multiplyAll(this.translateFromOrigin, this.scale, this.rotateX, this.rotateY, this.rotateZ);
     this.model.transform(this.translateToOrigin);
     this.model.transform(this.transform);
-    this.context.clearRect(0, 0, this.width, this.height);
     this.model.draw(this.context);
 };
 

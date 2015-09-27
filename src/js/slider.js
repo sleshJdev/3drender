@@ -4,13 +4,18 @@
  * Created by slesh on 9/27/15.
  */
 
-function Slider(slider, initialValue, minValue, maxValue, commonAction) {
+function Slider(slider, getInitialValue, minValue, maxValue, commonAction) {
     this.slider = slider;
-    this.initialValue = initialValue;
+    this.getInitialValue = getInitialValue;
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.commonAction = commonAction;
 }
+
+Slider.prototype.notify = function () {
+    this.changeListener(this.slider, this.getInitialValue());
+    this.slider.style.left = this.getInitialPosition(this.getInitialValue());
+};
 
 Slider.prototype.setChangeListener = function (changeListener) {
     var self = this;
@@ -19,8 +24,14 @@ Slider.prototype.setChangeListener = function (changeListener) {
     var sliderWidth = self.slider.clientWidth
     var parentWidth = parent.clientWidth - sliderWidth;
     var x, value, percent;
-    changeListener(self.slider, self.initialValue);
-    self.slider.style.left = Math.round((self.initialValue / self.maxValue) * parentWidth) + "px";
+
+    this.changeListener = changeListener;
+    this.getInitialPosition = function (initialValue) {
+        return Math.round((initialValue / self.maxValue) * parentWidth) + "px";
+    };
+
+    self.notify();
+    self.slider.style.left = self.getInitialPosition(self.getInitialValue());
     self.slider.addEventListener("mousedown", function () {
         isDown = true;
     });
@@ -44,8 +55,10 @@ Slider.prototype.setChangeListener = function (changeListener) {
                 value = self.maxValue;
             }
             self.slider.style.left = x + "px";
-            changeListener(self.slider, value);
+            self.changeListener(self.slider, value);
             self.commonAction();
         }
     });
+
+    return self;
 };
