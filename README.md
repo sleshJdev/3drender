@@ -1,2 +1,2 @@
-# 3drender
-### renderer of the 3d model of cone, written on javascript.
+# learning-js
+### various stuff written on javascript for the learning
