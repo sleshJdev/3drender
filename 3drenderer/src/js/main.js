@@ -56,9 +56,6 @@ window.onload = function () {
         });
     }
 
-    redraw();
-
-
     var projectionSwitcher = (function () {
         var projectionNumbersMap = Object.create(null);
         projectionNumbersMap["projection-1"] = 0;
@@ -179,6 +176,8 @@ window.onload = function () {
             slider.innerHTML = "&perp;" + Math.round(height) + "px";
         }));
 
+
+    redraw();
 };
 
 

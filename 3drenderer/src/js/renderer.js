@@ -35,8 +35,7 @@ Renderer.prototype.rendering = function () {
     this.scale = Matrix.prototype.getScaleMatrix(this.settings.scale);
     this.translateToOrigin = Matrix.prototype.getTranslateMatrix(this.settings.translate.negative());
     this.translateFromOrigin = Matrix.prototype.getTranslateMatrix(this.settings.translate.positive());
-    this.transform = Matrix.prototype.multiplyAll(this.translateFromOrigin, this.scale, this.rotateX, this.rotateY, this.rotateZ);
-    this.model.transform(this.translateToOrigin);
+    this.transform = Matrix.prototype.multiplyAll(this.translateFromOrigin, this.rotateX, this.rotateY, this.rotateZ, this.scale);
     this.model.transform(this.transform);
     this.model.draw(this.context);
 };

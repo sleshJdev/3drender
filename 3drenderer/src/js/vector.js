@@ -8,7 +8,6 @@ function Vector(x, y, z) {
     this.y0 = y || 0;
     this.z0 = z || 0;
     this.reset();
-
 };
 
 Vector.prototype.reset = function () {
