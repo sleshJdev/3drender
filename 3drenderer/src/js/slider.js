@@ -35,10 +35,7 @@ Slider.prototype.setChangeListener = function (changeListener) {
     self.slider.addEventListener("mousedown", function () {
         isDown = true;
     });
-    self.slider.addEventListener("mouseup", function () {
-        isDown = false;
-    });
-    parent.addEventListener("mouseup", function () {
+    document.addEventListener("mouseup", function () {
         isDown = false;
     });
     self.slider.addEventListener("mousemove", function (event) {
@@ -47,10 +44,10 @@ Slider.prototype.setChangeListener = function (changeListener) {
             x += event.clientX - (parent.offsetLeft + x + sliderWidth / 2);
             percent = x / parentWidth;
             value = percent * self.maxValue;
-            if (x < self.minValue) {
+            if (x <= self.minValue) {
                 x = 0;
                 value = self.minValue;
-            } else if (x > parentWidth) {
+            } else if (x >= parentWidth) {
                 x = parentWidth;
                 value = self.maxValue;
             }

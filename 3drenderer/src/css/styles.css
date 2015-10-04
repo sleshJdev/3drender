@@ -11,6 +11,7 @@ body {
 
 canvas {
     width: 100%;
+    border: solid 1px black;
 }
 
 .hint {
@@ -32,6 +33,10 @@ canvas {
     margin: 0px 2px 15px 8px;
 }
 
+.geometry-parameter label{
+    padding: 0 30px;
+}
+
 .geometry-parameter .slide-panel {
     width: 100%;
     float: right;
@@ -43,12 +48,12 @@ canvas {
 
 .projections {
     height: 20px;
-    width: 80%;
+    width: 100%;
     margin: auto;
 }
 
 .projections div{
-    width: 49%;
+    width: 33%;
     float: left;
     text-align: center;
     border: 1px solid lightgray;

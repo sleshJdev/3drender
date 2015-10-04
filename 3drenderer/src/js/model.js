@@ -96,8 +96,8 @@ Cone.prototype.draw = function (canvas) {
     this.drawBase(canvas);
 };
 
-Cone.prototype.transform = function (matrix) {
+Cone.prototype.transform = function (matrix, projection) {
     this.points.forEach(function (point) {
-        point.reset().transform(matrix);
+        point.reset().transform(matrix).transform(projection);
     });
 };

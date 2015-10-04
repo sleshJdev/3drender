@@ -5,38 +5,73 @@
  */
 
 
-function Renderer(context, model, settings, parameters) {
+function Renderer(context, model, projection, settings, parameters){
     //canvas
     this.context = context;
-
     //model
     this.model = model;
     this.settings = settings;
     this.parameters = parameters;
 
     //matrices
-    this.rotateX;
-    this.rotateY;
-    this.rotateZ;
-    this.scale;
-    this.translateToOrigin;
-    this.translateFromOrigin;
+    this.projection = projection;
     this.transform;
+    this.rotate;
+    this.scale;
+    this.translate;
 }
 
-Renderer.prototype.rendering = function () {
+Renderer.prototype.checkGeometryUpdate = function () {
     if (this.settings.isUpdateGeometry) {
         this.model.generateGeometry(this.parameters);
         this.settings.isUpdateGeometry = false;
     }
-    this.rotateX = Matrix.prototype.getRotateXMatrix(this.settings.angle.x);
-    this.rotateY = Matrix.prototype.getRotateYMatrix(this.settings.angle.y);
-    this.rotateZ = Matrix.prototype.getRotateZMatrix(this.settings.angle.z);
+};
+
+Renderer.prototype.buildTransform = function () {
     this.scale = Matrix.prototype.getScaleMatrix(this.settings.scale);
-    this.translateToOrigin = Matrix.prototype.getTranslateMatrix(this.settings.translate.negative());
-    this.translateFromOrigin = Matrix.prototype.getTranslateMatrix(this.settings.translate.positive());
-    this.transform = Matrix.prototype.multiplyAll(this.translateFromOrigin, this.rotateX, this.rotateY, this.rotateZ, this.scale);
-    this.model.transform(this.transform);
+    this.rotate = Matrix.prototype.getRotateMatrix(this.settings.rotate);
+    this.translate = Matrix.prototype.getTranslateMatrix(this.settings.translate.positive());
+    this.transform = this.translate.multiply(this.scale).multiply(this.rotate);
+};
+
+Renderer.prototype.transformAndDrawModel = function(transform, projection){
+    this.model.transform(transform, projection);
     this.model.draw(this.context);
+};
+
+function OrthogonalRenderer(context, model, settings, parameters) {
+    Renderer.call(this, context, model, Matrix.prototype.getProjectionMatrix("xy"), settings, parameters);
+}
+
+OrthogonalRenderer.prototype = Object.create(Renderer.prototype);
+
+OrthogonalRenderer.prototype.rendering = function () {
+    this.checkGeometryUpdate();
+    this.buildTransform();
+    this.transformAndDrawModel(this.transform, Matrix.prototype.getProjectionMatrix("xy"));
+    this.transformAndDrawModel(this.transform, Matrix.prototype.getProjectionMatrix("yz"));
+    this.transformAndDrawModel(this.transform, Matrix.prototype.getProjectionMatrix("xz"));
+};
+
+function IsometricRenderer(context, model, settings, parameters){
+    Renderer.call(this, context, model, Matrix.prototype.getProjectionMatrix("xy"), settings, parameters);
+    this.alpha;
+    this.betta;
+}
+
+IsometricRenderer.prototype = Object.create(Renderer.prototype);
+
+IsometricRenderer.prototype.rendering = function () {
+    this.checkGeometryUpdate();
+    var DEGREES_TO_RADIANS = Math.PI / 180;
+    var RADIANS_TO_DEGREES = 180 / Math.PI;
+    var alpha = -35 * DEGREES_TO_RADIANS;
+    var betta = 45 * DEGREES_TO_RADIANS;
+    this.settings.rotate.x = alpha;
+    this.settings.rotate.y = betta;
+    //this.rotate = Matrix.prototype.getRotateXMatrix(this.alpha).multiply(Matrix.prototype.getRotateYMatrix(this.betta));
+    this.buildTransform();
+    this.transformAndDrawModel(this.transform, this.projection);
 };
 

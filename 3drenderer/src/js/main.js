@@ -8,13 +8,17 @@ window.onload = function () {
     var RADIANS_TO_DEGREES = 180 / Math.PI;
     var CANVAS_WIDTH = 1300;
     var CANVAS_HEIGHT = 450;
-    var Z_INDEX = 300;
+
+    var canvas = $("canvas");
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    var context = canvas.getContext("2d");
+
+    var selectedProjection = 1;
 
     var log = console.log;
     var cos = Math.cos;
     var sin = Math.sin;
-
-    var selectedProjection = 0;
 
     function $(selector) {
         return document.querySelector(selector);
@@ -24,44 +28,36 @@ window.onload = function () {
         return document.querySelectorAll(selector);
     }
 
-    var canvas = $("canvas");
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    var context = canvas.getContext("2d");
+    var renders = (function () {
+        //orthogonal
+        var orthogonalParameters = Util.createParameters(50, 100, 150, 8);
+        var orthogonalSettings = Util.createSettings(new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 300, 350));
+        //isometric
+        var isometricSettings = Util.createSettings(new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200, 0));
+        var isometricParameters = Util.createParameters(50, 100, 150, 8);
 
-    var settings = [
-        Util.createSettings(new Vector(300, CANVAS_HEIGHT - 200, 0)),
-        Util.createSettings(new Vector(900, CANVAS_HEIGHT - 200, 0))
-    ];
-
-    var parameters = [
-        Util.createParameters(50, 100, 150, 8),
-        Util.createParameters(50, 100, 150, 8)
-    ];
-
-    var cones = [
-        new Cone(parameters[0], settings[0].translate.clone()),
-        new Cone(parameters[1], settings[1].translate.clone())
-    ];
-
-    var renders = [
-        new Renderer(context, cones[0], settings[0], parameters[0]),
-        new Renderer(context, cones[1], settings[1], parameters[1])
-    ];
+        var orthogonalCone = new Cone(orthogonalParameters);
+        var isometricCone = new Cone(isometricParameters);
+        return [
+            new OrthogonalRenderer(context, orthogonalCone, orthogonalSettings, orthogonalParameters),
+            new IsometricRenderer(context, isometricCone, isometricSettings, isometricParameters)
+        ];
+    })();
 
     function redraw() {
         context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        renders.forEach(function (render) {
-            render.rendering();
-        });
+        renders[selectedProjection].rendering();
     }
 
-    var projectionSwitcher = (function () {
+    (function (projections) {
         var projectionNumbersMap = Object.create(null);
-        projectionNumbersMap["projection-1"] = 0;
-        projectionNumbersMap["projection-2"] = 1;
+        projections.forEach(function (name, index) {
+            $("#" + name).addEventListener("click", handler);
+            projectionNumbersMap[name] = index;
+        });
+        $("#" + projections[selectedProjection]).style.backgroundColor = "lightgray";
 
-        return function (projection) {
+        function handler(projection) {
             selectedProjection = projectionNumbersMap[projection.target.id];
             var divs = $$(".projections div");
             for (var i = 0; i < divs.length; ++i) {
@@ -69,11 +65,12 @@ window.onload = function () {
             }
             projection.target.style.backgroundColor = "lightgray";
             updateSliders();
+            redraw();
         }
-    })();
-
-    $("#projection-1").addEventListener("click", projectionSwitcher);
-    $("#projection-2").addEventListener("click", projectionSwitcher);
+    })([
+        "projection-orthogonal",
+        "projection-isometric"
+    ]);
 
     /*initialize slider for control panel. FUCK, there is a lot of them*/
     var sliders = [];
@@ -85,94 +82,91 @@ window.onload = function () {
     }
 
     sliders.push(new Slider($("#rotate-x-slider"), function () {
-        return Math.round(settings[selectedProjection].angle.x * RADIANS_TO_DEGREES);
+        return Math.round(renders[selectedProjection].settings.rotate.x * RADIANS_TO_DEGREES);
     }, 0, 360, redraw).setChangeListener(function (slider, angleX) {
-            settings[selectedProjection].angle.x = angleX * DEGREES_TO_RADIANS;
+            renders[selectedProjection].settings.rotate.x = angleX * DEGREES_TO_RADIANS;
             slider.innerHTML = "&ang;X: " + Math.round(angleX) + "&deg;";
         }));
 
     sliders.push(new Slider($("#rotate-y-slider"), function () {
-        return Math.round(settings[selectedProjection].angle.y * RADIANS_TO_DEGREES);
+        return Math.round(renders[selectedProjection].settings.rotate.y * RADIANS_TO_DEGREES);
     }, 0, 360, redraw).setChangeListener(function (slider, angleY) {
-            settings[selectedProjection].angle.y = angleY * DEGREES_TO_RADIANS;
+            renders[selectedProjection].settings.rotate.y = angleY * DEGREES_TO_RADIANS;
             slider.innerHTML = "&ang;Y: " + Math.round(angleY) + "&deg;";
         }));
     sliders.push(new Slider($("#rotate-z-slider"), function () {
-        return Math.round(settings[selectedProjection].angle.z * RADIANS_TO_DEGREES);
+        return Math.round(renders[selectedProjection].settings.rotate.z * RADIANS_TO_DEGREES);
     }, 0, 360, redraw).setChangeListener(function (slider, angleZ) {
-            settings[selectedProjection].angle.z = angleZ * DEGREES_TO_RADIANS;
+            renders[selectedProjection].settings.rotate.z = angleZ * DEGREES_TO_RADIANS;
             slider.innerHTML = "&ang;Z: " + Math.round(angleZ) + "&deg;";
         }));
 
     sliders.push(new Slider($("#translate-x-slider"), function () {
-        return settings[selectedProjection].translate.x;
-    }, 0, CANVAS_WIDTH, redraw).setChangeListener(function (slider, translateX) {
-            settings[selectedProjection].translate.x = translateX;
+        return renders[selectedProjection].settings.translate.x;
+    }, 0, 1000, redraw).setChangeListener(function (slider, translateX) {
+            renders[selectedProjection].settings.translate.x = translateX;
             slider.innerHTML = "&Delta;X:" + Math.round(translateX) + "px";
         }));
     sliders.push(new Slider($("#translate-y-slider"), function () {
-        return settings[selectedProjection].translate.y;
-    }, 0, CANVAS_HEIGHT, redraw).setChangeListener(function (slider, translateY) {
-            settings[selectedProjection].translate.y = translateY;
+        return renders[selectedProjection].settings.translate.y;
+    }, 0, 1000, redraw).setChangeListener(function (slider, translateY) {
+            renders[selectedProjection].settings.translate.y = translateY;
             slider.innerHTML = "&Delta;Y:" + Math.round(translateY) + "px";
         }));
 
     sliders.push(new Slider($("#translate-z-slider"), function () {
-        return settings[selectedProjection].translate.z;
-    }, 0, Z_INDEX, redraw).setChangeListener(function (slider, translateZ) {
-            settings[selectedProjection].translate.z = translateZ;
-            settings[selectedProjection].scale.x =
-                settings[selectedProjection].scale.y =
-                    settings[selectedProjection].scale.z = (Z_INDEX - translateZ) / Z_INDEX;
+        return renders[selectedProjection].settings.translate.z;
+    }, 0, 1000, redraw).setChangeListener(function (slider, translateZ) {
+            renders[selectedProjection].settings.translate.z = translateZ;
             slider.innerHTML = "&Delta;Z:" + Math.round(translateZ) + "px";
         }));
 
     sliders.push(new Slider($("#scale-x-slider"), function () {
-        return settings[selectedProjection].scale.x;
+        return renders[selectedProjection].settings.scale.x;
     }, 0, 5, redraw).setChangeListener(function (slider, scaleX) {
-            settings[selectedProjection].scale.x = scaleX;
+            renders[selectedProjection].settings.scale.x = scaleX;
             slider.innerHTML = "&times;" + scaleX.toFixed(2) + "X";
         }));
     sliders.push(new Slider($("#scale-y-slider"), function () {
-        return settings[selectedProjection].scale.y;
+        return renders[selectedProjection].settings.scale.y;
     }, 0, 5, redraw).setChangeListener(function (slider, scaleY) {
-            settings[selectedProjection].scale.y = scaleY;
+            renders[selectedProjection].settings.scale.y = scaleY;
             slider.innerHTML = "&times;" + scaleY.toFixed(2) + "Y";
         }));
     sliders.push(new Slider($("#scale-z-slider"), function () {
-        return settings[selectedProjection].scale.z;
+        return renders[selectedProjection].settings.scale.z;
     }, 0, 5, redraw).setChangeListener(function (slider, scaleZ) {
-            settings[selectedProjection].scale.z = scaleZ;
+            renders[selectedProjection].settings.scale.z = scaleZ;
             slider.innerHTML = "&times;" + scaleZ.toFixed(2) + "Z";
         }));
 
     sliders.push(new Slider($("#major-number-slider"), function () {
-        return parameters[selectedProjection].majorNumber;
+        return renders[selectedProjection].parameters.majorNumber;
     }, 3, 300, redraw).setChangeListener(function (slider, majorNumber) {
             majorNumber = Math.round(majorNumber);
-            settings[selectedProjection].isUpdateGeometry = true;
-            parameters[selectedProjection].majorNumber = majorNumber;
+            renders[selectedProjection].parameters.majorNumber = majorNumber;
+            renders[selectedProjection].settings.isUpdateGeometry = true;
             slider.innerHTML = majorNumber;
         }));
     sliders.push(new Slider($("#inner-radius-slider"), function () {
-        return parameters[selectedProjection].innerRadius;
+        return renders[selectedProjection].parameters.innerRadius;
     }, 5, 250, redraw).setChangeListener(function (slider, innerRadius) {
-            parameters[selectedProjection].innerRadius = innerRadius;
-            settings[selectedProjection].isUpdateGeometry = true;
+            renders[selectedProjection].parameters.innerRadius = innerRadius;
+            renders[selectedProjection].settings.isUpdateGeometry = true;
             slider.innerHTML = "&#8986;" + Math.round(innerRadius) + "px";
         }));
     sliders.push(new Slider($("#outer-radius-slider"), function () {
-        return parameters[selectedProjection].outerRadius;
+        return renders[selectedProjection].parameters.outerRadius;
     }, 10, 500, redraw).setChangeListener(function (slider, outerRadius) {
-            parameters[selectedProjection].outerRadius = outerRadius;
-            settings[selectedProjection].isUpdateGeometry = true;
+            renders[selectedProjection].parameters.outerRadius = outerRadius;
+            renders[selectedProjection].settings.isUpdateGeometry = true;
             slider.innerHTML = "&#8986;" + Math.round(outerRadius) + "px";
         }));
     sliders.push(new Slider($("#height-slider"), function () {
-        return parameters[selectedProjection].height;
+        return renders[selectedProjection].parameters.height;
     }, 10, CANVAS_HEIGHT, redraw).setChangeListener(function (slider, height) {
-            parameters[selectedProjection].height = height;
-            settings[selectedProjection].isUpdateGeometry = true;
+            renders[selectedProjection].parameters.height = height;
+            renders[selectedProjection].settings.isUpdateGeometry = true;
             slider.innerHTML = "&perp;" + Math.round(height) + "px";
         }));
 

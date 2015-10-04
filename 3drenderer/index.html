@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>3D Modeling</title>
     <link href="src/css/styles.css" rel="stylesheet">
+    <script src="src/js/cube-draft.js"></script>
     <script src="src/js/slider.js"></script>
     <script src="src/js/util.js"></script>
     <script src="src/js/vector.js"></script>
@@ -14,13 +15,11 @@
 </head>
 <body>
 <div id="content">
+    <div style="text-align: center; background-color: aliceblue">PROJECTIONS</div>
     <div class="projections">
-        <div id="projection-1">
-            DIV1
-        </div>
-        <div id="projection-2">
-            DIV2
-        </div>
+        <div id="projection-orthogonal">ORTHOGONAL</div>
+        <div id="projection-isometric">ISOMETRIC</div>
+        <div id="projection-xz"></div>
     </div>
     <div class="canvas">
         <canvas>Need update browser</canvas>
@@ -28,28 +27,28 @@
     <div class="control-panel">
         <div class="geometry">
             <div class="geometry-parameter">
-                <label>Major number<br><span class="hint">(defines quantity points of cone)</span></label>
+                <label>Major number<span class="hint">(defines quantity points of cone)</span></label>
 
                 <div class="slide-panel">
                     <div id="major-number-slider" class="slider"></div>
                 </div>
             </div>
             <div class="geometry-parameter">
-                <label>Inner diameter<br><span class="hint">(diameter of inner circle)</span></label>
+                <label>Inner diameter<span class="hint">(diameter of inner circle)</span></label>
 
                 <div class="slide-panel">
                     <div id="inner-radius-slider" class="slider"></div>
                 </div>
             </div>
             <div class="geometry-parameter">
-                <label>Outer diameter<br><span class="hint">(radius of outer circle)</span></label>
+                <label>Outer diameter<span class="hint">(radius of outer circle)</span></label>
 
                 <div class="slide-panel">
                     <div id="outer-radius-slider" class="slider"></div>
                 </div>
             </div>
             <div class="geometry-parameter">
-                <label>Height<br><span class="hint">(height of cone)</span></label>
+                <label>Height<span class="hint">(height of cone)</span></label>
 
                 <div class="slide-panel">
                     <div id="height-slider" class="slider"></div>
@@ -92,7 +91,7 @@
                 <label>Scaling</label>
 
                 <div>
-                    <div class="hidden slide-panel">
+                    <div class="slide-panel">
                         <div id="scale-z-slider" class="slider"></div>
                     </div>
                     <div class="slide-panel">
