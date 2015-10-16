@@ -2,7 +2,7 @@
  * Created by slesh on 9/26/15.
  */
 
-function Matrix(diagonalValue) {
+function Matrix() {
     this.v00 = 0; this.v01 = 0; this.v02 = 0; this.v03 = 0;
     this.v10 = 0; this.v11 = 0; this.v12 = 0; this.v13 = 0;
     this.v20 = 0; this.v21 = 0; this.v22 = 0; this.v23 = 0;
@@ -36,17 +36,12 @@ Matrix.prototype.multiply = function (b) {
     return c;
 };
 
-Matrix.prototype.multiplyOnVector = function (vector) {
-    return vector.clone().transform(this);
-};
-
-
 Matrix.prototype.getRotateXMatrix = function (angleXRadians) {
     var sin = Math.sin(angleXRadians);
     var rotateXMatrix = new Matrix();
     rotateXMatrix.v11 = rotateXMatrix.v22 = Math.cos(angleXRadians);
-    rotateXMatrix.v12 = -sin;
-    rotateXMatrix.v21 = sin;
+    rotateXMatrix.v12 = sin;
+    rotateXMatrix.v21 = -sin;
 
     return rotateXMatrix;
 };
@@ -55,8 +50,8 @@ Matrix.prototype.getRotateYMatrix = function (angleYRadians) {
     var sin = Math.sin(angleYRadians);
     var rotateYMatrix = new Matrix();
     rotateYMatrix.v00 = rotateYMatrix.v22 = Math.cos(angleYRadians);
-    rotateYMatrix.v02 = sin;
-    rotateYMatrix.v20 = -sin;
+    rotateYMatrix.v02 = -sin;
+    rotateYMatrix.v20 = sin;
 
     return rotateYMatrix;
 };
@@ -65,8 +60,8 @@ Matrix.prototype.getRotateZMatrix = function (angleZRadians) {
     var sin = Math.sin(angleZRadians);
     var rotateZMatrix = new Matrix();
     rotateZMatrix.v00 = rotateZMatrix.v11 = Math.cos(angleZRadians);
-    rotateZMatrix.v01 = -sin;
-    rotateZMatrix.v10 = sin;
+    rotateZMatrix.v01 = sin;
+    rotateZMatrix.v10 = -sin;
 
     return rotateZMatrix;
 };
@@ -84,6 +79,7 @@ Matrix.prototype.getTranslateMatrix = function (translateVector) {
     translateMatrix.v03 = translateVector.x;
     translateMatrix.v13 = translateVector.y;
     translateMatrix.v23 = translateVector.z;
+    translateMatrix.v33 = 1;
 
     return translateMatrix;
 };
@@ -98,24 +94,28 @@ Matrix.prototype.getScaleMatrix = function (scaleVector) {
     return scaleMatrix;
 };
 
-Matrix.prototype.getProjectionMatrix = function (axis) {
-    var projection = new Matrix();
-    switch (axis.toLocaleLowerCase().trim()) {
-        case "yz":
-            projection.v00 = 0;
-            projection.v02 = 1;
-            break;
-        case "xz":
-            projection.v11 = 0;
-            projection.v12 = 1;
-            projection.v22 = 0;
-            break;
-        default ://xy
-            projection.v22 = 0;
-            break;
-    }
-    return projection;
-};
+Matrix.prototype.getProjectionMatrix = (function () {
+    var projectionXY = new Matrix();
+    var projectionYZ = new Matrix();
+    var projectionXZ = new Matrix();
+
+    projectionXY.v22 = 0;
+
+    projectionYZ.v00 = 0;
+    projectionYZ.v02 = 1;
+
+    projectionXZ.v11 = 0;
+    projectionXZ.v12 = 1;
+
+    var projections = new Object(null);
+    projections.xy = projectionXY;
+    projections.yz = projectionYZ;
+    projections.xz = projectionXZ;
+
+    return function (axis) {
+        return projections[axis.toLowerCase().trim()];
+    };
+})();
 
 Matrix.prototype.toString = function () {
     return  "[[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +

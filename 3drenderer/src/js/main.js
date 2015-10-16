@@ -3,16 +3,23 @@
 /**
  * Created by slesh on 9/24/15.
  */
+
+var CONSTANTS = Object.create(null);
+CONSTANTS.DEGREES_TO_RADIANS = Math.PI / 180;
+CONSTANTS.RADIANS_TO_DEGREES = 180 / Math.PI;
+CONSTANTS.CANVAS_WIDTH = 1300;
+CONSTANTS.CANVAS_HEIGHT = 450;
+
 window.onload = function () {
-    var DEGREES_TO_RADIANS = Math.PI / 180;
-    var RADIANS_TO_DEGREES = 180 / Math.PI;
-    var CANVAS_WIDTH = 1300;
-    var CANVAS_HEIGHT = 450;
+    var W = CONSTANTS.CANVAS_WIDTH;
+    var H = CONSTANTS.CANVAS_HEIGHT;
+    var RTOD = CONSTANTS.RADIANS_TO_DEGREES;
+    var DTOR = CONSTANTS.DEGREES_TO_RADIANS;
 
     var canvas = $("canvas");
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
     var context = canvas.getContext("2d");
+    canvas.width = W;
+    canvas.height = H;
 
     var selectedProjection = 1;
 
@@ -31,9 +38,9 @@ window.onload = function () {
     var renders = (function () {
         //orthogonal
         var orthogonalParameters = Util.createParameters(50, 100, 150, 8);
-        var orthogonalSettings = Util.createSettings(new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 300, 350));
+        var orthogonalSettings = Util.createSettings(new Vector(W / 2, H - 300, 350));
         //isometric
-        var isometricSettings = Util.createSettings(new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200, 0));
+        var isometricSettings = Util.createSettings(new Vector(W / 2, H - 200, 0));
         var isometricParameters = Util.createParameters(50, 100, 150, 8);
 
         var orthogonalCone = new Cone(orthogonalParameters);
@@ -45,7 +52,7 @@ window.onload = function () {
     })();
 
     function redraw() {
-        context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        context.clearRect(0, 0, W, H);
         renders[selectedProjection].rendering();
     }
 
@@ -82,22 +89,22 @@ window.onload = function () {
     }
 
     sliders.push(new Slider($("#rotate-x-slider"), function () {
-        return Math.round(renders[selectedProjection].settings.rotate.x * RADIANS_TO_DEGREES);
+        return Math.round(renders[selectedProjection].settings.rotate.x * RTOD);
     }, 0, 360, redraw).setChangeListener(function (slider, angleX) {
-            renders[selectedProjection].settings.rotate.x = angleX * DEGREES_TO_RADIANS;
+            renders[selectedProjection].settings.rotate.x = angleX * DTOR;
             slider.innerHTML = "&ang;X: " + Math.round(angleX) + "&deg;";
         }));
 
     sliders.push(new Slider($("#rotate-y-slider"), function () {
-        return Math.round(renders[selectedProjection].settings.rotate.y * RADIANS_TO_DEGREES);
+        return Math.round(renders[selectedProjection].settings.rotate.y * RTOD);
     }, 0, 360, redraw).setChangeListener(function (slider, angleY) {
-            renders[selectedProjection].settings.rotate.y = angleY * DEGREES_TO_RADIANS;
+            renders[selectedProjection].settings.rotate.y = angleY * DTOR;
             slider.innerHTML = "&ang;Y: " + Math.round(angleY) + "&deg;";
         }));
     sliders.push(new Slider($("#rotate-z-slider"), function () {
-        return Math.round(renders[selectedProjection].settings.rotate.z * RADIANS_TO_DEGREES);
+        return Math.round(renders[selectedProjection].settings.rotate.z * RTOD);
     }, 0, 360, redraw).setChangeListener(function (slider, angleZ) {
-            renders[selectedProjection].settings.rotate.z = angleZ * DEGREES_TO_RADIANS;
+            renders[selectedProjection].settings.rotate.z = angleZ * DTOR;
             slider.innerHTML = "&ang;Z: " + Math.round(angleZ) + "&deg;";
         }));
 
@@ -164,7 +171,7 @@ window.onload = function () {
         }));
     sliders.push(new Slider($("#height-slider"), function () {
         return renders[selectedProjection].parameters.height;
-    }, 10, CANVAS_HEIGHT, redraw).setChangeListener(function (slider, height) {
+    }, 10, H, redraw).setChangeListener(function (slider, height) {
             renders[selectedProjection].parameters.height = height;
             renders[selectedProjection].settings.isUpdateGeometry = true;
             slider.innerHTML = "&perp;" + Math.round(height) + "px";
