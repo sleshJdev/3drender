@@ -32,9 +32,7 @@ Renderer.prototype.buildTransform = function () {
     this.scale = Matrix.prototype.getScaleMatrix(this.settings.scale);
     this.rotate = Matrix.prototype.getRotateMatrix(this.settings.rotate);
     this.translate = Matrix.prototype.getTranslateMatrix(this.settings.translate.positive());
-    this.transform = this.translate.multiply(this.scale).multiply(this.rotate);
-    console.log(this.transform);
-    console.log();
+    this.transform = this.rotate.multiply(this.scale).multiply(this.translate);
 };
 
 Renderer.prototype.transformAndDrawModel = function (transform, projection) {
@@ -49,16 +47,14 @@ function OrthogonalRenderer(context, model, settings, parameters) {
 OrthogonalRenderer.prototype = Object.create(Renderer.prototype);
 
 OrthogonalRenderer.prototype.rendering = function () {
-    if (this.settings.isUpdateGeometry) {
-        this.model.generateGeometry(this.parameters);
-        this.settings.isUpdateGeometry = false;
-    }
-
-    this.scale = Matrix.prototype.getScaleMatrix(this.settings.scale);
-    this.rotate = Matrix.prototype.getRotateMatrix(this.settings.rotate);
-    this.translate = Matrix.prototype.getTranslateMatrix(this.settings.translate.positive());
-    this.transform = this.translate.multiply(this.rotate).multiply(this.scale);
-
+    this.checkGeometryUpdate();
+    this.buildTransform();
+    //var p = this.settings.translate;
+    //this.model.transform(Matrix.prototype.getTranslateMatrix(new Vector(-p.x,-p.y, -p.z)), this.projection);
+    //this.model.transform(this.scale, this.projection);
+    //this.model.transform(this.rotate, this.projection);
+    //this.model.transform(Matrix.prototype.getTranslateMatrix(this.settings.translate.positive()), this.projection);
+    //this.model.draw(this.context);
     this.transformAndDrawModel(this.transform, Matrix.prototype.getProjectionMatrix("xy"));
     this.transformAndDrawModel(this.transform, Matrix.prototype.getProjectionMatrix("yz"));
     this.transformAndDrawModel(this.transform, Matrix.prototype.getProjectionMatrix("xz"));
@@ -66,18 +62,19 @@ OrthogonalRenderer.prototype.rendering = function () {
 
 function IsometricRenderer(context, model, settings, parameters) {
     Renderer.call(this, context, model, Matrix.prototype.getProjectionMatrix("xy"), settings, parameters);
-    this.psi = -30;//angle for y axes
-    this.phi = -60;//angle for x axes
+    this.phi = 30;//angle for x axes
+    this.psi = 30;//angle for y axes
 }
 
 IsometricRenderer.prototype = Object.create(Renderer.prototype);
 
 IsometricRenderer.prototype.rendering = function () {
+    this.checkGeometryUpdate();
     var mx = Matrix.prototype.getRotateXMatrix(this.phi);
     var my = Matrix.prototype.getRotateYMatrix(this.psi);
     this.translate = Matrix.prototype.getTranslateMatrix(this.settings.translate.positive());
     var rm = this.translate.multiply(mx).multiply(my);
-    this.checkGeometryUpdate();
+    this.model.transform(Matrix.prototype.getTranslateMatrix(this.settings.translate.negative()));
     this.transformAndDrawModel(rm, this.projection);
 };
 

@@ -9,10 +9,10 @@ function Vector(x, y, z, w) {
     this.z0 = z || 0;
     this.w0 = w || 1;
 
-    this.reset();
+    this.origin();
 };
 
-Vector.prototype.reset = function () {
+Vector.prototype.origin = function () {
     this.x = this.x0;
     this.y = this.y0;
     this.z = this.z0;

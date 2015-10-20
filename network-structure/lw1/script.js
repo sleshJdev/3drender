@@ -40,7 +40,8 @@ window.onload = function () {
     };
 
     Network.prototype.findOneByProperty = function (property, value) {
-        return this.findAllByProperty(property, value)[0];
+        var all = this.findAllByProperty(property, value);
+        return !!all ? all[0] : null;
     };
 
     Network.prototype.findAllByProperty = function (property, value) {
@@ -51,42 +52,59 @@ window.onload = function () {
         });
     };
 
-    Network.prototype.findPath = function (start, target) {
-        var stopper = 0;
-        var neighbor, current = this.findOneByProperty("number", start);
+    Network.prototype.findPath = function (parent) {
+        var start = (function (self) {
+            var childs = self.findAllByProperty("parent", parent);
+            return childs.find(function (child) {
+                var isNotInLeft = self.findAllByProperty("leftLink", child.number).length == 0;
+                var isNotInRight = self.findAllByProperty("rightLink", child.number).length == 0;
+                if (isNotInLeft && isNotInRight) {
+                    return child;
+                }
+            });
+        })(this);
+
+        var neighbor, current = start;
         var stack = [current];
         var visits = Object.create(null);
-        var path, paths = [];
-        while (++stopper < 500 && stack.length > 0) {
+        var path = [current.number];
+        var hasFamily = true;
+        while (stack.length > 0) {
             current = stack.pop();
-            path = [current.number];
+            if (!hasFamily) {
+                path.push(current.number);
+            }
             visits[current.number] = false;
-            console.log("pop: " + current);
+            console.log("\npop: " + current);
+            var rightRoad = [];
             if (current.rightLink > 0) {
                 neighbor = this.findOneByProperty("number", current.rightLink);
                 if (!visits[neighbor.number]) {
                     stack.push(neighbor);
                     visits[neighbor.number] = true;
-                    path.push(neighbor.number);
+                    rightRoad.push(neighbor.number);
                     console.log("visit right: true, node: " + neighbor);
                 }
             }
             neighbor = current;
+            var leftRoad = [];
             while (neighbor.leftLink > 0) {
                 neighbor = this.findOneByProperty("number", neighbor.leftLink);
                 if (!visits[neighbor.number]) {
                     stack.push(neighbor);
                     visits[neighbor.number] = true;
-                    path.push(neighbor.number);
+                    leftRoad.push(neighbor.number);
                     console.log("visit left: true, node: " + neighbor);
                 }
             }
-            if (path.length > 1) {
-                paths.push(path);
+            if (hasFamily = leftRoad.length > 0) {
+                path = path.concat(leftRoad);
+            } else if (hasFamily = rightRoad.length > 0) {
+                path = path.concat(rightRoad);
             }
         }
         console.log("search is finished.");
-        return paths;
+        return path;
     };
 
     var network = new Network(["Number", "Id", "Parent", "Left Link", "Right Link"]);
@@ -110,19 +128,17 @@ window.onload = function () {
     network.fillTable($("#source-table"));
 
     $("#search-button").addEventListener("click", function () {
-        var paths = network.findPath($("#start-node").value);              
-        paths.forEach(function (path) {
-            var pathDiv = "";
-            path.forEach(function (nodeNumber, index) {
-                
-                if (index == 0) {                    
-                    pathDiv += nodeNumber;
-                    return;
-                }
-                pathDiv += "&rarr;" + nodeNumber;
-            });
-            $(".output").innerHTML += "<div>" + pathDiv + "</div>";
+        var path = network.findPath($("#start-node").value);
+        $(".output").innerHTML = "";
+        var formatPath = "";
+        path.forEach(function (nodeNumber, index) {
+            if (index == 0) {
+                formatPath += nodeNumber;
+                return;
+            }
+            formatPath += "&rarr;" + nodeNumber;
         });
+        $(".output").innerHTML += "<div>" + formatPath + "</div>";
     });
 };
 
