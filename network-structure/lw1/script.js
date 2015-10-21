@@ -66,6 +66,16 @@ window.onload = function () {
         var stack = [current];
         var visits = Object.create(null);
         var path, paths = [];
+
+        function visit(node) {
+            if (!visits[node.number]) {
+                stack.push(node);
+                visits[node.number] = true;
+                path.push(node.number);
+                console.log("visit right: true, node: " + node);
+            }
+        }
+
         while (stack.length > 0) {
             current = stack.pop();
             path = [current.number];
@@ -73,22 +83,12 @@ window.onload = function () {
             console.log("pop: " + current);
             if (current.rightLink > 0) {
                 neighbor = this.findOneByProperty("number", current.rightLink);
-                if (!visits[neighbor.number]) {
-                    stack.push(neighbor);
-                    visits[neighbor.number] = true;
-                    path.push(neighbor.number);
-                    console.log("visit right: true, node: " + neighbor);
-                }
+                visit(neighbor);
             }
             neighbor = current;
             while (neighbor.leftLink > 0) {
                 neighbor = this.findOneByProperty("number", neighbor.leftLink);
-                if (!visits[neighbor.number]) {
-                    stack.push(neighbor);
-                    visits[neighbor.number] = true;
-                    path.push(neighbor.number);
-                    console.log("visit left: true, node: " + neighbor);
-                }
+                visit(neighbor);
             }
             if (path.length > 1) {
                 paths.push(path);
@@ -120,6 +120,7 @@ window.onload = function () {
 
     $("#search-button").addEventListener("click", function () {
         var paths = network.findPath($("#start-node").value);
+        $(".output").innerHTML = "";
         paths.forEach(function (path) {
             var pathDiv = "";
             path.forEach(function (nodeNumber, index) {
