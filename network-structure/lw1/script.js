@@ -40,8 +40,7 @@ window.onload = function () {
     };
 
     Network.prototype.findOneByProperty = function (property, value) {
-        var all = this.findAllByProperty(property, value);
-        return !!all ? all[0] : null;
+        return this.findAllByProperty(property, value)[0];
     };
 
     Network.prototype.findAllByProperty = function (property, value) {
@@ -63,48 +62,40 @@ window.onload = function () {
                 }
             });
         })(this);
-
         var neighbor, current = start;
         var stack = [current];
         var visits = Object.create(null);
-        var path = [current.number];
-        var hasFamily = true;
+        var path, paths = [];
         while (stack.length > 0) {
             current = stack.pop();
-            if (!hasFamily) {
-                path.push(current.number);
-            }
+            path = [current.number];
             visits[current.number] = false;
-            console.log("\npop: " + current);
-            var rightRoad = [];
+            console.log("pop: " + current);
             if (current.rightLink > 0) {
                 neighbor = this.findOneByProperty("number", current.rightLink);
                 if (!visits[neighbor.number]) {
                     stack.push(neighbor);
                     visits[neighbor.number] = true;
-                    rightRoad.push(neighbor.number);
+                    path.push(neighbor.number);
                     console.log("visit right: true, node: " + neighbor);
                 }
             }
             neighbor = current;
-            var leftRoad = [];
             while (neighbor.leftLink > 0) {
                 neighbor = this.findOneByProperty("number", neighbor.leftLink);
                 if (!visits[neighbor.number]) {
                     stack.push(neighbor);
                     visits[neighbor.number] = true;
-                    leftRoad.push(neighbor.number);
+                    path.push(neighbor.number);
                     console.log("visit left: true, node: " + neighbor);
                 }
             }
-            if (hasFamily = leftRoad.length > 0) {
-                path = path.concat(leftRoad);
-            } else if (hasFamily = rightRoad.length > 0) {
-                path = path.concat(rightRoad);
+            if (path.length > 1) {
+                paths.push(path);
             }
         }
         console.log("search is finished.");
-        return path;
+        return paths;
     };
 
     var network = new Network(["Number", "Id", "Parent", "Left Link", "Right Link"]);
@@ -128,17 +119,19 @@ window.onload = function () {
     network.fillTable($("#source-table"));
 
     $("#search-button").addEventListener("click", function () {
-        var path = network.findPath($("#start-node").value);
-        $(".output").innerHTML = "";
-        var formatPath = "";
-        path.forEach(function (nodeNumber, index) {
-            if (index == 0) {
-                formatPath += nodeNumber;
-                return;
-            }
-            formatPath += "&rarr;" + nodeNumber;
+        var paths = network.findPath($("#start-node").value);
+        paths.forEach(function (path) {
+            var pathDiv = "";
+            path.forEach(function (nodeNumber, index) {
+
+                if (index == 0) {
+                    pathDiv += nodeNumber;
+                    return;
+                }
+                pathDiv += "&rarr;" + nodeNumber;
+            });
+            $(".output").innerHTML += "<div>" + pathDiv + "</div>";
         });
-        $(".output").innerHTML += "<div>" + formatPath + "</div>";
     });
 };
 

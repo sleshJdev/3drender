@@ -1,37 +1,37 @@
-table{
-    border-spacing: 1px;
+table tr td{
+	padding: 1px 5px;
+	border: 1px solid black;
 }
 
-td{
-    padding-left: 20px;
+.view-panel{
+	
 }
 
-.content {
-    margin: 20px;
+.content{
+	margin: 20px;
 }
 
-.view-panel, .control-panel {
-    margin-top: 30px;
+.column{
+	float: left;
 }
 
-.push-right {
-    float: right;
+.form-group{
+	width: 400px;
+	margin: 10px;
 }
 
-.push-left {
-    float: left;
+.control-group{
+	margin: 10px;
+}
+ 
+.output{
+	margin: 10px;
+	width: 100%;
+	height: 100%;
+	background: #ffeeff;
+	border-radius: 10px;
 }
 
-.controls {
-    width: 30%;
-}
-
-.output {
-    width: 70%;
-    height: 100%;
-    background: #ffeeff;
-}
-
-.output text {
-    margin: 0 3px;
+.output text{
+	margin: 0 3px;
 }
