@@ -5,7 +5,6 @@
 function Cone(parameters) {
     this.colors = parameters.colors;
     this.vectors = [];
-    this.origin = new Vector(0, 0, 0);
 }
 
 Cone.prototype.generateGeometry = function (parameters) {
@@ -15,6 +14,7 @@ Cone.prototype.generateGeometry = function (parameters) {
     this.innerRadius = parameters.innerRadius;
     this.outerRadius = parameters.outerRadius;
     this.peak = new Vector(0, -this.height, 0);
+    this.origin = new Vector(0, 0, 0);
     var generator = function (quantityPoints, radius) {
         var current = new Vector(0, 0, 0);
         var shift = (2 * Math.PI) / quantityPoints;

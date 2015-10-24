@@ -30,6 +30,7 @@ OrthogonalRender.prototype.rendering = function () {
         this.settings.isUpdateGeometry = false;
         console.log("update geometry ... ok");
     }
+
     var o = this.model.origin.restore().clone();
     var t1 = Matrix.prototype.getTranslateMatrix(o.scale(-1));
     var t2 = Matrix.prototype.getTranslateMatrix(o.scale(-1).shift(this.settings.translate));
@@ -41,6 +42,11 @@ OrthogonalRender.prototype.rendering = function () {
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("yz"));
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xz"));
+
+    this.context.font = "30px Arial";
+    this.context.fillText("XOY", o.x + this.parameters.outerRadius, o.y);
+    this.context.fillText("ZOY", o.z + this.parameters.outerRadius, o.y);
+    this.context.fillText("XOZ", o.x + this.parameters.outerRadius, o.z);
 
     this.settings.translate.scale(0);
     this.settings.rotate.scale(0);
