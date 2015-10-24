@@ -14,7 +14,6 @@ Cone.prototype.generateGeometry = function (parameters) {
     this.innerRadius = parameters.innerRadius;
     this.outerRadius = parameters.outerRadius;
     this.peak = new Vector(0, -this.height, 0);
-    this.origin = new Vector(0, 0, 0);
     var generator = function (quantityPoints, radius) {
         var current = new Vector(0, 0, 0);
         var shift = (2 * Math.PI) / quantityPoints;
@@ -81,7 +80,6 @@ Cone.prototype.draw = function (canvas, projection) {
 };
 
 Cone.prototype.transform = function (matrix) {
-    this.origin.restore().transform(matrix).commit();
     this.peak.restore().transform(matrix).commit();
     this.vectors.forEach(function (vector) {
         vector.restore().transform(matrix).commit();
