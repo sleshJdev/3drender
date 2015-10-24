@@ -1,13 +1,23 @@
-"use strict"
 /**
- * Created by slesh on 9/26/15.
+ * Created by slesh on 10/23/15.
  */
 
 function Vector(x, y, z, w) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.z = z || 0;
-    this.w = w || 1;
+    this.x0 = x || 0;
+    this.y0 = y || 0;
+    this.z0 = z || 0;
+    this.w0 = w || 1;
+
+    this.origin();
+};
+
+Vector.prototype.origin = function () {
+    this.x = this.x0;
+    this.y = this.y0;
+    this.z = this.z0;
+    this.w = this.w0;
+
+    return this;
 };
 
 Vector.prototype.move = function (vector) {

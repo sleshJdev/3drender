@@ -13,26 +13,22 @@ function Controller() {
 Controller.prototype.initializeHandler = function () {
     var self = this;
 
-    function handleHelper(event, value) {
-        console.log("shiftKey: " + event.shiftKey + ", ctrlKey: " + event.ctrlKey + "key: " + event.key + ", keyCode: " + event.keyCode);
+    function handleKey(event, isDown) {
         var id = "" + event.keyCode + event.shiftKey + event.ctrlKey;
         if (id in self.events) {
-            self.events[id].isDown = value;
+            self.events[id].isDown = isDown;
             if (!!self.beforeAction) {
                 self.beforeAction();
             }
             for (var key in self.events) {
-                var e = self.events[key];
+                var e = self.events[keyCode];
                 if (e.isDown) {
-                    if (event.shiftKey && e.withShift) {
+                    if (event.shiftKey && e.hasShift) {
                         e.action(event);
-                        console.log("sfiftKey: " + event.shiftKey + ", hasShift: " + e.withShift + ", ctrlKey: " + event.ctrlKey + ", hasCtrl: " + e.withCtrl + ", key: " + event.key + ", code" + event.keyCode + ", action code: " + e.key + ", id: " + key);
-                    } else if (event.ctrlKey && e.withCtrl) {
+                    } else if (event.ctrlKey && e.hasCtrl) {
                         e.action(event);
-                        console.log("sfiftKey: " + event.shiftKey + ", hasShift: " + e.withShift + ", ctrlKey: " + event.ctrlKey + ", hasCtrl: " + e.withCtrl + ", key: " + event.key + ", code" + event.keyCode + ", action code: " + e.key + ", id: " + key);
-                    } else if (event.ctrlKey == e.withCtrl && event.shiftKey == e.withShift) {
+                    } else if (event.ctrlKey == e.hasCtrl && event.shiftKey == e.hasShift) {
                         e.action(event);
-                        console.log("sfiftKey: " + event.shiftKey + ", hasShift: " + e.withShift + ", ctrlKey: " + event.ctrlKey + ", hasCtrl: " + e.withCtrl + ", key: " + event.key + ", code" + event.keyCode + ", action code: " + e.key + ", id: " + key);
                     }
                 }
             }
@@ -45,19 +41,19 @@ Controller.prototype.initializeHandler = function () {
     }
 
     document.addEventListener("keydown", function (event) {
-        handleHelper(event, true);
+        handleKey(event, true);
     });
     document.addEventListener("keyup", function (event) {
-        handleHelper(event, false);
+        handleKey(event, false);
     });
 };
 
-Controller.prototype.addListenerForKey = function (key, withShift, withCtrl, action) {
+Controller.prototype.addListenerForKey = function (key, hasShift, hasCtrl, action) {
     var event = Object.create(null);
     event.isDown = false;
-    event.withShift = withShift || false;
-    event.withCtrl = withCtrl || false;
+    event.keyCode = keyCode;
+    event.hasShift = hasShift || false;
+    event.hasCtrl = hasCtrl || false;
     event.action = action;
-    event.key = key;
-    this.events["" + key + withShift + withCtrl] = event;
+    this.events["" + keyCode + hasShift + hasCtrl] = event;
 };

@@ -99,13 +99,12 @@ Matrix.prototype.getProjectionMatrix = (function () {
     var projectionYZ = new Matrix();
     var projectionXZ = new Matrix();
 
-    projectionXY.v22 = 0;
-
+    projectionYZ.v20 = 1;
     projectionYZ.v00 = 0;
-    projectionYZ.v02 = 1;
 
     projectionXZ.v11 = 0;
-    projectionXZ.v12 = 1;
+    projectionXZ.v21 = 1;
+    projectionXZ.v22 = 0;
 
     var projections = new Object(null);
     projections.xy = projectionXY;
@@ -119,9 +118,9 @@ Matrix.prototype.getProjectionMatrix = (function () {
 
 Matrix.prototype.toString = function () {
     return  "[_[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +
-        "__[" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +
-        "__[" + this.v20 + ", " + this.v21 + ", " + this.v22 + ", " + this.v23 + "]\n" +
-        "__[" + this.v30 + ", " + this.v31 + ", " + this.v32 + ", " + this.v33 + "]]";
+            "__[" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +
+            "__[" + this.v20 + ", " + this.v21 + ", " + this.v22 + ", " + this.v23 + "]\n" +
+            "__[" + this.v30 + ", " + this.v31 + ", " + this.v32 + ", " + this.v33 + "]]";
 };
 
 
