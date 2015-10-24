@@ -2,12 +2,12 @@
  * Created by slesh on 9/26/15.
  */
 
-function Matrix() {
+function Matrix(diagonalValue) {
     this.v00 = 0; this.v01 = 0; this.v02 = 0; this.v03 = 0;
     this.v10 = 0; this.v11 = 0; this.v12 = 0; this.v13 = 0;
     this.v20 = 0; this.v21 = 0; this.v22 = 0; this.v23 = 0;
     this.v30 = 0; this.v31 = 0; this.v32 = 0; this.v33 = 0;
-    this.v00 = this.v11 = this.v22 = this.v33 = 1;
+    this.v00 = this.v11 = this.v22 = this.v33 = diagonalValue == undefined ? 1 : diagonalValue;
 }
 
 Matrix.prototype.multiply = function (m) {
@@ -99,12 +99,11 @@ Matrix.prototype.getProjectionMatrix = (function () {
     var projectionYZ = new Matrix();
     var projectionXZ = new Matrix();
 
-    projectionYZ.v20 = 1;
     projectionYZ.v00 = 0;
+    projectionYZ.v20 = 1;
 
     projectionXZ.v11 = 0;
     projectionXZ.v21 = 1;
-    projectionXZ.v22 = 0;
 
     var projections = new Object(null);
     projections.xy = projectionXY;

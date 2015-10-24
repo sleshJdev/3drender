@@ -26,7 +26,7 @@ Util.createSettings = function (translate) {
     var settings = Object.create(null);//settings to rendering of cone
     settings.rotate = new Vector(0, 0, 0);
     settings.scale = new Vector(1, 1, 1);
-    settings.translate = new Vector(0, 0, 0);
+    settings.translate = translate || new Vector(0, 0, 0);
     settings.isUpdateGeometry = true;
 
     return settings;

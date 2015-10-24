@@ -50,9 +50,11 @@ Cone.prototype.drawBase = function (canvas) {
     canvas.stroke();
 };
 
-Cone.prototype.draw = function (canvas) {
+Cone.prototype.draw = function (canvas, projection) {
     var self = this;
+    self.peak.restore().transform(projection);
     self.vectors.forEach(function (vector, number) {
+        vector.restore().transform(projection);
         if (number == 0 || number == (self.majorNumber + 1)) {
             switch (number) {
                 case 0:
@@ -79,8 +81,9 @@ Cone.prototype.draw = function (canvas) {
 };
 
 Cone.prototype.transform = function (matrix) {
-    this.peak.origin().transform(matrix);
+    this.origin.restore().transform(matrix).commit();
+    this.peak.restore().transform(matrix).commit();
     this.vectors.forEach(function (vector) {
-        vector.origin().transform(matrix);
+        vector.restore().transform(matrix).commit();
     });
 };

@@ -60,32 +60,32 @@ Controller.prototype.registerEvents = function () {
     /*
      rotating
      */
-    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x += 10 * Jaga.d2r; });
-    self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x -= 10 * Jaga.d2r; });
-    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y += 10 * Jaga.d2r; });
-    self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y -= 10 * Jaga.d2r; });
-    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z += 10 * Jaga.d2r; });
-    self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z -= 10 * Jaga.d2r; });
+    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x = 10 * Jaga.d2r; });
+    self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -10 * Jaga.d2r; });
+    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y = 10 * Jaga.d2r; });
+    self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -10 * Jaga.d2r; });
+    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z = 10 * Jaga.d2r; });
+    self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z = -10 * Jaga.d2r; });
 
     /*
      scaling
      */
-    self.addListenerForKey(87/*"w"*/, true, false, function () { self.render.settings.scale.x += 0.1; });
-    self.addListenerForKey(83/*"s"*/, true, false, function () { self.render.settings.scale.x -= 0.1; });
-    self.addListenerForKey(68/*"d"*/, true, false, function () { self.render.settings.scale.y += 0.1; });
-    self.addListenerForKey(65/*"a"*/, true, false, function () { self.render.settings.scale.y -= 0.1; });
-    self.addListenerForKey(69/*"e"*/, true, false, function () { self.render.settings.scale.z += 0.1; });
-    self.addListenerForKey(81/*"q"*/, true, false, function () { self.render.settings.scale.z -= 0.1; });
+    self.addListenerForKey(87/*"w"*/, true, false, function () { self.render.settings.scale.x = 0.1; });
+    self.addListenerForKey(83/*"s"*/, true, false, function () { self.render.settings.scale.x = 0.1; });
+    self.addListenerForKey(68/*"d"*/, true, false, function () { self.render.settings.scale.y = 0.1; });
+    self.addListenerForKey(65/*"a"*/, true, false, function () { self.render.settings.scale.y = 0.1; });
+    self.addListenerForKey(69/*"e"*/, true, false, function () { self.render.settings.scale.z = 0.1; });
+    self.addListenerForKey(81/*"q"*/, true, false, function () { self.render.settings.scale.z = 0.1; });
 
     /*
      translating
      */
-    self.addListenerForKey(39/*arrow-right*/, false, false, function () { self.render.settings.translate.x += 10; });
-    self.addListenerForKey(37/*arrow-left */, false, false, function () { self.render.settings.translate.x -= 10; });
-    self.addListenerForKey(38/*arrow-up   */, false, false, function () { self.render.settings.translate.y -= 10; });
-    self.addListenerForKey(40/*arrow-down */, false, false, function () { self.render.settings.translate.y += 10; });
-    self.addListenerForKey(38/*arrow-up   */, true,  false, function () { self.render.settings.translate.z += 10; });
-    self.addListenerForKey(40/*arrow-down */, true,  false, function () { self.render.settings.translate.z -= 10; });
+    self.addListenerForKey(39/*arrow-right*/, false, false, function () { self.render.settings.translate.x = 10; });
+    self.addListenerForKey(37/*arrow-left */, false, false, function () { self.render.settings.translate.x = -10; });
+    self.addListenerForKey(38/*arrow-up   */, false, false, function () { self.render.settings.translate.y = -10; });
+    self.addListenerForKey(40/*arrow-down */, false, false, function () { self.render.settings.translate.y = 10; });
+    self.addListenerForKey(38/*arrow-up   */, true,  false, function () { self.render.settings.translate.z = -10; });
+    self.addListenerForKey(40/*arrow-down */, true,  false, function () { self.render.settings.translate.z = 10; });
 
     /*
      changing geometry parameters

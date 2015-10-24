@@ -23,13 +23,15 @@ Jaga.create = function(canvas){
     var renders = [];
 
     var parameters = Util.createParameters(50, 100, 150, 8);
-    var settings = Util.createSettings(new Vector(200, 300, 500));
+    var settings = Util.createSettings(new Vector(800, 200, 500));
     var model = new Cone(parameters);
 
     renders.push(new OrthogonalRender(context, model, settings, parameters));
 
     var controller = new Controller(renders);
     controller.registerEvents();
+
+    renders[0].rendering();
 };
 
 window.onload = function() {

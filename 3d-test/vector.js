@@ -8,10 +8,19 @@ function Vector(x, y, z, w) {
     this.z0 = z || 0;
     this.w0 = w || 1;
 
-    this.origin();
+    this.restore();
 };
 
-Vector.prototype.origin = function () {
+Vector.prototype.commit = function () {
+    this.x0 = this.x;
+    this.y0 = this.y;
+    this.z0 = this.z;
+    this.w0 = this.w;
+
+    return this;
+};
+
+Vector.prototype.restore = function () {
     this.x = this.x0;
     this.y = this.y0;
     this.z = this.z0;
@@ -47,7 +56,7 @@ Vector.prototype.scale = function(factor){
 Vector.prototype.transform = function (matrix) {
     var x = this.x * matrix.v00 + this.y * matrix.v10 + this.z * matrix.v20 + this.w * matrix.v30;
     var y = this.x * matrix.v01 + this.y * matrix.v11 + this.z * matrix.v21 + this.w * matrix.v31;
-    var z = this.x * matrix.v02 + this.y * matrix.v12 + this.z * matrix.v22 + this.w * matrix.v23;
+    var z = this.x * matrix.v02 + this.y * matrix.v12 + this.z * matrix.v22 + this.w * matrix.v32;
     var w = this.x * matrix.v03 + this.y * matrix.v13 + this.z * matrix.v23 + this.w * matrix.v33;
 
     this.x = x;

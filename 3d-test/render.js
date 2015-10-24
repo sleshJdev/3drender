@@ -30,14 +30,19 @@ OrthogonalRender.prototype.rendering = function () {
         this.settings.isUpdateGeometry = false;
         console.log("update geometry ... ok");
     }
-    var t = Matrix.prototype.getTranslateMatrix(this.settings.translate);
+    var o = this.model.origin.restore().clone();
+    var t1 = Matrix.prototype.getTranslateMatrix(o.scale(-1));
+    var t2 = Matrix.prototype.getTranslateMatrix(o.scale(-1).shift(this.settings.translate));
     var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
-
-    this.model.transform(r.multiply(t));
-    console.log("transform model ... ok");
+    var m = t1.multiply(r).multiply(t2);
 
     this.clearCanvas();
-    this.model.draw(this.context);
-    //console.log("draw model ... ok");
+    this.model.transform(m);
+    this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
+    this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("yz"));
+    this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xz"));
+
+    this.settings.translate.scale(0);
+    this.settings.rotate.scale(0);
 };
 
