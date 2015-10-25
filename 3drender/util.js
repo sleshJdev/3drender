@@ -5,7 +5,7 @@
 Util = Object.create(null);
 
 Util.createParameters = function (innerRadius, outerRadius, height, majorNumber, colors) {
-    var parameters = Object.create(null);//parameters for model of cone
+    var parameters = Object.create(null);//parameters for model
     parameters.innerRadius = innerRadius;
     parameters.outerRadius = outerRadius;
     parameters.height = height;
@@ -26,7 +26,7 @@ Util.createSettings = function (translate) {
     var settings = Object.create(null);//settings to rendering of cone
     settings.rotate = new Vector(0, 0, 0);
     settings.scale = new Vector(1, 1, 1);
-    settings.translate = translate;
+    settings.translate = translate || new Vector(0, 0, 0);
     settings.isUpdateGeometry = true;
 
     return settings;
