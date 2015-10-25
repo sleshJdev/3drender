@@ -58,24 +58,24 @@ OrthogonalRender.prototype.rendering = function () {
     this.context.fillText("XOZ", this.origin.x + this.parameters.outerRadius, this.origin.z);
 };
 
-function IsometricRender(context, model, settings, parameters) {
+function AxonometricRender(context, model, settings, parameters) {
     Render.call(this, RenderType.ISOMETRIC, context, model, settings, parameters);
 }
 
-IsometricRender.prototype = Object.create(Render.prototype);
+AxonometricRender.prototype = Object.create(Render.prototype);
 
-IsometricRender.prototype.rendering = function () {
+AxonometricRender.prototype.rendering = function () {
     this.updateGeometry();
 
     var t1 = Matrix.prototype.getTranslateMatrix(this.origin.scale(-1));
     var t2 = Matrix.prototype.getTranslateMatrix(this.origin.scale(-1).shift(this.settings.translate));
     var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
     var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
-    var i = Matrix.prototype.getIsometricMatrix();
     var m = t1.multiply(r).multiply(s).multiply(t2);
 
     this.clear();
     this.origin.restore().transform(m).commit();
-    this.model.transform(m.multiply(i));
-    this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
+    this.model.transform(m);
+    this.model.draw(this.context, Matrix.prototype.getIsometricMatrix());
+    this.model.draw(this.context, Matrix.prototype.getDimetricMatrix());
 };

@@ -20,8 +20,8 @@ Jaga.create = function(canvas){
     renders.push(new OrthogonalRender(context,
         Util.createSettings(new Vector(800, 200, 500)),
         new Cone(Util.createParameters(50, 100, 150, 8))));
-    renders.push(new IsometricRender(context,
-        Util.createSettings(new Vector(800, 200, 500)),
+    renders.push(new AxonometricRender(context,
+        Util.createSettings(new Vector(500, 50, 500)),
         new Cone(Util.createParameters(50, 100, 150, 8))));
 
     var controller = new Controller(renders);

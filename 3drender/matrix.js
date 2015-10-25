@@ -129,6 +129,19 @@ Matrix.prototype.getIsometricMatrix = (function () {
     };
 })();
 
+Matrix.prototype.getDimetricMatrix = (function () {
+    var v1 = Math.sqrt(2) / 2;
+    var v2 = Math.sqrt(2 / 3);
+    var matrix = new Matrix();
+    matrix.v00 = 1;  matrix.v01 = 0;  matrix.v02 = -v1;
+    matrix.v10 = 0;  matrix.v11 = 1;  matrix.v12 = v1;
+    matrix.v20 = v1; matrix.v21 = v1; matrix.v22 = v2;
+
+    return function () {
+        return matrix;
+    }
+})();
+
 Matrix.prototype.toString = function () {
     return  "[_[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +
             "__[" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +
