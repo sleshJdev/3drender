@@ -3,11 +3,16 @@
  */
 "use strict";
 
-function Controller(renderers){
+function Controller(renderers, statusPanel){
     this.events = Object.create(null);
     this.renderers = renderers;
     this.render = renderers[0];
+    this.statusPanel = statusPanel;
 }
+
+Controller.prototype.showStatus = function () {
+    this.statusPanel.innerHTML = this.render.getStatus();
+};
 
 Controller.prototype.switchRender = function(index){
     this.render = this.renderers[index];
@@ -48,6 +53,7 @@ Controller.prototype.registerEvents = function () {
             }
             if (isDown) {
                 self.render.rendering();
+                self.showStatus();
             }
             event.preventDefault();
             event.stopPropagation();

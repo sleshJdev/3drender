@@ -15,6 +15,10 @@ function Render(type, context, model, settings, parameters){
     this.parameters = parameters;
 }
 
+Render.prototype.getStatus = function () {
+    return "";
+};
+
 Render.prototype.resetSettings = function(){
     this.settings.translate.scale(0);
     this.settings.rotate.scale(0);
@@ -33,6 +37,15 @@ Render.prototype.updateGeometry = function () {
     }
 };
 
+Render.prototype.buildTransformation = function () {
+    var t1 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1));
+    var t2 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1).shift(this.settings.translate));
+    var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
+    var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
+
+    return t1.multiply(r).multiply(s).multiply(t2);
+};
+
 function OrthogonalRender(context, model, settings, parameters) {
     Render.call(this, RenderType.ORTHOGONAL, context, model, settings, parameters);
 }
@@ -42,15 +55,9 @@ OrthogonalRender.prototype = Object.create(Render.prototype);
 OrthogonalRender.prototype.rendering = function () {
     this.updateGeometry();
 
-    var t1 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1));
-    var t2 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1).shift(this.settings.translate));
-    var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
-    var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
-    var m = t1.multiply(r).multiply(s).multiply(t2);
-
     this.clearCanvas();
     this.resetSettings();
-    this.model.transform(m).commit();
+    this.model.transform(this.buildTransformation()).commit();
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("yz"));
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xz"));
@@ -92,7 +99,7 @@ AxonometricRender.prototype.rendering = function () {
         var m = t1.multiply(r).multiply(s).multiply(t2);
         model.transform(m).commit();
         model.draw(self.context, self.projections[index]);
-        self.context.fillText(self.labels[index], model.origin.x + self.parameters.outerRadius, model.origin.y);
+        self.context.fillText(self.labels[index], model.origin.x - self.parameters.outerRadius, model.origin.y);
     });
     self.resetSettings();
 };
@@ -105,15 +112,10 @@ ObliqueRender.prototype = Object.create(Render.prototype);
 
 ObliqueRender.prototype.rendering = function () {
     this.updateGeometry();
-
-    var t1 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1));
-    var t2 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1).shift(this.settings.translate));
-    var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
-    var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
-    var m = t1.multiply(r).multiply(s).multiply(t2);
-
     this.clearCanvas();
     this.resetSettings();
-    this.model.transform(m).commit();
-    this.model.draw(this.context, Matrix.prototype.getObliqueMatrix(1, 45 * Jaga.d2r));
+    this.model.transform(this.buildTransformation()).commit();
+    this.model.draw(this.context, Matrix.prototype.getObliqueMatrix(0.5, 63.4 * Jaga.d2r));
 };
+
+
