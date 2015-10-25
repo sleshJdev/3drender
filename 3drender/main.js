@@ -28,7 +28,9 @@ Jaga.create = function(canvas){
         [new Cone(parameters, new Vector(200, 50, 500)), new Cone(parameters, new Vector(600, 50, 500))],
         Util.createSettings(), parameters));
 
-
+    parameters = Util.createParameters(50, 100, 150, 8);
+    renders.push(new ObliqueRender(context, new Cone(parameters, new Vector(600, 250, 500)),
+        Util.createSettings(), parameters));
 
     var controller = new Controller(renders);
     controller.registerEvents();

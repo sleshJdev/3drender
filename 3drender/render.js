@@ -97,4 +97,23 @@ AxonometricRender.prototype.rendering = function () {
     self.resetSettings();
 };
 
+function ObliqueRender(context, model, settings, parameters) {
+    Render.call(this, RenderType.OBLIQUE, context, model, settings, parameters);
+};
 
+ObliqueRender.prototype = Object.create(Render.prototype);
+
+ObliqueRender.prototype.rendering = function () {
+    this.updateGeometry();
+
+    var t1 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1));
+    var t2 = Matrix.prototype.getTranslateMatrix(this.model.origin.scale(-1).shift(this.settings.translate));
+    var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
+    var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
+    var m = t1.multiply(r).multiply(s).multiply(t2);
+
+    this.clearCanvas();
+    this.resetSettings();
+    this.model.transform(m).commit();
+    this.model.draw(this.context, Matrix.prototype.getObliqueMatrix(1, 45 * Jaga.d2r));
+};
