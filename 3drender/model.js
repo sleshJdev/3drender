@@ -2,9 +2,11 @@
  * Created by slesh on 10/24/15.
  */
 
-function Cone(parameters) {
+function Cone(parameters, origin) {
     this.parameters = parameters;
     this.vectors = [];
+    this.origin = origin || new Vector();
+    console.log(this.origin);
 }
 
 Cone.prototype.generateGeometry = function () {
@@ -75,11 +77,24 @@ Cone.prototype.draw = function (canvas, projection) {
     });
     canvas.stroke();
     self.drawBase(canvas);
+
+    return this;
 };
 
 Cone.prototype.transform = function (matrix) {
-    this.peak.restore().transform(matrix).commit();
+    this.peak.restore().transform(matrix);
     this.vectors.forEach(function (vector) {
-        vector.restore().transform(matrix).commit();
+        vector.restore().transform(matrix);
     });
+
+    return this;
+};
+
+Cone.prototype.commit = function () {
+    this.peak.commit();
+    this.vectors.forEach(function (vector) {
+        vector.commit();
+    });
+
+    return this;
 };

@@ -142,6 +142,18 @@ Matrix.prototype.getDimetricMatrix = (function () {
     }
 })();
 
+Matrix.prototype.getObliqueMatrix = (function () {
+    var matrix = new Matrix(0);
+    matrix.v00 = matrix.v11 = matrix.v33 = 1;
+
+    return function (l, alpha) {
+        matrix.v20 = l * Math.cos(alpha);
+        matrix.v21 = l * Math.sin(alpha);
+
+        return matrix;
+    }
+})();
+
 Matrix.prototype.toString = function () {
     return  "[_[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +
             "__[" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +
