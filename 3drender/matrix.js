@@ -115,13 +115,26 @@ Matrix.prototype.getProjectionMatrix = (function () {
     };
 })();
 
+Matrix.prototype.getIsometricMatrix = (function () {
+    var v1 = Math.sqrt(3) / 2;
+    var v2 = 1 / Math.sqrt(3);
+    var v3 = -1 / 2;
+    var matrix = new Matrix();
+    matrix.v00 = v1; matrix.v01 = 0; matrix.v02 = v1;
+    matrix.v10 = v3; matrix.v11 = 1; matrix.v12 = v3;
+    matrix.v20 = matrix.v21 = matrix.v22 = v2;
+
+    return function (parameter) {
+        return matrix;
+    };
+})();
+
 Matrix.prototype.toString = function () {
     return  "[_[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +
             "__[" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +
             "__[" + this.v20 + ", " + this.v21 + ", " + this.v22 + ", " + this.v23 + "]\n" +
             "__[" + this.v30 + ", " + this.v31 + ", " + this.v32 + ", " + this.v33 + "]]";
 };
-
 
 //multiplication test
 //var m = null;

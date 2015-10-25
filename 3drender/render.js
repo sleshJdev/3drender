@@ -6,7 +6,7 @@ var RenderType = Object.create(null);
 RenderType.ORTHOGONAL = 0;
 RenderType.ISOMETRIC = 1;
 
-function Render(type, context, model, settings, parameters){
+function Render(type, context, settings, model, parameters){
     this.type = type;
     this.context = context;
     this.model = model;
@@ -15,31 +15,38 @@ function Render(type, context, model, settings, parameters){
     this.origin = new Vector();
 }
 
-Render.prototype.clearCanvas = function(){
+Render.prototype.clear = function(){
     this.context.clearRect(0, 0, Jaga.canvasWidth, Jaga.canvasHeight);
+    this.settings.translate.scale(0);
+    this.settings.rotate.scale(0);
+    this.settings.scale.restore();
 };
 
-function OrthogonalRender(context, model, settings, parameters) {
-    Render.call(this, RenderType.ORTHOGONAL, context, model, settings, parameters);
+Render.prototype.updateGeometry = function () {
+    if (this.settings.isUpdateGeometry) {
+        this.settings.isUpdateGeometry = false;
+        this.model.generateGeometry();
+        this.model.transform(Matrix.prototype.getTranslateMatrix(this.origin));
+    }
+};
+
+function OrthogonalRender(context, settings, model) {
+    Render.call(this, RenderType.ORTHOGONAL, context, settings, model, model.parameters);
 }
 
 OrthogonalRender.prototype = Object.create(Render.prototype);
 
 OrthogonalRender.prototype.rendering = function () {
-    if (this.settings.isUpdateGeometry) {
-        this.settings.isUpdateGeometry = false;
-        console.log("this.settings.translate: " + this.settings.translate);
-        this.model.generateGeometry(this.parameters);
-        this.model.transform(Matrix.prototype.getTranslateMatrix(this.origin));
-    }
+    this.updateGeometry();
 
     var t1 = Matrix.prototype.getTranslateMatrix(this.origin.scale(-1));
     var t2 = Matrix.prototype.getTranslateMatrix(this.origin.scale(-1).shift(this.settings.translate));
+    var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
     var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
-    var m = t1.multiply(r).multiply(t2);
+    var m = t1.multiply(r).multiply(s).multiply(t2);
 
+    this.clear();
     this.origin.restore().transform(m).commit();
-    this.clearCanvas();
     this.model.transform(m);
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("yz"));
@@ -49,11 +56,7 @@ OrthogonalRender.prototype.rendering = function () {
     this.context.fillText("XOY", this.origin.x + this.parameters.outerRadius, this.origin.y);
     this.context.fillText("ZOY", this.origin.z + this.parameters.outerRadius, this.origin.y);
     this.context.fillText("XOZ", this.origin.x + this.parameters.outerRadius, this.origin.z);
-
-    this.settings.translate.scale(0);
-    this.settings.rotate.scale(0);
 };
-
 
 function IsometricRender(context, model, settings, parameters) {
     Render.call(this, RenderType.ISOMETRIC, context, model, settings, parameters);
@@ -62,5 +65,17 @@ function IsometricRender(context, model, settings, parameters) {
 IsometricRender.prototype = Object.create(Render.prototype);
 
 IsometricRender.prototype.rendering = function () {
+    this.updateGeometry();
 
+    var t1 = Matrix.prototype.getTranslateMatrix(this.origin.scale(-1));
+    var t2 = Matrix.prototype.getTranslateMatrix(this.origin.scale(-1).shift(this.settings.translate));
+    var s = Matrix.prototype.getScaleMatrix(this.settings.scale);
+    var r = Matrix.prototype.getRotateMatrix(this.settings.rotate);
+    var i = Matrix.prototype.getIsometricMatrix();
+    var m = t1.multiply(r).multiply(s).multiply(t2);
+
+    this.clear();
+    this.origin.restore().transform(m).commit();
+    this.model.transform(m.multiply(i));
+    this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
 };

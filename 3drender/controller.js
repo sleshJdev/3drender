@@ -29,7 +29,7 @@ Controller.prototype.registerEvents = function () {
     var self = this;
 
     function handler(event){
-        //console.log(event);
+        console.log(event);
         var isDown = event.type == "keydown";
         var id = "" + event.keyCode + event.shiftKey + event.ctrlKey;
         if (id in self.events) {
@@ -70,12 +70,14 @@ Controller.prototype.registerEvents = function () {
     /*
      scaling
      */
-    self.addListenerForKey(87/*"w"*/, true, false, function () { self.render.settings.scale.x = 0.1; });
-    self.addListenerForKey(83/*"s"*/, true, false, function () { self.render.settings.scale.x = 0.1; });
-    self.addListenerForKey(68/*"d"*/, true, false, function () { self.render.settings.scale.y = 0.1; });
-    self.addListenerForKey(65/*"a"*/, true, false, function () { self.render.settings.scale.y = 0.1; });
-    self.addListenerForKey(69/*"e"*/, true, false, function () { self.render.settings.scale.z = 0.1; });
-    self.addListenerForKey(81/*"q"*/, true, false, function () { self.render.settings.scale.z = 0.1; });
+    self.addListenerForKey(87/*"w"*/, false, true, function () { self.render.settings.scale.x = 1.1; });
+    self.addListenerForKey(83/*"s"*/, false, true, function () { self.render.settings.scale.x = 0.9; });
+    self.addListenerForKey(68/*"d"*/, false, true, function () { self.render.settings.scale.y = 1.1; });
+    self.addListenerForKey(65/*"a"*/, false, true, function () { self.render.settings.scale.y = 0.9; });
+    self.addListenerForKey(69/*"e"*/, false, true, function () { self.render.settings.scale.z = 1.1; });
+    self.addListenerForKey(81/*"q"*/, false, true, function () { self.render.settings.scale.z = 0.9; });
+    self.addListenerForKey(88/*"x"*/, false, true, function () { self.render.settings.scale.w = 1.1; });
+    self.addListenerForKey(90/*"z"*/, false, true, function () { self.render.settings.scale.w = 0.9; });
 
     /*
      translating
