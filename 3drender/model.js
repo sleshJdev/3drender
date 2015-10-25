@@ -6,7 +6,6 @@ function Cone(parameters, origin) {
     this.parameters = parameters;
     this.vectors = [];
     this.origin = origin || new Vector();
-    console.log(this.origin);
 }
 
 Cone.prototype.generateGeometry = function () {

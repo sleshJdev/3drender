@@ -34,7 +34,7 @@ Controller.prototype.registerEvents = function () {
     var self = this;
 
     function handler(event){
-        console.log(event);
+        //console.log(event);
         var isDown = event.type == "keydown";
         var id = "" + event.keyCode + event.shiftKey + event.ctrlKey;
         if (id in self.events) {
@@ -49,6 +49,7 @@ Controller.prototype.registerEvents = function () {
                     } else if (event.ctrlKey == registeredEvent.hasCtrl && event.shiftKey == registeredEvent.hasShift) {
                         registeredEvent.action(event);
                     }
+                    self.events[id].isDown = false;
                 }
             }
             if (isDown) {
@@ -66,11 +67,11 @@ Controller.prototype.registerEvents = function () {
     /*
      rotating
      */
-    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x = 10 * Jaga.d2r; });
+    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x =  10 * Jaga.d2r; });
     self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -10 * Jaga.d2r; });
-    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y = 10 * Jaga.d2r; });
+    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y =  10 * Jaga.d2r; });
     self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -10 * Jaga.d2r; });
-    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z = 10 * Jaga.d2r; });
+    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z =  10 * Jaga.d2r; });
     self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z = -10 * Jaga.d2r; });
 
     /*
@@ -88,12 +89,12 @@ Controller.prototype.registerEvents = function () {
     /*
      translating
      */
-    self.addListenerForKey(39/*arrow-right*/, false, false, function () { self.render.settings.translate.x = 10; });
+    self.addListenerForKey(39/*arrow-right*/, false, false, function () { self.render.settings.translate.x =  10; });
     self.addListenerForKey(37/*arrow-left */, false, false, function () { self.render.settings.translate.x = -10; });
     self.addListenerForKey(38/*arrow-up   */, false, false, function () { self.render.settings.translate.y = -10; });
-    self.addListenerForKey(40/*arrow-down */, false, false, function () { self.render.settings.translate.y = 10; });
+    self.addListenerForKey(40/*arrow-down */, false, false, function () { self.render.settings.translate.y =  10; });
     self.addListenerForKey(38/*arrow-up   */, true,  false, function () { self.render.settings.translate.z = -10; });
-    self.addListenerForKey(40/*arrow-down */, true,  false, function () { self.render.settings.translate.z = 10; });
+    self.addListenerForKey(40/*arrow-down */, true,  false, function () { self.render.settings.translate.z =  10; });
 
     /*
      changing geometry parameters
@@ -103,17 +104,17 @@ Controller.prototype.registerEvents = function () {
         self.render.settings.isUpdateGeometry = true;
     }
 
-    self.addListenerForKey(73/*i*/, false, false, function () {  updateGeometry("innerRadius", 5); });
-    self.addListenerForKey(73/*i*/, true, false, function () {   updateGeometry("innerRadius", -5); });
+    self.addListenerForKey(73/*i*/, false, false, function () { updateGeometry("innerRadius", 5); });
+    self.addListenerForKey(73/*i*/, true,  false, function () { updateGeometry("innerRadius", -5); });
 
     self.addListenerForKey(79/*o*/, false, false, function () { updateGeometry("outerRadius", 5); });
-    self.addListenerForKey(79/*o*/, true, false, function () {  updateGeometry("outerRadius", -5); });
+    self.addListenerForKey(79/*o*/, true,  false, function () { updateGeometry("outerRadius", -5); });
 
     self.addListenerForKey(76/*l*/, false, false, function () { updateGeometry("height", 5); });
-    self.addListenerForKey(76/*l*/, true, false, function () {  updateGeometry("height", -5); });
+    self.addListenerForKey(76/*l*/, true,  false, function () { updateGeometry("height", -5); });
 
     self.addListenerForKey(78/*n*/, false, false, function () { updateGeometry("majorNumber", 1); });
-    self.addListenerForKey(78/*n*/, true, false, function () {  updateGeometry("majorNumber", -1); });
+    self.addListenerForKey(78/*n*/, true,  false, function () { updateGeometry("majorNumber", -1); });
 
     [49/*1*/, 50/*2*/, 51/*3*/].forEach(function (code, index) {
         self.addListenerForKey(code, false, true, function () {

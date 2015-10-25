@@ -54,9 +54,7 @@ OrthogonalRender.prototype = Object.create(Render.prototype);
 
 OrthogonalRender.prototype.rendering = function () {
     this.updateGeometry();
-
     this.clearCanvas();
-    this.resetSettings();
     this.model.transform(this.buildTransformation()).commit();
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("xy"));
     this.model.draw(this.context, Matrix.prototype.getProjectionMatrix("yz"));
@@ -66,6 +64,7 @@ OrthogonalRender.prototype.rendering = function () {
     this.context.fillText("XOY", this.model.origin.x + this.parameters.outerRadius, this.model.origin.y);
     this.context.fillText("ZOY", this.model.origin.z + this.parameters.outerRadius, this.model.origin.y);
     this.context.fillText("XOZ", this.model.origin.x + this.parameters.outerRadius, this.model.origin.z);
+    this.resetSettings();
 };
 
 function AxonometricRender(context, models, settings, parameters) {
@@ -113,9 +112,9 @@ ObliqueRender.prototype = Object.create(Render.prototype);
 ObliqueRender.prototype.rendering = function () {
     this.updateGeometry();
     this.clearCanvas();
-    this.resetSettings();
     this.model.transform(this.buildTransformation()).commit();
     this.model.draw(this.context, Matrix.prototype.getObliqueMatrix(0.5, 63.4 * Jaga.d2r));
+    this.resetSettings();
 };
 
 
