@@ -6,6 +6,8 @@ function Cone(parameters, origin) {
     this.parameters = parameters;
     this.vectors = [];
     this.origin = origin || new Vector();
+    this.totalTransformation = new Matrix();
+    this.currentTransformation = new Matrix();
 }
 
 Cone.prototype.generateGeometry = function () {
@@ -27,6 +29,10 @@ Cone.prototype.generateGeometry = function () {
     };
     generator.call(this, this.parameters.majorNumber, this.parameters.innerRadius);
     generator.call(this, this.parameters.majorNumber, this.parameters.outerRadius);
+
+    this.transform(this.totalTransformation);
+    this.currentTransformation = new Matrix();
+    this.commit();
 };
 
 Cone.prototype.drawBase = function (canvas) {
@@ -81,6 +87,7 @@ Cone.prototype.draw = function (canvas, projection) {
 };
 
 Cone.prototype.transform = function (matrix) {
+    this.currentTransformation = matrix;
     this.peak.restore().transform(matrix);
     this.vectors.forEach(function (vector) {
         vector.restore().transform(matrix);
@@ -90,6 +97,7 @@ Cone.prototype.transform = function (matrix) {
 };
 
 Cone.prototype.commit = function () {
+    this.totalTransformation = this.totalTransformation.multiply(this.currentTransformation);
     this.peak.commit();
     this.vectors.forEach(function (vector) {
         vector.commit();

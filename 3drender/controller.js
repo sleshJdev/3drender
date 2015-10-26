@@ -49,7 +49,6 @@ Controller.prototype.registerEvents = function () {
                     } else if (event.ctrlKey == registeredEvent.hasCtrl && event.shiftKey == registeredEvent.hasShift) {
                         registeredEvent.action(event);
                     }
-                    self.events[id].isDown = false;
                 }
             }
             if (isDown) {

@@ -3,11 +3,11 @@
  */
 
 var RenderType = Object.create(null);
-RenderType.ORTHOGONAL   = 0;
-RenderType.AXONOMETRIC  = 1;
-RenderType.OBLIQUE      = 2;
+RenderType.ORTHOGONAL = 0;
+RenderType.AXONOMETRIC = 1;
+RenderType.OBLIQUE = 2;
 
-function Render(type, context, model, settings, parameters){
+function Render(type, context, model, settings, parameters) {
     this.type = type;
     this.context = context;
     this.model = model;
@@ -19,7 +19,7 @@ Render.prototype.getStatus = function () {
     return "";
 };
 
-Render.prototype.resetSettings = function(){
+Render.prototype.resetSettings = function () {
     this.settings.translate.scale(0);
     this.settings.rotate.scale(0);
     this.settings.scale.restore();
@@ -27,13 +27,12 @@ Render.prototype.resetSettings = function(){
 
 Render.prototype.clearCanvas = function () {
     this.context.clearRect(0, 0, Jaga.canvasWidth, Jaga.canvasHeight);
-}
+};
 
 Render.prototype.updateGeometry = function () {
     if (this.settings.isUpdateGeometry) {
         this.settings.isUpdateGeometry = false;
         this.model.generateGeometry();
-        this.model.transform(Matrix.prototype.getTranslateMatrix(this.model.origin)).commit();
     }
 };
 
@@ -48,6 +47,7 @@ Render.prototype.buildTransformation = function () {
 
 function OrthogonalRender(context, model, settings, parameters) {
     Render.call(this, RenderType.ORTHOGONAL, context, model, settings, parameters);
+    model.totalTransformation = Matrix.prototype.getTranslateMatrix(model.origin);
 }
 
 OrthogonalRender.prototype = Object.create(Render.prototype);
@@ -72,6 +72,9 @@ function AxonometricRender(context, models, settings, parameters) {
     this.models = models;
     this.projections = [Matrix.prototype.getIsometricMatrix(), Matrix.prototype.getDimetricMatrix()];
     this.labels = ["Isometric", "Dimetric"];
+    this.models.forEach(function (model) {
+        model.totalTransformation = Matrix.prototype.getTranslateMatrix(model.origin);
+    })
 }
 
 AxonometricRender.prototype = Object.create(Render.prototype);
@@ -81,7 +84,6 @@ AxonometricRender.prototype.updateGeometry = function () {
         this.settings.isUpdateGeometry = false;
         this.models.forEach(function (model) {
             model.generateGeometry();
-            model.transform(Matrix.prototype.getTranslateMatrix(model.origin)).commit();
         });
     }
 };
@@ -105,7 +107,8 @@ AxonometricRender.prototype.rendering = function () {
 
 function ObliqueRender(context, model, settings, parameters) {
     Render.call(this, RenderType.OBLIQUE, context, model, settings, parameters);
-};
+    model.totalTransformation = Matrix.prototype.getTranslateMatrix(model.origin);
+}
 
 ObliqueRender.prototype = Object.create(Render.prototype);
 
