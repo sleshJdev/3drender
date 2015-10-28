@@ -15,6 +15,14 @@ window.onload = function () {
         return JSON.stringify(this);
     };
 
+    NetworkNode.prototype.hasLeft = function () {
+        return this.leftLink > 0;
+    };
+
+    NetworkNode.prototype.hasRight = function () {
+        return this.rightLink > 0;
+    };
+
     function Network(headers) {
         this.network = [];
         this.headers = headers;
@@ -52,57 +60,40 @@ window.onload = function () {
         });
     };
 
+    Network.prototype.getNeighbor = function (number) {
+        return this.findOneByProperty("number", number);
+    };
+
     Network.prototype.findPath = function (parent) {
-        var start = (function (self) {
-            var childs = self.findAllByProperty("parent", parent);
-            return childs.find(function (child) {
-                var isNotInLeft = self.findAllByProperty("leftLink", child.number).length == 0;
-                var isNotInRight = self.findAllByProperty("rightLink", child.number).length == 0;
-                if (isNotInLeft && isNotInRight) {
-                    return child;
-                }
-            });
+        var start = (function (network) {
+            var records = network.findAllByProperty("parent", parent);
+            return records.sort(function (a, b) {
+                return a.number > b.number;
+            })[0];
         })(this);
-        var neighbor, current = start;
-        var stack = [current];
-        var visits = Object.create(null);
-        var path = [current.number];
-        var hasFamily = true;
+
+        if (!start) {
+            alert("Incorrect node number");
+        }
+
+        var current,
+            stack = [start],
+            path = "";
         while (stack.length > 0) {
             current = stack.pop();
-            if (!hasFamily) {
-                path.push(current.number);
+            path += current.number + "  ";
+            if (current.hasRight()) {
+                stack.push(this.getNeighbor(current.rightLink));
             }
-            visits[current.number] = false;
-            console.log("\npop: " + current);
-            var rightRoad = [];
-            if (current.rightLink > 0) {
-                neighbor = this.findOneByProperty("number", current.rightLink);
-                if (!visits[neighbor.number]) {
-                    stack.push(neighbor);
-                    visits[neighbor.number] = true;
-                    rightRoad.push(neighbor.number);
-                    console.log("visit right: true, node: " + neighbor);
+            while (current.hasLeft()) {
+                current = this.getNeighbor(current.leftLink);
+                path += current.number + "  ";
+                if (current.hasRight()) {
+                    stack.push(this.getNeighbor(current.rightLink));
                 }
-            }
-            neighbor = current;
-            var leftRoad = [];
-            while (neighbor.leftLink > 0) {
-                neighbor = this.findOneByProperty("number", neighbor.leftLink);
-                if (!visits[neighbor.number]) {
-                    stack.push(neighbor);
-                    visits[neighbor.number] = true;
-                    leftRoad.push(neighbor.number);
-                    console.log("visit left: true, node: " + neighbor);
-                }
-            }
-            if (hasFamily = leftRoad.length > 0) {
-                path = path.concat(leftRoad);
-            } else if (hasFamily = rightRoad.length > 0) {
-                path = path.concat(rightRoad);
             }
         }
-        console.log("search is finished.");
+
         return path;
     };
 
@@ -127,16 +118,7 @@ window.onload = function () {
     network.fillTable($("#source-table"));
 
     $("#search-button").addEventListener("click", function () {
-        $(".output").innerHTML = "";
-        var formatPath = "";
-        path.forEach(function (nodeNumber, index) {
-            if (index == 0) {
-                formatPath += nodeNumber;
-                return;
-            }
-            formatPath += "&rarr;" + nodeNumber;
-        });
-        $(".output").innerHTML += "<div>" + formatPath + "</div>";
+        $(".output").innerHTML = network.findPath($("#start-node").value);
     });
 };
 
