@@ -116,7 +116,7 @@ ObliqueRender.prototype.rendering = function () {
     this.updateGeometry();
     this.clearCanvas();
     this.model.transform(this.buildTransformation()).commit();
-    this.model.draw(this.context, Matrix.prototype.getObliqueMatrix(0.5, 63.4 * Jaga.d2r));
+    this.model.draw(this.context, Matrix.prototype.getObliqueMatrix(1, 45 * Jaga.d2r));
     this.resetSettings();
 };
 

@@ -79,6 +79,7 @@ window.onload = function () {
         var current,
             stack = [start],
             path = "";
+
         while (stack.length > 0) {
             current = stack.pop();
             path += current.number + "  ";
