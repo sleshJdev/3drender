@@ -1,3 +1,7 @@
+body{
+    background-color: black;
+}
+
 .status {
     position: absolute;
     bottom: 0;

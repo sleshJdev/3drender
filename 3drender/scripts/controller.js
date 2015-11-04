@@ -46,7 +46,8 @@ Controller.prototype.registerEvents = function () {
                         registeredEvent.action(event);
                     } else if (event.ctrlKey && registeredEvent.hasCtrl) {
                         registeredEvent.action(event);
-                    } else if (event.ctrlKey == registeredEvent.hasCtrl && event.shiftKey == registeredEvent.hasShift) {
+                    } else if (event.ctrlKey  == registeredEvent.hasCtrl &&
+                               event.shiftKey == registeredEvent.hasShift) {
                         registeredEvent.action(event);
                     }
                 }
@@ -115,9 +116,12 @@ Controller.prototype.registerEvents = function () {
     self.addListenerForKey(78/*n*/, false, false, function () { updateGeometry("majorNumber", 1); });
     self.addListenerForKey(78/*n*/, true,  false, function () { updateGeometry("majorNumber", -1); });
 
-    [49/*1*/, 50/*2*/, 51/*3*/].forEach(function (code, index) {
+    [49/*1*/, 50/*2*/, 51/*3*/, 52/*4*/].forEach(function (code, index) {
         self.addListenerForKey(code, false, true, function () {
             self.switchRender(index);
         });
     });
+
+    self.addListenerForKey(67/*c*/, false, false, function () { self.render.settings.perspective.c +=  0.5; });
+    self.addListenerForKey(67/*c*/, true,  false, function () { self.render.settings.perspective.c += -0.5; });
 };

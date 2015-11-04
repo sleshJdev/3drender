@@ -15,22 +15,29 @@ Jaga.create = function(canvas){
     canvas.width = Jaga.canvasWidth;
     canvas.height = Jaga.canvasHeight;
     var context = canvas.getContext("2d");
+    context.font = "30px Arial";
+    context.fillStyle = "white";
+
+    var colors = Object.create(null);
+    colors.outer = "blue";
+    colors.inner = "red";
+    colors.base = "green";
 
     var renders = [],
         parameters;
 
-    parameters = Util.createParameters(50, 100, 150, 8);
-    renders.push(new OrthogonalRender(context, new Cone(parameters, new Vector(800, 200, 500)),
-        Util.createSettings(), parameters));
+    parameters = Util.createParameters(50, 100, 150, 8, colors);
+    renders.push(new OrthogonalRender(context, new Cone(parameters, new Vector(800, 200, 500)), Util.createSettings(), parameters));
 
-    parameters = Util.createParameters(50, 100, 150, 8);
+    parameters = Util.createParameters(50, 100, 150, 8, colors);
     renders.push(new AxonometricRender(context,
-        [new Cone(parameters, new Vector(400, 350, 0)), new Cone(parameters, new Vector(850, 350, 0))],
-        Util.createSettings(), parameters));
+        [new Cone(parameters, new Vector(400, 350, 0)), new Cone(parameters, new Vector(850, 350, 0))], Util.createSettings(), parameters));
 
-    parameters = Util.createParameters(50, 100, 150, 8);
-    renders.push(new ObliqueRender(context, new Cone(parameters, new Vector(600, 250, 0)),
-        Util.createSettings(), parameters));
+    parameters = Util.createParameters(50, 100, 150, 8, colors);
+    renders.push(new ObliqueRender(context, new Cone(parameters, new Vector(600, 250, 0)), Util.createSettings(), parameters));
+
+    parameters = Util.createParameters(50, 100, 150, 8, colors);
+    renders.push(new PerspectiveRender(context, new Cone(parameters, new Vector(600, 250, 0)), Util.createSettings(), parameters));
 
     var controller = new Controller(renders, document.querySelector(".status"));
     controller.registerEvents();

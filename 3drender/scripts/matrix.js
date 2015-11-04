@@ -154,6 +154,17 @@ Matrix.prototype.getObliqueMatrix = (function () {
     }
 })();
 
+Matrix.prototype.getPerspectiveMatrix = (function () {
+    var matrix = new Matrix();
+    //matrix.v33 = 0;
+
+    return function (d) {
+        matrix.v23 = 1 / d;
+
+        return matrix;
+    }
+})();
+
 Matrix.prototype.toString = function () {
     return  "[_[" + this.v00 + ", " + this.v01 + ", " + this.v02 + ", " + this.v03 + "]\n" +
             "__[" + this.v10 + ", " + this.v11 + ", " + this.v12 + ", " + this.v13 + "]\n" +

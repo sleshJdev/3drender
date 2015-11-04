@@ -99,23 +99,23 @@ window.onload = function () {
     };
 
     var network = new Network(["Number", "Id", "Parent", "Left Link", "Right Link"]);
-    network.addNode(new NetworkNode(1, 11, 1, 2, 4));
-    network.addNode(new NetworkNode(2, 111, 11, -1, -1));
-    network.addNode(new NetworkNode(3, 12, 2, 5, 14));
-    network.addNode(new NetworkNode(4, 12, 1, 5, 7));
-    network.addNode(new NetworkNode(5, 121, 12, -1, 6));
-    network.addNode(new NetworkNode(6, 122, 12, 8, -1));
-    network.addNode(new NetworkNode(7, 13, 1, 12, -1));
-    network.addNode(new NetworkNode(8, 1221, 122, -1, 9));
-    network.addNode(new NetworkNode(9, 1222, 122, 10, -1));
-    network.addNode(new NetworkNode(10, 1228, 1222, -1, 11));
-    network.addNode(new NetworkNode(11, 1229, 1222, -1, -1));
-    network.addNode(new NetworkNode(12, 1221, 13, -1, 13));
-    network.addNode(new NetworkNode(13, 1222, 13, 10, -1));
-    network.addNode(new NetworkNode(14, 21, 2, 17, -1));
-    network.addNode(new NetworkNode(15, 221, 21, 16, -1));
-    network.addNode(new NetworkNode(16, 1222, 221, 10, -1));
-    network.addNode(new NetworkNode(17, 13, 21, 12, 15));
+    network.addNode(new NetworkNode(1,    11,     1,      2,            4));
+    network.addNode(new NetworkNode(2,    111,    11,     -1,           -1));
+    network.addNode(new NetworkNode(3,    12,     2,      5,            14));
+    network.addNode(new NetworkNode(4,    12,     1,      5,             7));
+    network.addNode(new NetworkNode(5,    121,    12,     -1,           6));
+    network.addNode(new NetworkNode(6,    122,    12,     8,            -1));
+    network.addNode(new NetworkNode(7,    13,     1,      12,           -1));
+    network.addNode(new NetworkNode(8,    1221,   122,    -1,           9));
+    network.addNode(new NetworkNode(9,    1222,   122,    10,           -1));
+    network.addNode(new NetworkNode(10,   1228,   1222,   -1,           11));
+    network.addNode(new NetworkNode(11,   1229,   1222,   -1,           -1));
+    network.addNode(new NetworkNode(12,   1221,   13,     -1,           13));
+    network.addNode(new NetworkNode(13,   1222,   13,     10,           -1));
+    network.addNode(new NetworkNode(14,   21,     2,      17,           -1));
+    network.addNode(new NetworkNode(15,   221,    21,     16,           -1));
+    network.addNode(new NetworkNode(16,   1222,   221,    10,           -1));
+    network.addNode(new NetworkNode(17,   13,     21,     12,           15));
     network.fillTable($("#source-table"));
 
     $("#search-button").addEventListener("click", function () {

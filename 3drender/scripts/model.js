@@ -54,7 +54,7 @@ Cone.prototype.drawBase = function (canvas) {
     canvas.stroke();
 };
 
-Cone.prototype.draw = function (canvas, projection) {
+Cone.prototype.project = function (canvas, projection) {
     var self = this;
     self.peak.restore().transform(projection);
     self.vectors.forEach(function (vector, number) {

@@ -14,9 +14,9 @@ Util.createParameters = function (innerRadius, outerRadius, height, majorNumber,
         parameters.colors = colors;
     } else {
         parameters.colors = Object.create(null);
-        parameters.colors.outer = "darkred";
-        parameters.colors.inner = "darkgreen";
-        parameters.colors.base = "darkblue";
+        parameters.colors.outer = "blue";
+        parameters.colors.inner = "red";
+        parameters.colors.base = "green";
     }
 
     return parameters;
@@ -24,10 +24,14 @@ Util.createParameters = function (innerRadius, outerRadius, height, majorNumber,
 
 Util.createSettings = function (translate) {
     var settings = Object.create(null);//settings to rendering of cone
+
     settings.rotate = new Vector(0, 0, 0);
     settings.scale = new Vector(1, 1, 1);
     settings.translate = translate || new Vector(0, 0, 0);
     settings.isUpdateGeometry = true;
+
+    settings.perspective   = Object.create(null);
+    settings.perspective.c = 1;
 
     return settings;
 }
