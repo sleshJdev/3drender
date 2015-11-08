@@ -30,8 +30,11 @@ Util.createSettings = function (translate) {
     settings.translate = translate || new Vector(0, 0, 0);
     settings.isUpdateGeometry = true;
 
-    settings.perspective   = Object.create(null);
-    settings.perspective.c = 1;
+    settings.perspective = Object.create(null);
+    settings.perspective.fov = 60;
+    settings.perspective.aspect = 4/3;
+    settings.perspective.nearPlane = 1;
+    settings.perspective.farPlane = 400;
 
     settings.oblique = Object.create(null);
     settings.oblique.l = 1;

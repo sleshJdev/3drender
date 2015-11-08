@@ -124,7 +124,7 @@ Matrix.prototype.getIsometricMatrix = (function () {
     matrix.v10 = v3; matrix.v11 = 1; matrix.v12 = v3;
     matrix.v20 = matrix.v21 = matrix.v22 = v2;
 
-    return function (parameter) {
+    return function () {
         return matrix;
     };
 })();
@@ -156,11 +156,14 @@ Matrix.prototype.getObliqueMatrix = (function () {
 
 Matrix.prototype.getPerspectiveMatrix = (function () {
     var matrix = new Matrix();
+    matrix.v32 = 1;
     matrix.v33 = 0;
 
-    return function (d) {
-        matrix.v22 = -1;
-        matrix.v23 = 1 / d;
+    return function (perspective) {
+        matrix.v00 = 1 / Math.tan(perspective.fov / 2);
+        matrix.v11 = perspective.aspect * matrix.v00;
+        matrix.v22 = perspective.farPlane / (perspective.farPlane -  perspective.nearPlane);
+        matrix.v23 = -perspective.nearPlane * perspective.farPlane / (perspective.farPlane - perspective.nearPlane);
 
         return matrix;
     }

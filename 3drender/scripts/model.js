@@ -6,8 +6,8 @@ function Cone(parameters, origin) {
     this.parameters = parameters;
     this.vectors = [];
     this.origin = origin || new Vector();
-    this.totalTransformation = new Matrix();
-    this.currentTransformation = new Matrix();
+    this.state = new Matrix();// total transformation
+    this.matrix = new Matrix();// current transformation
 }
 
 Cone.prototype.generateGeometry = function () {
@@ -30,8 +30,8 @@ Cone.prototype.generateGeometry = function () {
     generator.call(this, this.parameters.majorNumber, this.parameters.innerRadius);
     generator.call(this, this.parameters.majorNumber, this.parameters.outerRadius);
 
-    this.transform(this.totalTransformation);
-    this.currentTransformation = new Matrix();
+    this.transform(this.state);
+    this.state = new Matrix();
     this.commit();
 };
 
@@ -54,11 +54,13 @@ Cone.prototype.drawBase = function (canvas) {
     canvas.stroke();
 };
 
-Cone.prototype.project = function (canvas, projection) {
+Cone.prototype.project = function (canvas, projector) {
     var self = this;
-    self.peak.restore().transform(projection);
+    projector(self.peak);
+    //self.peak.restore().transform(projection);
     self.vectors.forEach(function (vector, number) {
-        vector.restore().transform(projection);
+        projector(vector);
+        //vector.restore().transform(projection);
         if (number == 0 || number == (self.parameters.majorNumber + 1)) {
             switch (number) {
                 case 0:
@@ -87,7 +89,7 @@ Cone.prototype.project = function (canvas, projection) {
 };
 
 Cone.prototype.transform = function (matrix) {
-    this.currentTransformation = matrix;
+    this.matrix = matrix;
     this.peak.restore().transform(matrix);
     this.vectors.forEach(function (vector) {
         vector.restore().transform(matrix);
@@ -97,7 +99,7 @@ Cone.prototype.transform = function (matrix) {
 };
 
 Cone.prototype.commit = function () {
-    this.totalTransformation = this.totalTransformation.multiply(this.currentTransformation);
+    this.state = this.state.multiply(this.matrix);
     this.peak.commit();
     this.vectors.forEach(function (vector) {
         vector.commit();

@@ -5,6 +5,7 @@ body{
 .status {
     position: absolute;
     top: 0;
+    width: 250px;
     padding: 20px;
     border-right: solid 1px white;
     border-bottom: solid 1px white;

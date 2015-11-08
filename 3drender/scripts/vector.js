@@ -68,9 +68,9 @@ Vector.prototype.transform = function (matrix) {
     var w = this.x * matrix.v03 + this.y * matrix.v13 + this.z * matrix.v23 + this.w * matrix.v33;
 
     this.w = w || 1;
-    this.x = x / this.w;
-    this.y = y / this.w;
-    this.z = z / this.w;
+    this.x = x / w;
+    this.y = y / w;
+    this.z = z / w;
 
     return this;
 };

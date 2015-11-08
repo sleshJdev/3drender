@@ -11,7 +11,40 @@ function Controller(renderers, statusPanel){
 }
 
 Controller.prototype.showStatus = function () {
-    this.statusPanel.innerHTML = this.render.getStatus();
+    var renderState =
+        "TRANSLATE</br>&Delta;X..................." + this.render.state.translate.x +
+                 "</br>&Delta;Y..................." + this.render.state.translate.y +
+                 "</br>&Delta;Z..................." + this.render.state.translate.z + "</br></br>" +
+        "ROTATE</br>&ang;X..................." + this.render.state.rotate.x + "&deg;" +
+              "</br>&ang;Y..................." + this.render.state.rotate.y + "&deg;" +
+              "</br>&ang;Z..................." + this.render.state.rotate.z + "&deg;</br></br>" +
+        "SCALE</br>X...................." + this.render.state.scale.x +
+             "</br>Y...................." + this.render.state.scale.y +
+             "</br>Z...................." + this.render.state.scale.z + "</br></br>" +
+        "GEOMENTRY</br>Points..............." + this.render.parameters.majorNumber +
+                 "</br>Height..............." + this.render.parameters.height +
+                 "</br>Inner Radius........." + this.render .parameters.innerRadius +
+                 "</br>Outer Radius........." + this.render.parameters.outerRadius + "</br></br>";
+    switch (this.render.type){
+        case RenderType.OBLIQUE:
+            renderState +=
+                "OBLIQUE</br>L....................."           + this.render.settings.oblique.l.toFixed(1) +
+                       "</br>&ang;&alpha;...................." + this.render.settings.oblique.alpha + "&deg;</br></br>"
+            break;
+        case RenderType.PERSPECTIVE:
+            renderState +=
+                "PERSPECTIVE</br>Fov.................." + this.render.settings.perspective.fov +
+                           "</br>Aspect..............." + this.render.settings.perspective.aspect.toFixed(1) +
+                           "</br>Near Plane..........." + this.render.settings.perspective.nearPlane +
+                           "</br>Far Plane............" + this.render.settings.perspective.farPlane + "</br></br>";
+            break;
+        case RenderType.ORTHOGONAL:
+        case RenderType.AXONOMETRIC:
+
+            break;
+    }
+
+    this.statusPanel.innerHTML = renderState;
 };
 
 Controller.prototype.switchRender = function(index){
@@ -67,12 +100,12 @@ Controller.prototype.registerEvents = function () {
     /*
      rotating
      */
-    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x =  10; });
-    self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -10; });
-    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y =  10; });
-    self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -10; });
-    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z =  10; });
-    self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z = -10; });
+    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x =  5; });
+    self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -5; });
+    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y =  5; });
+    self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -5; });
+    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z =  5; });
+    self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z = -5; });
 
     /*
      scaling
@@ -130,6 +163,23 @@ Controller.prototype.registerEvents = function () {
     self.addListenerForKey(80/*p*/, false, false, function () { self.render.settings.oblique.alpha +=  5; });
     self.addListenerForKey(80/*p*/, true,  false, function () { self.render.settings.oblique.alpha += -5; });
 
-    self.addListenerForKey(67/*c*/, false, false, function () { self.render.settings.perspective.c +=  0.5; });
-    self.addListenerForKey(67/*c*/, true,  false, function () { self.render.settings.perspective.c += -0.5; });
+    /*
+    perspective projection
+     */
+    function createSwitcher(name, values){
+        var index = 0;
+        return function /*switch*/() {
+            self.render.settings.perspective[name] = values[index];
+            index = (index + 1) % values.length;
+        }
+    }
+
+    self.addListenerForKey(84/*t*/, false, false, createSwitcher("fov", [60, 90, 120]));
+    self.addListenerForKey(82/*r*/, false, false, createSwitcher("aspect", [4 / 3, 5 / 4, 15 / 9]));
+
+    self.addListenerForKey(70/*f*/, false, false, function () { self.render.settings.perspective.nearPlane +=  5; });
+    self.addListenerForKey(70/*f*/, true,  false, function () { self.render.settings.perspective.nearPlane += -5; });
+
+    self.addListenerForKey(71/*g*/, false, false, function () { self.render.settings.perspective.farPlane +=  5; });
+    self.addListenerForKey(71/*g*/, true,  false, function () { self.render.settings.perspective.farPlane += -5; });
 };
