@@ -33,5 +33,9 @@ Util.createSettings = function (translate) {
     settings.perspective   = Object.create(null);
     settings.perspective.c = 1;
 
+    settings.oblique = Object.create(null);
+    settings.oblique.l = 1;
+    settings.oblique.alpha = 0;
+
     return settings;
 }

@@ -67,12 +67,12 @@ Controller.prototype.registerEvents = function () {
     /*
      rotating
      */
-    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x =  10 * Jaga.d2r; });
-    self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -10 * Jaga.d2r; });
-    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y =  10 * Jaga.d2r; });
-    self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -10 * Jaga.d2r; });
-    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z =  10 * Jaga.d2r; });
-    self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z = -10 * Jaga.d2r; });
+    self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x =  10; });
+    self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -10; });
+    self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y =  10; });
+    self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -10; });
+    self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z =  10; });
+    self.addListenerForKey(81/*"q"*/, false, false, function () { self.render.settings.rotate.z = -10; });
 
     /*
      scaling
@@ -104,16 +104,16 @@ Controller.prototype.registerEvents = function () {
         self.render.settings.isUpdateGeometry = true;
     }
 
-    self.addListenerForKey(73/*i*/, false, false, function () { updateGeometry("innerRadius", 5); });
+    self.addListenerForKey(73/*i*/, false, false, function () { updateGeometry("innerRadius",  5); });
     self.addListenerForKey(73/*i*/, true,  false, function () { updateGeometry("innerRadius", -5); });
 
-    self.addListenerForKey(79/*o*/, false, false, function () { updateGeometry("outerRadius", 5); });
+    self.addListenerForKey(79/*o*/, false, false, function () { updateGeometry("outerRadius",  5); });
     self.addListenerForKey(79/*o*/, true,  false, function () { updateGeometry("outerRadius", -5); });
 
-    self.addListenerForKey(76/*l*/, false, false, function () { updateGeometry("height", 5); });
-    self.addListenerForKey(76/*l*/, true,  false, function () { updateGeometry("height", -5); });
+    self.addListenerForKey(72/*h*/, false, false, function () { updateGeometry("height",  5); });
+    self.addListenerForKey(72/*h*/, true,  false, function () { updateGeometry("height", -5); });
 
-    self.addListenerForKey(78/*n*/, false, false, function () { updateGeometry("majorNumber", 1); });
+    self.addListenerForKey(78/*n*/, false, false, function () { updateGeometry("majorNumber",  1); });
     self.addListenerForKey(78/*n*/, true,  false, function () { updateGeometry("majorNumber", -1); });
 
     [49/*1*/, 50/*2*/, 51/*3*/, 52/*4*/].forEach(function (code, index) {
@@ -121,6 +121,14 @@ Controller.prototype.registerEvents = function () {
             self.switchRender(index);
         });
     });
+
+    /*
+    oblique projection parameters
+     */
+    self.addListenerForKey(76/*l*/, false, false, function () { self.render.settings.oblique.l +=  0.1; });
+    self.addListenerForKey(76/*l*/, true,  false, function () { self.render.settings.oblique.l += -0.1; });
+    self.addListenerForKey(80/*p*/, false, false, function () { self.render.settings.oblique.alpha +=  5; });
+    self.addListenerForKey(80/*p*/, true,  false, function () { self.render.settings.oblique.alpha += -5; });
 
     self.addListenerForKey(67/*c*/, false, false, function () { self.render.settings.perspective.c +=  0.5; });
     self.addListenerForKey(67/*c*/, true,  false, function () { self.render.settings.perspective.c += -0.5; });

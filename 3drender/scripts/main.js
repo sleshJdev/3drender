@@ -42,7 +42,8 @@ Jaga.create = function(canvas){
     var controller = new Controller(renders, document.querySelector(".status"));
     controller.registerEvents();
 
-    renders[0].rendering();
+    controller.render.rendering();
+    controller.showStatus();
 };
 
 window.onload = function() {

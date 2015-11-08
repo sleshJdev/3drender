@@ -156,9 +156,10 @@ Matrix.prototype.getObliqueMatrix = (function () {
 
 Matrix.prototype.getPerspectiveMatrix = (function () {
     var matrix = new Matrix();
-    //matrix.v33 = 0;
+    matrix.v33 = 0;
 
     return function (d) {
+        matrix.v22 = -1;
         matrix.v23 = 1 / d;
 
         return matrix;

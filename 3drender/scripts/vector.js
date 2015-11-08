@@ -53,6 +53,14 @@ Vector.prototype.scale = function(factor){
     return this;
 };
 
+Vector.prototype.multiply = function (vector) {
+    this.x *= vector.x;
+    this.y *= vector.y;
+    this.z *= vector.z;
+
+    return this;
+};
+
 Vector.prototype.transform = function (matrix) {
     var x = this.x * matrix.v00 + this.y * matrix.v10 + this.z * matrix.v20 + this.w * matrix.v30;
     var y = this.x * matrix.v01 + this.y * matrix.v11 + this.z * matrix.v21 + this.w * matrix.v31;
