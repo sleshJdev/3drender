@@ -155,15 +155,20 @@ Matrix.prototype.getObliqueMatrix = (function () {
 })();
 
 Matrix.prototype.getPerspectiveMatrix = (function () {
-    var matrix = new Matrix();
-    matrix.v32 = 1;
-    matrix.v33 = 0;
+    var matrix = new Matrix(0);
 
     return function (perspective) {
-        matrix.v00 = 1 / Math.tan(perspective.fov / 2);
-        matrix.v11 = perspective.aspect * matrix.v00;
-        matrix.v22 = perspective.farPlane / (perspective.farPlane -  perspective.nearPlane);
-        matrix.v23 = -perspective.nearPlane * perspective.farPlane / (perspective.farPlane - perspective.nearPlane);
+        var h = Math.cos(perspective.fov / 2) / Math.sin(perspective.fov / 2);
+        var w = h * perspective.aspect;
+        var a = perspective.farPlane / (perspective.farPlane - perspective.nearPlane);
+        var b = a * -perspective.nearPlane;
+        var c = 1 / perspective.distance;
+
+        matrix.v00 = h;
+        matrix.v11 = w;
+        matrix.v22 = a;
+        matrix.v32 = b;
+        matrix.v23 = c;
 
         return matrix;
     }

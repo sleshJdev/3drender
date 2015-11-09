@@ -45,6 +45,14 @@ Vector.prototype.shift = function (vector) {
     return this;
 };
 
+Vector.prototype.offset = function (dx, dy, dz) {
+    this.x += dx;
+    this.y += dy;
+    this.z += dz;
+
+    return this;
+};
+
 Vector.prototype.scale = function(factor){
     this.x *= factor;
     this.y *= factor;
@@ -67,10 +75,10 @@ Vector.prototype.transform = function (matrix) {
     var z = this.x * matrix.v02 + this.y * matrix.v12 + this.z * matrix.v22 + this.w * matrix.v32;
     var w = this.x * matrix.v03 + this.y * matrix.v13 + this.z * matrix.v23 + this.w * matrix.v33;
 
-    this.w = w || 1;
-    this.x = x / w;
-    this.y = y / w;
-    this.z = z / w;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
 
     return this;
 };

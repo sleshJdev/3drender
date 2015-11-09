@@ -11,38 +11,39 @@ RenderType.PERSPECTIVE  = 3;
 /*
  render - base class for other renders
  */
-function Render(type, context, model, settings, parameters) {
+function Render(type, context, settings, parameters, model) {
     this.type = type;
     this.context = context;
     this.settings = settings;
     this.parameters = parameters;
-    this.state = Util.createSettings();
     this.model = model;
     if (this.model) {
         if (this.model.constructor == Array) {
-            this.model.forEach(function (m) {
-                m.state = Matrix.prototype.getTranslateMatrix(m.origin);
+            this.model.forEach(function (model) {
+                model.state = Matrix.prototype.getTranslateMatrix(model.origin);
             })
         } else {
             this.model.state = Matrix.prototype.getTranslateMatrix(this.model.origin);
 
         }
     }
-
-    this.getProjector = (function () {
-        var self = this;
-        self.projection = null;
-        self.projector = function(vector) {
-            vector.restore().transform(self.projection);
-        };
-
-        return function (projection) {
-            self.projection = projection;
-
-            return self.projector;
-        }
-    })();
+    this.state = Util.createSettings();
 }
+
+Render.prototype.getProjector = (function () {
+    var projector = Object.create(null);
+    projector.projection = null;
+    projector.do = function (vector) {
+        vector.restore().transform(this.projection);
+    };
+    projector.prepare = function (projection) {
+        projector.projection = projection;
+
+        return projector;
+    };
+
+    return projector.prepare;
+})();
 
 Render.prototype.resetSettings = function () {
     this.settings.translate.scale(0);
@@ -58,10 +59,6 @@ Render.prototype.updateGeometry = function () {
     this.state.translate.shift(this.settings.translate);
     this.state.rotate.shift(this.settings.rotate);
     this.state.scale.multiply(this.settings.scale);
-
-    this.state.scale.x = this.state.scale.x.toFixed(1);
-    this.state.scale.y = this.state.scale.y.toFixed(1);
-    this.state.scale.z = this.state.scale.z.toFixed(1);
 
     if (this.settings.isUpdateGeometry) {
         this.settings.isUpdateGeometry = false;
@@ -88,8 +85,8 @@ Render.prototype.buildTransformation = function () {
 /*
  orthogonal projection
  */
-function OrthogonalRender(context, model, settings, parameters) {
-    Render.call(this, RenderType.ORTHOGONAL, context, model, settings, parameters);
+function OrthogonalRender(context, settings, parameters, model) {
+    Render.call(this, RenderType.ORTHOGONAL, context, settings, parameters, model);
 }
 
 OrthogonalRender.prototype = Object.create(Render.prototype);
@@ -112,12 +109,10 @@ OrthogonalRender.prototype.rendering = function () {
 /*
  axonometric(isometric and dimetric) projection
  */
-function AxonometricRender(context, models, settings, parameters) {
-    Render.call(this, RenderType.AXONOMETRIC, context, models, settings, parameters);
-    var self = this;
-    self.labels     = ["Isometric", "Dimetric"];
-    self.projectors = [function () { return self.getProjector(Matrix.prototype.getIsometricMatrix()) },
-                       function () { return self.getProjector(Matrix.prototype.getDimetricMatrix()); }];
+function AxonometricRender(context, settings, parameters, models) {
+    Render.call(this, RenderType.AXONOMETRIC, context, settings, parameters, models);
+    this.labels      = ["Isometric", "Dimetric"];
+    this.projections = [Matrix.prototype.getIsometricMatrix(), Matrix.prototype.getDimetricMatrix()];
 }
 
 AxonometricRender.prototype = Object.create(Render.prototype);
@@ -133,7 +128,7 @@ AxonometricRender.prototype.rendering = function () {
         var t2 = Matrix.prototype.getTranslateMatrix(model.origin.scale(-1).shift(self.settings.translate));
         var m = t1.multiply(r).multiply(s).multiply(t2);
         model.transform(m).commit();
-        model.project(self.context, self.projectors[index]());
+        model.project(self.context, self.getProjector(self.projections[index]));
         self.context.fillText(self.labels[index], model.peak.x, model.peak.y);
     });
     self.resetSettings();
@@ -143,8 +138,8 @@ AxonometricRender.prototype.rendering = function () {
 /*
  oblique projection
  */
-function ObliqueRender(context, model, settings, parameters) {
-    Render.call(this, RenderType.OBLIQUE, context, model, settings, parameters);
+function ObliqueRender(context, settings, parameters, model) {
+    Render.call(this, RenderType.OBLIQUE, context, settings, parameters, model);
     model.state = Matrix.prototype.getTranslateMatrix(model.origin);
 }
 
@@ -163,28 +158,62 @@ ObliqueRender.prototype.rendering = function () {
 /*
  perspective projection
  */
-function PerspectiveRender(context, model, settings, parameters){
-    Render.call(this, RenderType.PERSPECTIVE,  context, model, settings, parameters);
+function PerspectiveRender(context, settings, parameters, model){
+    Render.call(this, RenderType.PERSPECTIVE, context, settings, parameters, model);
 }
 
 PerspectiveRender.prototype = Object.create(Render.prototype);
 
+PerspectiveRender.prototype.getProjector = (function () {
+    var projector = Object.create(null);
+    projector.projection = null;
+    projector.viewWindow = null;
+    projector.do = function (vector) {
+        vector.restore().transform(projector.projection);
+        //vector.z0 = vector.z;
+        vector.scale(1 / vector.z);
+        console.log("x: ", vector.x, ", y: ", vector.y, ", z: ", vector.z);
+        vector.x = this.viewWindow.left + this.viewWindow.width  * ( (1 + vector.x) / 2 );
+        vector.y = this.viewWindow.top  + this.viewWindow.height * ( (1 + vector.y) / 2 );
+    };
+    /*
+     windowRectangle:{top,left,width,height}
+     */
+    projector.prepare = function (projection, viewWindow) {
+        //console.log("projection: ", projection);
+        projector.projection = projection;
+        projector.viewWindow = viewWindow;
+
+        return projector;
+    };
+
+    return projector.prepare;
+})();
+
+PerspectiveRender.prototype.drawViewWindow = function () {
+    this.context.strokeStyle = "white";
+    this.context.beginPath();
+    var r = this.settings.perspective.windowView;
+    this.context.moveTo(r.left, r.top);
+    this.context.lineTo(r.left + r.width, r.top);
+    this.context.lineTo(r.left + r.width, r.top + r.height);
+    this.context.lineTo(r.left, r.top + r.height);
+    this.context.closePath();
+    this.context.stroke();
+};
+
 PerspectiveRender.prototype.rendering = function () {
     var perspective = Object.create(null);
     perspective.fov = this.settings.perspective.fov * Jaga.d2r;
-    perspective.aspect = this.settings.perspective.aspect;
+    perspective.aspect = this.settings.perspective.windowView.width / this.settings.perspective.windowView.height;
     perspective.nearPlane = this.settings.perspective.nearPlane;
     perspective.farPlane = this.settings.perspective.farPlane;
-
-    console.log("fov ",perspective.fov, " --- aspect ", perspective.aspect, " --- nearPlane ", perspective.nearPlane, " --- farPlane ", perspective.farPlane);
+    perspective.distance = this.settings.perspective.distance;
+    //console.log("fov ",perspective.fov, " --- aspect ", perspective.aspect, " --- nearPlane ", perspective.nearPlane, " --- farPlane ", perspective.farPlane);
     this.updateGeometry();
     this.clearCanvas();
     this.model.transform(this.buildTransformation()).commit();
-    this.model.project(this.context, this.getProjector(Matrix.prototype.getPerspectiveMatrix(perspective)));
-
-    console.log(this.model.vectors[0]);
-    console.log(this.model.vectors[5]);
-    console.log("\n\n");
-
+    this.model.project(this.context, this.getProjector(Matrix.prototype.getPerspectiveMatrix(perspective), this.settings.perspective.windowView));
+    this.drawViewWindow();
     this.resetSettings();
 };

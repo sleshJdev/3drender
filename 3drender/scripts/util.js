@@ -20,7 +20,7 @@ Util.createParameters = function (innerRadius, outerRadius, height, majorNumber,
     }
 
     return parameters;
-}
+};
 
 Util.createSettings = function (translate) {
     var settings = Object.create(null);//settings to rendering of cone
@@ -32,9 +32,15 @@ Util.createSettings = function (translate) {
 
     settings.perspective = Object.create(null);
     settings.perspective.fov = 60;
-    settings.perspective.aspect = 4/3;
-    settings.perspective.nearPlane = 1;
-    settings.perspective.farPlane = 400;
+    settings.perspective.aspect = 1;
+    settings.perspective.nearPlane = 10;
+    settings.perspective.farPlane = 100;
+    settings.perspective.distance = 1;
+    settings.perspective.windowView = Object.create(null);
+    settings.perspective.windowView.top = 50;
+    settings.perspective.windowView.left = 50;
+    settings.perspective.windowView.width = 400;
+    settings.perspective.windowView.height = 400;
 
     settings.oblique = Object.create(null);
     settings.oblique.l = 1;

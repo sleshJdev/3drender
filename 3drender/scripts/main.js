@@ -8,12 +8,12 @@ var Jaga = Object.create(null);
 
 Jaga.d2r = Math.PI / 180;
 Jaga.r2d = 180 / Math.PI;
-Jaga.canvasWidth = 1300;
+Jaga.canvasWidth = 1000;
 Jaga.canvasHeight = 600;
 
 Jaga.create = function(canvas){
-    canvas.width = Jaga.canvasWidth;
-    canvas.height = Jaga.canvasHeight;
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
     var context = canvas.getContext("2d");
     context.font = "30px Arial";
     context.fillStyle = "white";
@@ -27,23 +27,26 @@ Jaga.create = function(canvas){
         parameters;
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
-    renders.push(new OrthogonalRender(context, new Cone(parameters, new Vector(800, 200, 500)), Util.createSettings(), parameters));
+    renders.push(new OrthogonalRender(context, Util.createSettings(), parameters,
+        new Cone(parameters, new Vector(150, 200, 500))));
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
-    renders.push(new AxonometricRender(context,
-        [new Cone(parameters, new Vector(700, 350, 0)), new Cone(parameters, new Vector(800, 350, 0))], Util.createSettings(), parameters));
+    renders.push(new AxonometricRender(context, Util.createSettings(), parameters,
+        [new Cone(parameters, new Vector(200, 200, 100)), new Cone(parameters, new Vector(400, 200, 100))]));
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
-    renders.push(new ObliqueRender(context, new Cone(parameters, new Vector(600, 250, 0)), Util.createSettings(), parameters));
+    renders.push(new ObliqueRender(context, Util.createSettings(), parameters,
+        new Cone(parameters, new Vector(100, 200, 300))));
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
-    renders.push(new PerspectiveRender(context, new Cone(parameters, new Vector(600, 250, 0)), Util.createSettings(), parameters));
+    renders.push(new PerspectiveRender(context, Util.createSettings(), parameters,
+        new Cone(parameters, new Vector(300, 250, 300))));
 
     var controller = new Controller(renders, document.querySelector(".status"));
     controller.registerEvents();
 
     controller.render.rendering();
-    controller.showStatus();
+    controller.displayStatus();
 };
 
 window.onload = function() {

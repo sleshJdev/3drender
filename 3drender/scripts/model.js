@@ -56,10 +56,10 @@ Cone.prototype.drawBase = function (canvas) {
 
 Cone.prototype.project = function (canvas, projector) {
     var self = this;
-    projector(self.peak);
+    projector.do(self.peak);
     //self.peak.restore().transform(projection);
     self.vectors.forEach(function (vector, number) {
-        projector(vector);
+        projector.do(vector);
         //vector.restore().transform(projection);
         if (number == 0 || number == (self.parameters.majorNumber + 1)) {
             switch (number) {

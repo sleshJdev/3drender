@@ -5,11 +5,13 @@ body{
 .status {
     position: absolute;
     top: 0;
-    width: 250px;
-    padding: 20px;
-    border-right: solid 1px white;
+    right: 0;
+    width: 200px;
+    padding: 5px 5px 20px 20px;
+    border-left: solid 1px white;
     border-bottom: solid 1px white;
-    border-bottom-right-radius: 50px;
+    border-bottom-left-radius: 50px;
     color: white;
     font-family: "DejaVu Sans Mono";
+    font-size: small;
 }
