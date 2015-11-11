@@ -33,11 +33,16 @@ Controller.prototype.displayStatus = function () {
             break;
         case RenderType.PERSPECTIVE:
             renderState += "<hr>" +
-                "PERSPECTIVE</br>&ang;Fov................." + this.render.settings.perspective.fov + "&deg;" +
-                               "</br>Aspect..............." + this.render.settings.perspective.aspect.toFixed(1) +
-                               "</br>Near Plane..........." + this.render.settings.perspective.nearPlane +
-                               "</br>Far Plane............" + this.render.settings.perspective.farPlane +
-                               "</br>Distance............." + this.render.settings.perspective.distance;
+                "PERSPECTIVE</br>Window View Top......" + this.render.settings.perspective.windowView.top +
+                           "</br>Window View Left....." + this.render.settings.perspective.windowView.left +
+                           "</br>Window View Width...." + this.render.settings.perspective.windowView.width +
+                           "</br>Window View Height..." + this.render.settings.perspective.windowView.height +
+                           "</br>&ang;Fov................." + this.render.settings.perspective.fov + "&deg;" +
+                           "</br>Aspect..............." + this.render.settings.perspective.aspect.toFixed(1) +
+                           "</br>Near Plane..........." + this.render.settings.perspective.nearPlane +
+                           "</br>Far Plane............" + this.render.settings.perspective.farPlane +
+                           "</br>Distance............." + this.render.settings.perspective.distance;
+
             break;
         case RenderType.ORTHOGONAL:
         case RenderType.AXONOMETRIC:
@@ -187,6 +192,13 @@ Controller.prototype.registerEvents = function () {
     self.addListenerForKey(67/*c*/, false,  false, function () { self.render.settings.perspective.distance +=  1; });
     self.addListenerForKey(67/*c*/, true,   false, function () { self.render.settings.perspective.distance += -1; });
 
+    self.addListenerForKey(39/*arrow-right*/, true, false, function () { self.render.settings.perspective.windowView.width  +=  10; });
+    self.addListenerForKey(37/*arrow-left */, true, false, function () { self.render.settings.perspective.windowView.width  += -10; });
+    self.addListenerForKey(38/*arrow-up   */, true, false, function () { self.render.settings.perspective.windowView.height += -10; });
+    self.addListenerForKey(40/*arrow-down */, true, false, function () { self.render.settings.perspective.windowView.height +=  10; });
 
-
+    self.addListenerForKey(39/*arrow-right*/, false, true, function () { self.render.settings.perspective.windowView.left +=  10; });
+    self.addListenerForKey(37/*arrow-left */, false, true, function () { self.render.settings.perspective.windowView.left += -10; });
+    self.addListenerForKey(38/*arrow-up   */, false, true, function () { self.render.settings.perspective.windowView.top  += -10; });
+    self.addListenerForKey(40/*arrow-down */, false, true, function () { self.render.settings.perspective.windowView.top  +=  10; });
 };

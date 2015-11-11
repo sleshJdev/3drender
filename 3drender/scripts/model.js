@@ -13,7 +13,7 @@ function Cone(parameters, origin) {
 Cone.prototype.generateGeometry = function () {
     this.vectors = [];
     this.peak = new Vector(0, -this.parameters.height, 0);
-    var generator = function (quantityPoints, radius) {
+    function generator(quantityPoints, radius) {
         var current = new Vector(0, 0, 0);
         var shift = (2 * Math.PI) / quantityPoints;
 

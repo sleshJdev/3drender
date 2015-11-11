@@ -140,7 +140,6 @@ AxonometricRender.prototype.rendering = function () {
  */
 function ObliqueRender(context, settings, parameters, model) {
     Render.call(this, RenderType.OBLIQUE, context, settings, parameters, model);
-    model.state = Matrix.prototype.getTranslateMatrix(model.origin);
 }
 
 ObliqueRender.prototype = Object.create(Render.prototype);
@@ -169,10 +168,7 @@ PerspectiveRender.prototype.getProjector = (function () {
     projector.projection = null;
     projector.viewWindow = null;
     projector.do = function (vector) {
-        vector.restore().transform(projector.projection);
-        //vector.z0 = vector.z;
-        vector.scale(1 / vector.z);
-        console.log("x: ", vector.x, ", y: ", vector.y, ", z: ", vector.z);
+        vector.restore().transform(projector.projection).scale(1 / vector.z);
         vector.x = this.viewWindow.left + this.viewWindow.width  * ( (1 + vector.x) / 2 );
         vector.y = this.viewWindow.top  + this.viewWindow.height * ( (1 + vector.y) / 2 );
     };
@@ -193,11 +189,11 @@ PerspectiveRender.prototype.getProjector = (function () {
 PerspectiveRender.prototype.drawViewWindow = function () {
     this.context.strokeStyle = "white";
     this.context.beginPath();
-    var r = this.settings.perspective.windowView;
-    this.context.moveTo(r.left, r.top);
-    this.context.lineTo(r.left + r.width, r.top);
-    this.context.lineTo(r.left + r.width, r.top + r.height);
-    this.context.lineTo(r.left, r.top + r.height);
+    var wv = this.settings.perspective.windowView;
+    this.context.moveTo(wv.left, wv.top);
+    this.context.lineTo(wv.left + wv.width, wv.top);
+    this.context.lineTo(wv.left + wv.width, wv.top + wv.height);
+    this.context.lineTo(wv.left, wv.top + wv.height);
     this.context.closePath();
     this.context.stroke();
 };
@@ -205,7 +201,8 @@ PerspectiveRender.prototype.drawViewWindow = function () {
 PerspectiveRender.prototype.rendering = function () {
     var perspective = Object.create(null);
     perspective.fov = this.settings.perspective.fov * Jaga.d2r;
-    perspective.aspect = this.settings.perspective.windowView.width / this.settings.perspective.windowView.height;
+    this.settings.perspective.aspect = this.settings.perspective.windowView.width / this.settings.perspective.windowView.height;
+    perspective.aspect = this.settings.perspective.aspect;
     perspective.nearPlane = this.settings.perspective.nearPlane;
     perspective.farPlane = this.settings.perspective.farPlane;
     perspective.distance = this.settings.perspective.distance;

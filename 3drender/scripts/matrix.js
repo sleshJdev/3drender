@@ -158,12 +158,12 @@ Matrix.prototype.getPerspectiveMatrix = (function () {
     var matrix = new Matrix(0);
 
     return function (perspective) {
-        var h = Math.cos(perspective.fov / 2) / Math.sin(perspective.fov / 2);
+        var h = 1 / Math.tan(perspective.fov / 2);
         var w = h * perspective.aspect;
         var a = perspective.farPlane / (perspective.farPlane - perspective.nearPlane);
         var b = a * -perspective.nearPlane;
         var c = 1 / perspective.distance;
-
+        
         matrix.v00 = h;
         matrix.v11 = w;
         matrix.v22 = a;
