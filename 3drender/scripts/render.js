@@ -206,7 +206,6 @@ PerspectiveRender.prototype.rendering = function () {
     perspective.nearPlane = this.settings.perspective.nearPlane;
     perspective.farPlane = this.settings.perspective.farPlane;
     perspective.distance = this.settings.perspective.distance;
-    //console.log("fov ",perspective.fov, " --- aspect ", perspective.aspect, " --- nearPlane ", perspective.nearPlane, " --- farPlane ", perspective.farPlane);
     this.updateGeometry();
     this.clearCanvas();
     this.model.transform(this.buildTransformation()).commit();
