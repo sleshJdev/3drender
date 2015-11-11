@@ -40,7 +40,7 @@ Jaga.create = function(canvas){
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
     renders.push(new PerspectiveRender(context, Util.createSettings(), parameters,
-        new Cone(parameters, new Vector(300, 250, 300))));
+        new Cone(parameters, new Vector(0, 50, 350))));
 
     var controller = new Controller(renders, document.querySelector(".status"));
     controller.registerEvents();

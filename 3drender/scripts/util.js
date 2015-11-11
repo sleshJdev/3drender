@@ -38,9 +38,9 @@ Util.createSettings = function (translate) {
     settings.perspective.distance = 1;
     settings.perspective.windowView = Object.create(null);
     settings.perspective.windowView.top = 50;
-    settings.perspective.windowView.left = 50;
-    settings.perspective.windowView.width = 400;
-    settings.perspective.windowView.height = 400;
+    settings.perspective.windowView.left = 100;
+    settings.perspective.windowView.width = 750;
+    settings.perspective.windowView.height = 550;
 
     settings.oblique = Object.create(null);
     settings.oblique.l = 1;

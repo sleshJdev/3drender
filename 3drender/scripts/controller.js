@@ -192,10 +192,10 @@ Controller.prototype.registerEvents = function () {
     self.addListenerForKey(67/*c*/, false,  false, function () { self.render.settings.perspective.distance +=  1; });
     self.addListenerForKey(67/*c*/, true,   false, function () { self.render.settings.perspective.distance += -1; });
 
-    self.addListenerForKey(39/*arrow-right*/, true, false, function () { self.render.settings.perspective.windowView.width  +=  10; });
-    self.addListenerForKey(37/*arrow-left */, true, false, function () { self.render.settings.perspective.windowView.width  += -10; });
-    self.addListenerForKey(38/*arrow-up   */, true, false, function () { self.render.settings.perspective.windowView.height += -10; });
-    self.addListenerForKey(40/*arrow-down */, true, false, function () { self.render.settings.perspective.windowView.height +=  10; });
+    self.addListenerForKey(39/*arrow-right*/, true, true, function () { self.render.settings.perspective.windowView.width  +=  10; });
+    self.addListenerForKey(37/*arrow-left */, true, true, function () { self.render.settings.perspective.windowView.width  += -10; });
+    self.addListenerForKey(38/*arrow-up   */, true, true, function () { self.render.settings.perspective.windowView.height += -10; });
+    self.addListenerForKey(40/*arrow-down */, true, true, function () { self.render.settings.perspective.windowView.height +=  10; });
 
     self.addListenerForKey(39/*arrow-right*/, false, true, function () { self.render.settings.perspective.windowView.left +=  10; });
     self.addListenerForKey(37/*arrow-left */, false, true, function () { self.render.settings.perspective.windowView.left += -10; });

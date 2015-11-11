@@ -3,10 +3,10 @@
  */
 
 var RenderType = Object.create(null);
-RenderType.ORTHOGONAL   = 0;
-RenderType.AXONOMETRIC  = 1;
-RenderType.OBLIQUE      = 2;
-RenderType.PERSPECTIVE  = 3;
+RenderType.ORTHOGONAL = 0;
+RenderType.AXONOMETRIC = 1;
+RenderType.OBLIQUE = 2;
+RenderType.PERSPECTIVE = 3;
 
 /*
  render - base class for other renders
@@ -111,7 +111,7 @@ OrthogonalRender.prototype.rendering = function () {
  */
 function AxonometricRender(context, settings, parameters, models) {
     Render.call(this, RenderType.AXONOMETRIC, context, settings, parameters, models);
-    this.labels      = ["Isometric", "Dimetric"];
+    this.labels = ["Isometric", "Dimetric"];
     this.projections = [Matrix.prototype.getIsometricMatrix(), Matrix.prototype.getDimetricMatrix()];
 }
 
@@ -147,9 +147,11 @@ ObliqueRender.prototype = Object.create(Render.prototype);
 ObliqueRender.prototype.rendering = function () {
     this.updateGeometry();
     this.clearCanvas();
-    var projection = Matrix.prototype.getObliqueMatrix(this.settings.oblique.l, this.settings.oblique.alpha * Jaga.d2r);
     this.model.transform(this.buildTransformation()).commit();
-    this.model.project(this.context, this.getProjector(projection));
+    this.model.project(this.context,
+        this.getProjector(Matrix.prototype.getObliqueMatrix(
+            this.settings.oblique.l,
+            this.settings.oblique.alpha * Jaga.d2r)));
     this.resetSettings();
 };
 
@@ -157,7 +159,7 @@ ObliqueRender.prototype.rendering = function () {
 /*
  perspective projection
  */
-function PerspectiveRender(context, settings, parameters, model){
+function PerspectiveRender(context, settings, parameters, model) {
     Render.call(this, RenderType.PERSPECTIVE, context, settings, parameters, model);
 }
 
@@ -169,8 +171,8 @@ PerspectiveRender.prototype.getProjector = (function () {
     projector.viewWindow = null;
     projector.do = function (vector) {
         vector.restore().transform(projector.projection).scale(1 / vector.z);
-        vector.x = this.viewWindow.left + this.viewWindow.width  * ( (1 + vector.x) / 2 );
-        vector.y = this.viewWindow.top  + this.viewWindow.height * ( (1 + vector.y) / 2 );
+        vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
+        vector.y = this.viewWindow.top + this.viewWindow.height * ( (1 + vector.y) / 2 );
     };
     /*
      windowRectangle:{top,left,width,height}
@@ -201,7 +203,6 @@ PerspectiveRender.prototype.drawViewWindow = function () {
 PerspectiveRender.prototype.rendering = function () {
     var perspective = Object.create(null);
     perspective.fov = this.settings.perspective.fov * Jaga.d2r;
-    this.settings.perspective.aspect = this.settings.perspective.windowView.width / this.settings.perspective.windowView.height;
     perspective.aspect = this.settings.perspective.aspect;
     perspective.nearPlane = this.settings.perspective.nearPlane;
     perspective.farPlane = this.settings.perspective.farPlane;
@@ -209,7 +210,9 @@ PerspectiveRender.prototype.rendering = function () {
     this.updateGeometry();
     this.clearCanvas();
     this.model.transform(this.buildTransformation()).commit();
-    this.model.project(this.context, this.getProjector(Matrix.prototype.getPerspectiveMatrix(perspective), this.settings.perspective.windowView));
-    this.drawViewWindow();
+    this.model.project(this.context,
+        this.getProjector(Matrix.prototype.getPerspectiveMatrix(perspective),
+            this.settings.perspective.windowView));
+    //this.drawViewWindow();
     this.resetSettings();
 };
