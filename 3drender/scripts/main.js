@@ -36,7 +36,7 @@ Jaga.create = function(canvas){
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
     renders.push(new ObliqueRender(context, Util.createSettings(), parameters,
-        new Cone(parameters, new Vector(100, 200, 300))));
+        new Cone(parameters, new Vector(300, 200, 100))));
 
     parameters = Util.createParameters(50, 100, 150, 8, colors);
     renders.push(new PerspectiveRender(context, Util.createSettings(), parameters,

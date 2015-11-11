@@ -150,8 +150,7 @@ ObliqueRender.prototype.rendering = function () {
     this.model.transform(this.buildTransformation()).commit();
     this.model.project(this.context,
         this.getProjector(Matrix.prototype.getObliqueMatrix(
-            this.settings.oblique.l,
-            this.settings.oblique.alpha * Jaga.d2r)));
+            this.settings.oblique.l, this.settings.oblique.alpha * Jaga.d2r)));
     this.resetSettings();
 };
 
@@ -170,7 +169,7 @@ PerspectiveRender.prototype.getProjector = (function () {
     projector.projection = null;
     projector.viewWindow = null;
     projector.do = function (vector) {
-        vector.restore().transform(projector.projection).scale(1 / vector.z);
+        vector.restore().transform(this.projection).scale(1 / vector.z);
         vector.x = Jaga.canvasWidth * ( (1 + vector.x) / 2 );
         vector.y = Jaga.canvasHeight * ( (1 + vector.y) / 2 );
         //vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
@@ -211,8 +210,8 @@ PerspectiveRender.prototype.rendering = function () {
     this.updateGeometry();
     this.clearCanvas();
     this.model.transform(this.buildTransformation()).commit();
-    this.model.project(this.context,
-        this.getProjector(Matrix.prototype.getPerspectiveMatrix(perspective),
+    this.model.project(this.context, this.getProjector(
+            Matrix.prototype.getPerspectiveMatrix(perspective),
             this.settings.perspective.windowView));
     //this.drawViewWindow();
     this.resetSettings();
