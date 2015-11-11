@@ -43,8 +43,8 @@ Util.createSettings = function (translate) {
     settings.perspective.windowView.height = 550;
 
     settings.oblique = Object.create(null);
-    settings.oblique.l = 1;
-    settings.oblique.alpha = 0;
+    settings.oblique.l = 2;
+    settings.oblique.alpha = 45;
 
     return settings;
 }

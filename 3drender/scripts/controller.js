@@ -12,36 +12,36 @@ function Controller(renderers, statusPanel){
 
 Controller.prototype.displayStatus = function () {
     var renderState =
-        "TRANSLATE</br>&Delta;X..................." + this.render.state.translate.x +
-                 "</br>&Delta;Y..................." + this.render.state.translate.y +
-                 "</br>&Delta;Z..................." + this.render.state.translate.z + "<hr>" +
-             "ROTATE</br>&ang;X..................." + this.render.state.rotate.x + "&deg;" +
-                   "</br>&ang;Y..................." + this.render.state.rotate.y + "&deg;" +
-                   "</br>&ang;Z..................." + this.render.state.rotate.z + "&deg;<hr>" +
-                  "SCALE</br>X...................." + this.render.state.scale.x.toFixed(1) +
-                       "</br>Y...................." + this.render.state.scale.y.toFixed(1) +
-                       "</br>Z...................." + this.render.state.scale.z.toFixed(1) + "<hr>" +
-              "GEOMENTRY</br>Points..............." + this.render.parameters.majorNumber +
-                       "</br>Height..............." + this.render.parameters.height +
-                       "</br>Inner Radius........." + this.render .parameters.innerRadius +
-                       "</br>Outer Radius........." + this.render.parameters.outerRadius;
+        "TRANSLATE</br>&Delta;X................." + this.render.state.translate.x +
+                 "</br>&Delta;Y................." + this.render.state.translate.y +
+                 "</br>&Delta;Z................." + this.render.state.translate.z + "<hr>" +
+             "ROTATE</br>&ang;X................." + this.render.state.rotate.x + "&deg;" +
+                   "</br>&ang;Y................." + this.render.state.rotate.y + "&deg;" +
+                   "</br>&ang;Z................." + this.render.state.rotate.z + "&deg;<hr>" +
+                  "SCALE</br>X.................." + this.render.state.scale.x.toFixed(1) +
+                       "</br>Y.................." + this.render.state.scale.y.toFixed(1) +
+                       "</br>Z.................." + this.render.state.scale.z.toFixed(1) + "<hr>" +
+              "GEOMENTRY</br>Points............." + this.render.parameters.majorNumber +
+                       "</br>Height............." + this.render.parameters.height +
+                       "</br>Inner Radius......." + this.render .parameters.innerRadius +
+                       "</br>Outer Radius......." + this.render.parameters.outerRadius;
     switch (this.render.type){
         case RenderType.OBLIQUE:
             renderState += "<hr>" +
-                          "OBLIQUE</br>L....................." + this.render.settings.oblique.l.toFixed(1) +
-                       "</br>&ang;&alpha;...................." + this.render.settings.oblique.alpha + "&deg;"
+                          "OBLIQUE</br>L..................." + this.render.settings.oblique.l.toFixed(1) +
+                       "</br>&ang;&alpha;.................." + this.render.settings.oblique.alpha + "&deg;"
             break;
         case RenderType.PERSPECTIVE:
             renderState += "<hr>" +
-                "PERSPECTIVE</br>Window View Top......" + this.render.settings.perspective.windowView.top +
-                           "</br>Window View Left....." + this.render.settings.perspective.windowView.left +
-                           "</br>Window View Width...." + this.render.settings.perspective.windowView.width +
-                           "</br>Window View Height..." + this.render.settings.perspective.windowView.height +
-                           "</br>&ang;Fov................." + this.render.settings.perspective.fov + "&deg;" +
-                           "</br>Aspect..............." + this.render.settings.perspective.aspect.toFixed(1) +
-                           "</br>Near Plane..........." + this.render.settings.perspective.nearPlane +
-                           "</br>Far Plane............" + this.render.settings.perspective.farPlane +
-                           "</br>Distance............." + this.render.settings.perspective.distance;
+                "PERSPECTIVE</br>Window View Top...." + this.render.settings.perspective.windowView.top +
+                           "</br>Window View Left..." + this.render.settings.perspective.windowView.left +
+                           "</br>Window View Width.." + this.render.settings.perspective.windowView.width +
+                           "</br>Window View Height." + this.render.settings.perspective.windowView.height +
+                           "</br>&ang;Fov..............." + this.render.settings.perspective.fov + "&deg;" +
+                           "</br>Aspect............." + this.render.settings.perspective.aspect.toFixed(1) +
+                           "</br>Near Plane........." + this.render.settings.perspective.nearPlane +
+                           "</br>Far Plane.........." + this.render.settings.perspective.farPlane +
+                           "</br>Distance..........." + this.render.settings.perspective.distance;
 
             break;
         case RenderType.ORTHOGONAL:
@@ -81,12 +81,9 @@ Controller.prototype.registerEvents = function () {
             for (var key in self.events) {
                 var registeredEvent = self.events[key];
                 if (registeredEvent.isDown) {
-                    if (event.shiftKey && registeredEvent.hasShift) {
-                        registeredEvent.action(event);
-                    } else if (event.ctrlKey && registeredEvent.hasCtrl) {
-                        registeredEvent.action(event);
-                    } else if (event.ctrlKey  == registeredEvent.hasCtrl &&
-                               event.shiftKey == registeredEvent.hasShift) {
+                    var shift = event.shiftKey == registeredEvent.hasShift;
+                    var ctrl  = event.ctrlKey == registeredEvent.hasCtrl;
+                    if (ctrl || shift) {
                         registeredEvent.action(event);
                     }
                 }

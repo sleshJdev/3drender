@@ -171,14 +171,15 @@ PerspectiveRender.prototype.getProjector = (function () {
     projector.viewWindow = null;
     projector.do = function (vector) {
         vector.restore().transform(projector.projection).scale(1 / vector.z);
-        vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
-        vector.y = this.viewWindow.top + this.viewWindow.height * ( (1 + vector.y) / 2 );
+        vector.x = Jaga.canvasWidth * ( (1 + vector.x) / 2 );
+        vector.y = Jaga.canvasHeight * ( (1 + vector.y) / 2 );
+        //vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
+        //vector.y = this.viewWindow.top + this.viewWindow.height * ( (1 + vector.y) / 2 );
     };
     /*
      windowRectangle:{top,left,width,height}
      */
     projector.prepare = function (projection, viewWindow) {
-        //console.log("projection: ", projection);
         projector.projection = projection;
         projector.viewWindow = viewWindow;
 
