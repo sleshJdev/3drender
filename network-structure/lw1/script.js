@@ -24,7 +24,7 @@ window.onload = function () {
     graph.addVertex(new Vertex(15, 221, 21, 16, -1));
     graph.addVertex(new Vertex(16, 1222, 221, 10, -1));
     graph.addVertex(new Vertex(17, 13, 21, 12, 15));
-    graph.fillTable(headers, $("#source-table"));
+    graph.fillTable(headers, $("table"));
 
     $("#search-button").addEventListener("click", function () {
         $(".output").innerHTML = graph.findPath($("#start-node").value);
@@ -32,12 +32,21 @@ window.onload = function () {
 
     $("#clear-button").addEventListener("click", function () {
         graph.clear($("#start-node").value);
-        graph.fillTable(headers, $("#source-table"));
+        graph.fillTable(headers, $("table"));
     });
 
     $("#build-button").addEventListener("click", function () {
         graph.buildRelations($("#start-node").value);
-        graph.fillTable(headers, $("#source-table"));
+        graph.fillTable(headers, $("table"));
+    });
+
+    $("#build-all-button").addEventListener("click", function () {
+        graph.vertexes.forEach(function (vertex) {
+            if (!vertex.rightLink && !vertex.leftLink) {
+                graph.buildRelations(vertex.parent);
+            }
+        });
+        graph.fillTable(headers, $("table"));
     });
 };
 
