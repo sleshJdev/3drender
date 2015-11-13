@@ -33,8 +33,8 @@ Util.createSettings = function (translate) {
     settings.perspective = Object.create(null);
     settings.perspective.fov = 60;
     settings.perspective.aspect = 1;
-    settings.perspective.nearPlane = 10;
-    settings.perspective.farPlane = 100;
+    settings.perspective.nearPlane = 300;
+    settings.perspective.farPlane = 500;
     settings.perspective.distance = 1;
     settings.perspective.windowView = Object.create(null);
     settings.perspective.windowView.top = 50;
@@ -47,4 +47,8 @@ Util.createSettings = function (translate) {
     settings.oblique.alpha = 45;
 
     return settings;
-}
+};
+
+Util.triangle = function (triangle) {
+
+};
