@@ -169,11 +169,11 @@ PerspectiveRender.prototype.getProjector = (function () {
     projector.projection = null;
     projector.viewWindow = null;
     projector.do = function (vector) {
-        vector.restore().transform(this.projection).scale(1 / vector.z);
-        vector.x = Jaga.canvasWidth * ( (1 + vector.x) / 2 );
-        vector.y = Jaga.canvasHeight * ( (1 + vector.y) / 2 );
-        //vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
-        //vector.y = this.viewWindow.top + this.viewWindow.height * ( (1 + vector.y) / 2 );
+        vector.restore().transform(this.projection).scale(1 / vector.w);
+        //vector.x = Jaga.canvasWidth * ( (1 + vector.x) / 2 );
+        //vector.y = Jaga.canvasHeight * ( (1 + vector.y) / 2 );
+        vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
+        vector.y = this.viewWindow.top + this.viewWindow.height * ( (1 + vector.y) / 2 );
     };
     /*
      windowRectangle:{top,left,width,height}
@@ -202,17 +202,16 @@ PerspectiveRender.prototype.drawViewWindow = function () {
 
 PerspectiveRender.prototype.rendering = function () {
     var perspective = Object.create(null);
+    for(var property in this.settings.perspective){
+        perspective[property] = this.settings.perspective[property];
+    }
     perspective.fov = this.settings.perspective.fov * Jaga.d2r;
-    perspective.aspect = this.settings.perspective.aspect;
-    perspective.nearPlane = this.settings.perspective.nearPlane;
-    perspective.farPlane = this.settings.perspective.farPlane;
-    perspective.distance = this.settings.perspective.distance;
     this.updateGeometry();
     this.clearCanvas();
     this.model.transform(this.buildTransformation()).commit();
     this.model.project(this.context, this.getProjector(
             Matrix.prototype.getPerspectiveMatrix(perspective),
             this.settings.perspective.windowView));
-    //this.drawViewWindow();
+    this.drawViewWindow();
     this.resetSettings();
 };
