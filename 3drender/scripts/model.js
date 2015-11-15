@@ -8,22 +8,22 @@
  model of cone
  */
 (function (JagaEngine) {
-    function generator(quantityPoints, radius) {
+    function generator(radius) {
         var current = new JagaEngine.Vector(0, 0, 0);
-        var shift = (2 * Math.PI) / quantityPoints;
-        for (var angle = 0, i = 0; i <= quantityPoints; angle += shift, ++i) {
+        var shift = (2 * Math.PI) / this.parameters.majorNumber;
+        for (var angle = 0, i = 0; i <= this.parameters.majorNumber; angle += shift, ++i) {
             current.x = radius * Math.cos(angle);
             current.z = radius * Math.sin(angle);
             this.vectors.push(current.clone());
         }
         var last = this.vectors.length - 1;
-        var first = last - quantityPoints;
+        var first = last - this.parameters.majorNumber;
         this.vectors[last] = this.vectors[first];//closure: last = first
     }
 
-    function triangulation(start, quantityPoints, color){
+    function triangulation(start, color){
         var face;
-        for(var i = start; i < start + quantityPoints; ++i){
+        for(var i = start; i < start + this.parameters.majorNumber; ++i){
             face = Object.create(null);
             face.a = this.vectors[i];
             face.b = this.peak;
@@ -31,6 +31,45 @@
             face.color = color;
             this.faces.push(face);
         }
+    }
+
+    function triangulationBase(color){
+        var opCurrent,//outer vertex
+            ipCurrent,//inner vertex
+            ipPrevious,//previous inner vertex
+            opPrevious;//previous outer vertex
+        var face;
+        for (var i = 0; i <= this.parameters.majorNumber; ++i) {
+            ipCurrent = this.vectors[i];
+            opCurrent = this.vectors[i + this.parameters.majorNumber];
+            if (i == 0) {
+                ipPrevious = ipCurrent;
+                opPrevious = opCurrent;
+                continue;
+            }
+            face = Object.create(null);
+            face.a = ipPrevious;
+            face.b = ipCurrent;
+            face.c = opCurrent;
+            face.color = color;
+            this.faces.push(face);
+            face = Object.create(null);
+            face.a = opPrevious;
+            face.b = opCurrent;
+            face.c = ipPrevious;
+            face.color = color;
+            this.faces.push(face);
+            ipPrevious = ipCurrent;
+            opPrevious = opCurrent;
+        }
+        console.log(2*this.parameters.majorNumber + 2);
+        console.log(this.vectors.length);
+        face = Object.create(null);
+        face.a = this.vectors[0];
+        face.b = this.vectors[this.parameters.majorNumber + 1];
+        face.c = this.vectors[2 * this.parameters.majorNumber];
+        face.color = color;
+        this.faces.push(face);
     }
 
     JagaEngine.Cone = (function () {
@@ -47,13 +86,11 @@
             this.vectors = [];
             this.faces = [];
             this.peak = new JagaEngine.Vector(0, -this.parameters.height, 0);
-
-            generator.call(this, this.parameters.majorNumber, this.parameters.innerRadius);
-            generator.call(this, this.parameters.majorNumber, this.parameters.outerRadius);
-            triangulation.call(this, 0,                               this.parameters.majorNumber, {r: 0, g: 0, b: 1, a: 1});
-            triangulation.call(this, this.parameters.majorNumber + 1, this.parameters.majorNumber, {r: 1, g: 0, b: 0, a: 1});
-
-            console.log("generated model. triangles: " + this.faces.length + ", vectors: " + this.vectors.length);
+            generator.call(this, this.parameters.innerRadius);
+            generator.call(this, this.parameters.outerRadius);
+            triangulation.call(this, 0,                               {r: 0, g: 0, b: 1, a: 1});
+            triangulation.call(this, this.parameters.majorNumber + 1, {r: 1, g: 0, b: 0, a: 1});
+            triangulationBase.call(this, {r: 0, g: 1, b: 0, a: 1});
             this.transform(this.state);
             this.state = new JagaEngine.Matrix();
             this.commit();

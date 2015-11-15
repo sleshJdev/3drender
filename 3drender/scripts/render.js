@@ -198,6 +198,7 @@
     JagaEngine.PerspectiveRender = (function () {
         function PerspectiveRender(drawContext, settings, parameters, model) {
             JagaEngine.Render.call(this, JagaEngine.RenderType.PERSPECTIVE, drawContext, settings, parameters, model);
+            this.device = new JagaEngine.Device(drawContext);
         }
 
         PerspectiveRender.prototype = Object.create(JagaEngine.Render.prototype);
@@ -249,9 +250,13 @@
             var self = this;
             self.updateGeometry();
             self.clearCanvas();
-            
-            self.model.transform(this.buildTransformation()).commit();
+            self.device.clear();
             self.model.project(self.drawContext, self.getProjector(self.settings.perspective));
+            self.model.faces.forEach(function (face) {
+                self.device.drawTriangle(face.a, face.b, face.c, face.color);
+            });
+            self.device.present();
+            self.model.transform(this.buildTransformation()).commit();
             self.drawViewWindow(self.settings.perspective.viewWindow);
             self.resetSettings();
         };
