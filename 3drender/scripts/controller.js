@@ -105,8 +105,8 @@
             /*
              rotating
              */
-            self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x =  5; });
-            self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x = -5; });
+            self.addListenerForKey(87/*"w"*/, false, false, function () { self.render.settings.rotate.x = -5; });
+            self.addListenerForKey(83/*"s"*/, false, false, function () { self.render.settings.rotate.x =  5; });
             self.addListenerForKey(68/*"d"*/, false, false, function () { self.render.settings.rotate.y =  5; });
             self.addListenerForKey(65/*"a"*/, false, false, function () { self.render.settings.rotate.y = -5; });
             self.addListenerForKey(69/*"e"*/, false, false, function () { self.render.settings.rotate.z =  5; });
