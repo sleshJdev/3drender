@@ -84,6 +84,21 @@ Graph.prototype.buildRelations = function (parent) {
     var stack = [database[parent][0]],
         current = null;
 
+    while (stack.length > 0) {
+        current = stack.pop();
+        resolveRelationFor(current);
+        if (current.hasRight()) {
+            stack.push(this.getNeighbor(current.rightLink));
+        }
+        while (current.hasLeft()) {
+            current = this.getNeighbor(current.leftLink);
+            resolveRelationFor(current);
+            if (current.hasRight()) {
+                stack.push(this.getNeighbor(current.rightLink));
+            }
+        }
+    }
+
     function resolveRelationFor(vertex) {
         var sons = database[vertex.id];
         var brothers = database[vertex.parent];
@@ -98,21 +113,6 @@ Graph.prototype.buildRelations = function (parent) {
         }
         if (sons) {
             vertex.leftLink = sons.length > 0 ? sons[0].number : -1;
-        }
-    }
-
-    while (stack.length > 0) {
-        current = stack.pop();
-        resolveRelationFor(current);
-        if (current.hasRight()) {
-            stack.push(this.getNeighbor(current.rightLink));
-        }
-        while (current.hasLeft()) {
-            current = this.getNeighbor(current.leftLink);
-            resolveRelationFor(current);
-            if (current.hasRight()) {
-                stack.push(this.getNeighbor(current.rightLink));
-            }
         }
     }
 };
