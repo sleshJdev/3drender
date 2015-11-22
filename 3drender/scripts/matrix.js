@@ -40,7 +40,7 @@
             return r;
         };
 
-        Matrix.rotateX = function (angleXRadians) {
+        Matrix.RotateX = function (angleXRadians) {
             var sin = Math.sin(angleXRadians);
             var cos = Math.cos(angleXRadians);
             var rotateXMatrix = new Matrix();
@@ -50,7 +50,7 @@
             return rotateXMatrix;
         };
 
-        Matrix.rotateY = function (angleYRadians) {
+        Matrix.RotateY = function (angleYRadians) {
             var sin = Math.sin(angleYRadians);
             var cos = Math.cos(angleYRadians);
             var rotateYMatrix = new Matrix();
@@ -60,7 +60,7 @@
             return rotateYMatrix;
         };
 
-        Matrix.rotateZ = function (angleZRadians) {
+        Matrix.RotateZ = function (angleZRadians) {
             var sin = Math.sin(angleZRadians);
             var cos = Math.cos(angleZRadians);
             var rotateZMatrix = new Matrix();
@@ -70,15 +70,15 @@
             return rotateZMatrix;
         };
 
-        Matrix.getRotate = function (rotateVector) {
-            var matrixX = this.rotateX(rotateVector.x);
-            var matrixY = this.rotateY(rotateVector.y);
-            var matrixZ = this.rotateZ(rotateVector.z);
+        Matrix.Rotation = function (rotateVector) {
+            var matrixX = this.RotateX(rotateVector.x);
+            var matrixY = this.RotateY(rotateVector.y);
+            var matrixZ = this.RotateZ(rotateVector.z);
 
             return matrixZ.multiply(matrixX).multiply(matrixY);
         };
 
-        Matrix.getTranslate = function (translateVector) {
+        Matrix.Translation = function (translateVector) {
             var translateMatrix = new Matrix();
             translateMatrix.v30 = translateVector.x;
             translateMatrix.v31 = translateVector.y;
@@ -88,7 +88,7 @@
             return translateMatrix;
         };
 
-        Matrix.getScale = function (scaleVector) {
+        Matrix.Scaling = function (scaleVector) {
             var scaleMatrix = new Matrix();
             scaleMatrix.v00 = scaleVector.x;
             scaleMatrix.v11 = scaleVector.y;
@@ -98,7 +98,7 @@
             return scaleMatrix;
         };
 
-        Matrix.getOrthogonal = (function () {
+        Matrix.Orthogonal = (function () {
             var projectionXY = new Matrix();
             var projectionYZ = new Matrix();
             var projectionXZ = new Matrix();
@@ -119,20 +119,7 @@
             };
         })();
 
-        Matrix.lookAtLH = function (eye, target, up) {
-            var zAxis = target.subtract(eye);
-            zAxis.normalize();
-            var xAxis = JagaEngine.Vector.Cross(up, zAxis);
-            xAxis.normalize();
-            var yAxis = Vector3.Cross(zAxis, xAxis);
-            yAxis.normalize();
-            var ex = -Vector3.Dot(xAxis, eye);
-            var ey = -Vector3.Dot(yAxis, eye);
-            var ez = -Vector3.Dot(zAxis, eye);
-            return Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0, xAxis.y, yAxis.y, zAxis.y, 0, xAxis.z, yAxis.z, zAxis.z, 0, ex, ey, ez, 1);
-        };
-
-        Matrix.getIsometric = (function () {
+        Matrix.Isometric = (function () {
             var v1 =  Math.sqrt(3) / 2;
             var v2 =  1 / Math.sqrt(3);
             var v3 = -1 / 2;
@@ -146,7 +133,7 @@
             };
         })();
 
-        Matrix.getDimetrix = (function () {
+        Matrix.Dimetric = (function () {
             var v1 = Math.sqrt(2) / 2;
             var v2 = Math.sqrt(2 / 3);
             var matrix = new Matrix();
@@ -170,6 +157,49 @@
                 return matrix;
             }
         })();
+
+        Matrix.LookAtLH = function LookAtLH(eye, target, up) {
+            var zAxis = target.subtract(eye);
+            zAxis.normalize();
+            var xAxis = Vector.Cross(up, zAxis);
+            xAxis.normalize();
+            var yAxis = Vector.Cross(zAxis, xAxis);
+            yAxis.normalize();
+            var ex = -Vector.Dot(xAxis, eye);
+            var ey = -Vector.Dot(yAxis, eye);
+            var ez = -Vector.Dot(zAxis, eye);
+            return Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0, xAxis.y, yAxis.y, zAxis.y, 0, xAxis.z, yAxis.z, zAxis.z, 0, ex, ey, ez, 1);
+        };
+        Matrix.PerspectiveLH = function(width, height, znear, zfar) {
+            var matrix = Matrix.Zero();
+            matrix.v00 = (2.0 * znear) / width;
+            matrix.v01 = matrix.v02 = matrix.v03 = 0.0;
+            matrix.v11 = (2.0 * znear) / height;
+            matrix.v10 = matrix.v12 = matrix.v13 = 0.0;
+            matrix.v22 = -zfar / (znear - zfar);
+            matrix.v20 = matrix.v21 = 0.0;
+            matrix.v23 = 1.0;
+            matrix.v30 = matrix.v31 = matrix.v33 = 0.0;
+            matrix.v32 = (znear * zfar) / (znear - zfar);
+
+            return matrix;
+        };
+
+        Matrix.PerspectiveFovLH = function(fov, aspect, znear, zfar) {
+            var matrix = Matrix.Zero();
+            var tan = 1.0 / (Math.tan(fov * 0.5));
+            matrix.v00 = tan / aspect;
+            matrix.v01 = matrix.v02 = matrix.v03 = 0.0;
+            matrix.v11 = tan;
+            matrix.v10 = matrix.v12 = matrix.v13 = 0.0;
+            matrix.v20 = matrix.v21 = 0.0;
+            matrix.v22 = -zfar / (znear - zfar);
+            matrix.v23 = 1.0;
+            matrix.v30 = matrix.v31 = matrix.v33 = 0.0;
+            matrix.v32 = (znear * zfar) / (znear - zfar);
+
+            return matrix;
+        };
 
         Matrix.perspective = (function () {
             var matrix = new Matrix();

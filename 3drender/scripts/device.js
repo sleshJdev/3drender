@@ -15,7 +15,7 @@
         Device.prototype.clear = function () {
             this.drawContext.clearRect(0, 0, JagaEngine.canvasWidth, JagaEngine.canvasHeight);
             this.backbuffer = this.drawContext.getImageData(0, 0, JagaEngine.canvasWidth, JagaEngine.canvasHeight);
-            for(var i = 0; i < this.depthbuffer.length; i++) {
+            for (var i = 0; i < this.depthbuffer.length; i++) {
                 this.depthbuffer[i] = 10000000;
             }
         };
@@ -35,13 +35,29 @@
         };
 
         Device.prototype.drawTriangle = function (p1, p2, p3, color) {
-            if (p1.y > p2.y) { var temp = p2; p2 = p1; p1 = temp; }
-            if (p2.y > p3.y) { var temp = p2; p2 = p3; p3 = temp; }
-            if (p1.y > p2.y) { var temp = p2; p2 = p1; p1 = temp; }
+            if (p1.y > p2.y) {
+                var temp = p2;
+                p2 = p1;
+                p1 = temp;
+            }
+            if (p2.y > p3.y) {
+                var temp = p2;
+                p2 = p3;
+                p3 = temp;
+            }
+            if (p1.y > p2.y) {
+                var temp = p2;
+                p2 = p1;
+                p1 = temp;
+            }
             var dp1p2 = 0,
                 dp1p3 = 0;
-            if (p2.y - p1.y > 0) { dp1p2 = (p2.x - p1.x) / (p2.y - p1.y); }
-            if (p3.y - p1.y > 0) { dp1p3 = (p3.x - p1.x) / (p3.y - p1.y); }
+            if (p2.y - p1.y > 0) {
+                dp1p2 = (p2.x - p1.x) / (p2.y - p1.y);
+            }
+            if (p3.y - p1.y > 0) {
+                dp1p3 = (p3.x - p1.x) / (p3.y - p1.y);
+            }
             if (dp1p2 > dp1p3) {
                 for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
                     if (y < p2.y) {
@@ -68,8 +84,12 @@
         };
 
         Device.prototype.clamp = function (value, min, max) {
-            if (typeof min === "undefined") { min = 0; }
-            if (typeof max === "undefined") { max = 1; }
+            if (typeof min === "undefined") {
+                min = 0;
+            }
+            if (typeof max === "undefined") {
+                max = 1;
+            }
 
             return Math.max(min, Math.min(value, max));
         };
@@ -94,6 +114,20 @@
             this.backbufferdata[index4 + 1] = color.g * 255;
             this.backbufferdata[index4 + 2] = color.b * 255;
             this.backbufferdata[index4 + 3] = color.a * 255;
+        };
+
+        Device.prototype.render = function (camera, model) {
+            var viewMatrix = JagaEngine.Matrix.LookAtLH(camera.position, camera.target, JagaEngine.Vector.Up());
+            var projectionMatrix = JagaEngine.Matrix.PerspectiveFovLH(0.78, JagaEngine.canvasWidth / JagaEngine.canvasHeight, 0.01, 1.0);
+            var worldMatrix = JagaEngine.Matrix.Rotation(model.Rotation).multiply(JagaEngine.Matrix.Translation(model.Position));
+            var transformMatrix = worldMatrix.multiply(viewMatrix).multiply(projectionMatrix);
+            for (var indexFaces = 0; indexFaces < model.faces.length; indexFaces++) {
+                var currentFace = model.faces[indexFaces];
+                var pixelA = this.project(currentFace.a, transformMatrix);
+                var pixelB = this.project(currentFace.b, transformMatrix);
+                var pixelC = this.project(currentFace.c, transformMatrix);
+                this.drawTriangle(pixelA, pixelB, pixelC, currentFace.color);
+            }
         };
 
         return Device;

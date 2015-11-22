@@ -6,6 +6,23 @@
 
 var JagaEngine = Object.create(null);
 
+(function (JagaEngine) {
+    JagaEngine.Color = (function () {
+        function Color(r, g, b, a) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+            this.rgb = "rgba(" + 255 * r + "," + 255 * g + "," + 255 * b + "," + a + ")";
+        }
+
+        Color.prototype.toString = function () {
+            return "{R: " + this.r + " G:" + this.g + " B:" + this.b + " A:" + this.a + "}";
+        };
+        return Color;
+    })();
+})(JagaEngine || (JagaEngine = Object.create(null)));
+
 JagaEngine.start = function(canvas, statusPanel){
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
