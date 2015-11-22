@@ -47,9 +47,4 @@ JagaEngine.start = function(canvas, statusPanel){
 
 window.onload = function() {
     JagaEngine.start(document.querySelector("canvas"), document.querySelector(".status"));
-
-    //var canvas = document.querySelector("canvas");
-    //var context = canvas.getContext("2d");
-    //context.beginPath();
-    //var lineScanner = new LinerScanner(context);
 };

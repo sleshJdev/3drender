@@ -30,6 +30,14 @@
             var settings = Object.create(null);//settings to rendering of cone
 
             settings.rotate         = new JagaEngine.Vector(0, 0, 0);
+            settings.rotate.toRadians = function () {
+                var result = new JagaEngine.Vector3(0, 0, 0);
+                result.x = this.x * Util.d2r;
+                result.y = this.y * Util.d2r;
+                result.z = this.z * Util.d2r;
+
+                return result;
+            };
             settings.scale          = new JagaEngine.Vector(1, 1, 1);
             settings.translate      = translate || new JagaEngine.Vector(0, 0, 0);
             settings.isUpdateGeometry = true;

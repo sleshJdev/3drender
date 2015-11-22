@@ -5,17 +5,52 @@
 
 (function (JagaEngine) {
     JagaEngine.Vector = (function () {
-        function Vector(initialX, initialY, initialZ) {
-            this.x = initialX;
-            this.y = initialY;
-            this.z = initialZ;
+        function Vector(x, y, z) {
+            this.x0 = x;
+            this.y0 = y;
+            this.z0 = z;
+
+            this.restore();
         }
+
+        Vector.prototype.commit = function () {
+            this.x = this.x0;
+            this.y = this.y0;
+            this.z = this.z0;
+
+            return this;
+        };
+
+        Vector.prototype.restore = function () {
+            this.x = this.x0;
+            this.y = this.y0;
+            this.z = this.z0;
+
+            return this;
+        };
+
+        Vector.prototype.transform = function (transformation) {
+            var x = (this.x * transformation.m[0]) + (this.y * transformation.m[4]) + (this.z * transformation.m[8]) + transformation.m[12];
+            var y = (this.x * transformation.m[1]) + (this.y * transformation.m[5]) + (this.z * transformation.m[9]) + transformation.m[13];
+            var z = (this.x * transformation.m[2]) + (this.y * transformation.m[6]) + (this.z * transformation.m[10]) + transformation.m[14];
+            var w = (this.x * transformation.m[3]) + (this.y * transformation.m[7]) + (this.z * transformation.m[11]) + transformation.m[15];
+
+            this.x = x / w;
+            this.y = y / w;
+            this.z = z / w;
+
+            return this;
+        };
 
         Vector.prototype.toString = function () {
             return "{X: " + this.x + " Y:" + this.y + " Z:" + this.z + "}";
         };
         Vector.prototype.add = function (otherVector) {
-            return new Vector(this.x + otherVector.x, this.y + otherVector.y, this.z + otherVector.z);
+            this.x += otherVector.x;
+            this.y += otherVector.y;
+            this.z += otherVector.z;
+
+            return this;
         };
         Vector.prototype.subtract = function (otherVector) {
             return new Vector(this.x - otherVector.x, this.y - otherVector.y, this.z - otherVector.z);
@@ -24,7 +59,11 @@
             return new Vector(-this.x, -this.y, -this.z);
         };
         Vector.prototype.scale = function (scale) {
-            return new Vector(this.x * scale, this.y * scale, this.z * scale);
+            this.x *= scale;
+            this.y *= scale;
+            this.z *= scale;
+
+            return this;
         };
         Vector.prototype.equals = function (otherVector) {
             return this.x === otherVector.x && this.y === otherVector.y && this.z === otherVector.z;
@@ -41,6 +80,9 @@
         Vector.prototype.lengthSquared = function () {
             return (this.x * this.x + this.y * this.y + this.z * this.z);
         };
+        Vector.prototype.clone = function () {
+            return new Vector(this.x, this.y, this.z);
+        };
         Vector.prototype.normalize = function () {
             var len = this.length();
             if (len === 0) {
@@ -53,12 +95,7 @@
 
             return this;
         };
-        Vector.FromArray = function FromArray(array, offset) {
-            if (!offset) {
-                offset = 0;
-            }
-            return new Vector(array[offset], array[offset + 1], array[offset + 2]);
-        };
+
         Vector.Zero = function Zero() {
             return new Vector(0, 0, 0);
         };
@@ -69,11 +106,7 @@
             return new Vector(source.x, source.y, source.z);
         };
         Vector.TransformCoordinates = function TransformCoordinates(vector, transformation) {
-            var x = (vector.x * transformation.m[0]) + (vector.y * transformation.m[4]) + (vector.z * transformation.m[8]) + transformation.m[12];
-            var y = (vector.x * transformation.m[1]) + (vector.y * transformation.m[5]) + (vector.z * transformation.m[9]) + transformation.m[13];
-            var z = (vector.x * transformation.m[2]) + (vector.y * transformation.m[6]) + (vector.z * transformation.m[10]) + transformation.m[14];
-            var w = (vector.x * transformation.m[3]) + (vector.y * transformation.m[7]) + (vector.z * transformation.m[11]) + transformation.m[15];
-            return new Vector(x / w, y / w, z / w);
+            return vector.transform(transformation).clone();
         };
         Vector.TransformNormal = function TransformNormal(vector, transformation) {
             var x = (vector.x * transformation.m[0]) + (vector.y * transformation.m[4]) + (vector.z * transformation.m[8]);

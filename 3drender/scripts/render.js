@@ -26,10 +26,10 @@
             this.model = model;
             if (this.model.constructor == Array) {
                 this.model.forEach(function (model) {
-                    model.state = JagaEngine.Matrix.getTranslate(model.origin);
+                    model.state = JagaEngine.Matrix.Translation(model.origin);
                 })
             } else {
-                this.model.state = JagaEngine.Matrix.getTranslate(this.model.origin);
+                this.model.state = JagaEngine.Matrix.Translation(this.model.origin);
             }
             this.state = JagaEngine.Util.createSettings();
             //useful constants
@@ -39,12 +39,12 @@
 
         Render.prototype.getProjector = (function () {
             var projector = Object.create(null);
-            projector.getProjection = null;
+            projector.projection = null;
             projector.do = function (vector) {
-                vector.restore().transform(this.getProjection);
+                vector.restore().transform(this.projection);
             };
             projector.prepare = function (projection) {
-                projector.getProjection = projection;
+                projector.projection = projection;
 
                 return projector;
             };
@@ -80,10 +80,10 @@
         };
 
         Render.prototype.buildTransformation = function () {
-            var t1 = JagaEngine.Matrix.getTranslate(this.model.origin.scale(-1));
-            var t2 = JagaEngine.Matrix.getTranslate(this.model.origin.scale(-1).add(this.settings.translate));
-            var s = JagaEngine.Matrix.getScale(this.settings.scale);
-            var r = JagaEngine.Matrix.getRotate(this.settings.rotate.scale(this.d2r));
+            var t1 = JagaEngine.Matrix.Translation(this.model.origin.scale(-1));
+            var t2 = JagaEngine.Matrix.Translation(this.model.origin.scale(-1).add(this.settings.translate));
+            var s = JagaEngine.Matrix.Scaling(this.settings.scale);
+            var r = JagaEngine.Matrix.RotationYawPitchRoll(this.settings.rotate.scale(this.d2r));
 
             return t1.multiply(r).multiply(s).multiply(t2);
         };
@@ -108,9 +108,9 @@
             this.updateGeometry();
             this.clearCanvas();
             this.model.transform(this.buildTransformation()).commit();
-            this.model.project(this.drawContext, this.getProjector(JagaEngine.Matrix.getOrthogonal("xy")));
-            this.model.project(this.drawContext, this.getProjector(JagaEngine.Matrix.getOrthogonal("yz")));
-            this.model.project(this.drawContext, this.getProjector(JagaEngine.Matrix.getOrthogonal("xz")));
+            this.model.project(this.drawContext, this.getProjector(JagaEngine.Matrix.Orthogonal("xy")));
+            this.model.project(this.drawContext, this.getProjector(JagaEngine.Matrix.Orthogonal("yz")));
+            this.model.project(this.drawContext, this.getProjector(JagaEngine.Matrix.Orthogonal("xz")));
             this.drawContext.fillText("XOY", this.model.origin.x + this.parameters.outerRadius, this.model.origin.y);
             this.drawContext.fillText("ZOY", this.model.origin.z + this.parameters.outerRadius, this.model.origin.y);
             this.drawContext.fillText("XOZ", this.model.origin.x + this.parameters.outerRadius, this.model.origin.z);
@@ -130,8 +130,7 @@
         function AxonometricRender(drawContext, settings, parameters, models) {
             JagaEngine.Render.call(this, JagaEngine.RenderType.AXONOMETRIC, drawContext, settings, parameters, models);
             this.labels = ["Isometric", "Dimetric"];
-            this.projections = [JagaEngine.Matrix.getIsometric(), JagaEngine.Matrix.getDimetrix()];
-
+            this.projections = [JagaEngine.Matrix.Isometric(), JagaEngine.Matrix.Dimetric()];
         }
         AxonometricRender.prototype = Object.create(JagaEngine.Render.prototype);
 
@@ -139,11 +138,11 @@
             var self = this;
             self.updateGeometry();
             self.clearCanvas();
-            var s = JagaEngine.Matrix.getScale(self.settings.scale);
-            var r = JagaEngine.Matrix.getRotate(self.settings.rotate.scale(this.d2r));
+            var s = JagaEngine.Matrix.Scaling(self.settings.scale);
+            var r = JagaEngine.Matrix.Scaling(self.settings.rotate.scale(this.d2r));
             this.model.forEach(function (model, index) {
-                var t1 = JagaEngine.Matrix.getTranslate(model.origin.scale(-1));
-                var t2 = JagaEngine.Matrix.getTranslate(model.origin.scale(-1).add(self.settings.translate));
+                var t1 = JagaEngine.Matrix.Translation(model.origin.scale(-1));
+                var t2 = JagaEngine.Matrix.Translation(model.origin.scale(-1).add(self.settings.translate));
                 var m = t1.multiply(r).multiply(s).multiply(t2);
                 model.transform(m).commit();
                 model.project(self.drawContext, self.getProjector(self.projections[index]));
@@ -175,7 +174,7 @@
             }
             copy.alpha *= this.d2r;
 
-            return JagaEngine.Matrix.getOblique(copy);
+            return JagaEngine.Matrix.Oblique(copy);
         };
 
         ObliqueRender.prototype.rendering = function () {
@@ -208,7 +207,7 @@
             projector.projection = null;
             projector.viewWindow = null;
             projector.do = function (vector) {
-                vector.restore().transform(this.projection).scale(1 / vector.w);
+                vector.restore().transform(this.projection);
                 vector.x = this.viewWindow.left + this.viewWindow.width * ( (1 + vector.x) / 2 );
                 vector.y = this.viewWindow.top + this.viewWindow.height * ( (1 + vector.y) / 2 );
             };
@@ -232,7 +231,7 @@
             }
             copy.fov *= this.d2r;
 
-            return JagaEngine.Matrix.perspective(copy);
+            return JagaEngine.Matrix.Perspective(copy);
         };
 
         PerspectiveRender.prototype.drawViewWindow = function (viewWindow) {
