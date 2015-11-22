@@ -12,43 +12,43 @@
 
         Matrix.prototype.multiply = function (other) {
             var result = new Matrix();
-            result.m[0] = this.m[0] * other.m[0] + this.m[1] * other.m[4] + this.m[2] * other.m[8] + this.m[3] * other.m[12];
-            result.m[1] = this.m[0] * other.m[1] + this.m[1] * other.m[5] + this.m[2] * other.m[9] + this.m[3] * other.m[13];
-            result.m[2] = this.m[0] * other.m[2] + this.m[1] * other.m[6] + this.m[2] * other.m[10] + this.m[3] * other.m[14];
-            result.m[3] = this.m[0] * other.m[3] + this.m[1] * other.m[7] + this.m[2] * other.m[11] + this.m[3] * other.m[15];
-            result.m[4] = this.m[4] * other.m[0] + this.m[5] * other.m[4] + this.m[6] * other.m[8] + this.m[7] * other.m[12];
-            result.m[5] = this.m[4] * other.m[1] + this.m[5] * other.m[5] + this.m[6] * other.m[9] + this.m[7] * other.m[13];
-            result.m[6] = this.m[4] * other.m[2] + this.m[5] * other.m[6] + this.m[6] * other.m[10] + this.m[7] * other.m[14];
-            result.m[7] = this.m[4] * other.m[3] + this.m[5] * other.m[7] + this.m[6] * other.m[11] + this.m[7] * other.m[15];
-            result.m[8] = this.m[8] * other.m[0] + this.m[9] * other.m[4] + this.m[10] * other.m[8] + this.m[11] * other.m[12];
-            result.m[9] = this.m[8] * other.m[1] + this.m[9] * other.m[5] + this.m[10] * other.m[9] + this.m[11] * other.m[13];
-            result.m[10] = this.m[8] * other.m[2] + this.m[9] * other.m[6] + this.m[10] * other.m[10] + this.m[11] * other.m[14];
-            result.m[11] = this.m[8] * other.m[3] + this.m[9] * other.m[7] + this.m[10] * other.m[11] + this.m[11] * other.m[15];
-            result.m[12] = this.m[12] * other.m[0] + this.m[13] * other.m[4] + this.m[14] * other.m[8] + this.m[15] * other.m[12];
-            result.m[13] = this.m[12] * other.m[1] + this.m[13] * other.m[5] + this.m[14] * other.m[9] + this.m[15] * other.m[13];
-            result.m[14] = this.m[12] * other.m[2] + this.m[13] * other.m[6] + this.m[14] * other.m[10] + this.m[15] * other.m[14];
-            result.m[15] = this.m[12] * other.m[3] + this.m[13] * other.m[7] + this.m[14] * other.m[11] + this.m[15] * other.m[15];
+            result.v00 = this.v00 * other.v00 + this.v01 * other.v10 + this.v02 * other.v20 + this.v03 * other.v30;
+            result.v01 = this.v00 * other.v01 + this.v01 * other.v11 + this.v02 * other.v21 + this.v03 * other.v31;
+            result.v02 = this.v00 * other.v02 + this.v01 * other.v12 + this.v02 * other.v22 + this.v03 * other.v32;
+            result.v03 = this.v00 * other.v03 + this.v01 * other.v13 + this.v02 * other.v23 + this.v03 * other.v33;
+            result.v10 = this.v10 * other.v00 + this.v11 * other.v10 + this.v12 * other.v20 + this.v13 * other.v30;
+            result.v11 = this.v10 * other.v01 + this.v11 * other.v11 + this.v12 * other.v21 + this.v13 * other.v31;
+            result.v12 = this.v10 * other.v02 + this.v11 * other.v12 + this.v12 * other.v22 + this.v13 * other.v32;
+            result.v13 = this.v10 * other.v03 + this.v11 * other.v13 + this.v12 * other.v23 + this.v13 * other.v33;
+            result.v20 = this.v20 * other.v00 + this.v21 * other.v10 + this.v22 * other.v20 + this.v23 * other.v30;
+            result.v21 = this.v20 * other.v01 + this.v21 * other.v11 + this.v22 * other.v21 + this.v23 * other.v31;
+            result.v22 = this.v20 * other.v02 + this.v21 * other.v12 + this.v22 * other.v22 + this.v23 * other.v32;
+            result.v23 = this.v20 * other.v03 + this.v21 * other.v13 + this.v22 * other.v23 + this.v23 * other.v33;
+            result.v30 = this.v30 * other.v00 + this.v31 * other.v10 + this.v32 * other.v20 + this.v33 * other.v30;
+            result.v31 = this.v30 * other.v01 + this.v31 * other.v11 + this.v32 * other.v21 + this.v33 * other.v31;
+            result.v32 = this.v30 * other.v02 + this.v31 * other.v12 + this.v32 * other.v22 + this.v33 * other.v32;
+            result.v33 = this.v30 * other.v03 + this.v31 * other.v13 + this.v32 * other.v23 + this.v33 * other.v33;
             return result;
         };
 
         Matrix.FromValues = function (v00, v01, v02, v03, v10, v11, v12, v13, v20, v21, v22, f23, v30, v31, v32, v33) {
             var result = new Matrix();
-            result.m[0] = v00;
-            result.m[1] = v01;
-            result.m[2] = v02;
-            result.m[3] = v03;
-            result.m[4] = v10;
-            result.m[5] = v11;
-            result.m[6] = v12;
-            result.m[7] = v13;
-            result.m[8] = v20;
-            result.m[9] = v21;
-            result.m[10] = v22;
-            result.m[11] = f23;
-            result.m[12] = v30;
-            result.m[13] = v31;
-            result.m[14] = v32;
-            result.m[15] = v33;
+            result.v00 = v00;
+            result.v01 = v01;
+            result.v02 = v02;
+            result.v03 = v03;
+            result.v10 = v10;
+            result.v11 = v11;
+            result.v12 = v12;
+            result.v13 = v13;
+            result.v20 = v20;
+            result.v21 = v21;
+            result.v22 = v22;
+            result.v23 = f23;
+            result.v30 = v30;
+            result.v31 = v31;
+            result.v32 = v32;
+            result.v33 = v33;
 
             return result;
         };
@@ -65,12 +65,12 @@
             var result = Matrix.Zero();
             var s = Math.sin(angle);
             var c = Math.cos(angle);
-            result.m[0] = 1.0;
-            result.m[15] = 1.0;
-            result.m[5] = c;
-            result.m[10] = c;
-            result.m[9] = -s;
-            result.m[6] = s;
+            result.v00 = 1.0;
+            result.v33 = 1.0;
+            result.v11 = c;
+            result.v22 = c;
+            result.v21 = -s;
+            result.v12 = s;
 
             return result;
         };
@@ -79,12 +79,12 @@
             var result = Matrix.Zero();
             var s = Math.sin(angle);
             var c = Math.cos(angle);
-            result.m[5] = 1.0;
-            result.m[15] = 1.0;
-            result.m[0] = c;
-            result.m[2] = -s;
-            result.m[8] = s;
-            result.m[10] = c;
+            result.v11 = 1.0;
+            result.v33 = 1.0;
+            result.v00 = c;
+            result.v02 = -s;
+            result.v20 = s;
+            result.v22 = c;
 
             return result;
         };
@@ -93,12 +93,12 @@
             var result = Matrix.Zero();
             var s = Math.sin(angle);
             var c = Math.cos(angle);
-            result.m[10] = 1.0;
-            result.m[15] = 1.0;
-            result.m[0] = c;
-            result.m[1] = s;
-            result.m[4] = -s;
-            result.m[5] = c;
+            result.v22 = 1.0;
+            result.v33 = 1.0;
+            result.v00 = c;
+            result.v01 = s;
+            result.v10 = -s;
+            result.v11 = c;
 
             return result;
         };
@@ -109,19 +109,19 @@
             var c1 = 1 - c;
             axis.normalize();
             var result = Matrix.Zero();
-            result.m[0] = (axis.x * axis.x) * c1 + c;
-            result.m[1] = (axis.x * axis.y) * c1 - (axis.z * s);
-            result.m[2] = (axis.x * axis.z) * c1 + (axis.y * s);
-            result.m[3] = 0.0;
-            result.m[4] = (axis.y * axis.x) * c1 + (axis.z * s);
-            result.m[5] = (axis.y * axis.y) * c1 + c;
-            result.m[6] = (axis.y * axis.z) * c1 - (axis.x * s);
-            result.m[7] = 0.0;
-            result.m[8] = (axis.z * axis.x) * c1 - (axis.y * s);
-            result.m[9] = (axis.z * axis.y) * c1 + (axis.x * s);
-            result.m[10] = (axis.z * axis.z) * c1 + c;
-            result.m[11] = 0.0;
-            result.m[15] = 1.0;
+            result.v00 = (axis.x * axis.x) * c1 + c;
+            result.v01 = (axis.x * axis.y) * c1 - (axis.z * s);
+            result.v02 = (axis.x * axis.z) * c1 + (axis.y * s);
+            result.v03 = 0.0;
+            result.v10 = (axis.y * axis.x) * c1 + (axis.z * s);
+            result.v11 = (axis.y * axis.y) * c1 + c;
+            result.v12 = (axis.y * axis.z) * c1 - (axis.x * s);
+            result.v13 = 0.0;
+            result.v20 = (axis.z * axis.x) * c1 - (axis.y * s);
+            result.v21 = (axis.z * axis.y) * c1 + (axis.x * s);
+            result.v22 = (axis.z * axis.z) * c1 + c;
+            result.v23 = 0.0;
+            result.v33 = 1.0;
 
             return result;
         };
@@ -136,18 +136,18 @@
 
         Matrix.Scaling = function (vector) {
             var result = Matrix.Zero();
-            result.m[0] = vector.x;
-            result.m[5] = vector.y;
-            result.m[10] = vector.z;
-            result.m[15] = 1.0;
+            result.v00 = vector.x;
+            result.v11 = vector.y;
+            result.v22 = vector.z;
+            result.v33 = 1.0;
             return result;
         };
 
         Matrix.Translation = function (vector) {
             var result = Matrix.Identity();
-            result.m[12] = vector.x;
-            result.m[13] = vector.y;
-            result.m[14] = vector.z;
+            result.v30 = vector.x;
+            result.v31 = vector.y;
+            result.v32 = vector.z;
             return result;
         };
 
@@ -167,15 +167,15 @@
 
         Matrix.PerspectiveLH = function (width, height, znear, zfar) {
             var matrix = Matrix.Zero();
-            matrix.m[0] = (2.0 * znear) / width;
-            matrix.m[1] = matrix.m[2] = matrix.m[3] = 0.0;
-            matrix.m[5] = (2.0 * znear) / height;
-            matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0;
-            matrix.m[10] = -zfar / (znear - zfar);
-            matrix.m[8] = matrix.m[9] = 0.0;
-            matrix.m[11] = 1.0;
-            matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0;
-            matrix.m[14] = (znear * zfar) / (znear - zfar);
+            matrix.v00 = (2.0 * znear) / width;
+            matrix.v01 = matrix.v02 = matrix.v03 = 0.0;
+            matrix.v11 = (2.0 * znear) / height;
+            matrix.v10 = matrix.v12 = matrix.v13 = 0.0;
+            matrix.v22 = -zfar / (znear - zfar);
+            matrix.v20 = matrix.v21 = 0.0;
+            matrix.v23 = 1.0;
+            matrix.v30 = matrix.v31 = matrix.v33 = 0.0;
+            matrix.v32 = (znear * zfar) / (znear - zfar);
 
             return matrix;
         };
@@ -183,37 +183,37 @@
         Matrix.PerspectiveFovLH = function (fov, aspect, znear, zfar) {
             var matrix = Matrix.Zero();
             var tan = 1.0 / (Math.tan(fov * 0.5));
-            matrix.m[0] = tan / aspect;
-            matrix.m[1] = matrix.m[2] = matrix.m[3] = 0.0;
-            matrix.m[5] = tan;
-            matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0;
-            matrix.m[8] = matrix.m[9] = 0.0;
-            matrix.m[10] = -zfar / (znear - zfar);
-            matrix.m[11] = 1.0;
-            matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0;
-            matrix.m[14] = (znear * zfar) / (znear - zfar);
+            matrix.v00 = tan / aspect;
+            matrix.v01 = matrix.v02 = matrix.v03 = 0.0;
+            matrix.v11 = tan;
+            matrix.v10 = matrix.v12 = matrix.v13 = 0.0;
+            matrix.v20 = matrix.v21 = 0.0;
+            matrix.v22 = -zfar / (znear - zfar);
+            matrix.v23 = 1.0;
+            matrix.v30 = matrix.v31 = matrix.v33 = 0.0;
+            matrix.v32 = (znear * zfar) / (znear - zfar);
 
             return matrix;
         };
 
         Matrix.Transpose = function (matrix) {
             var result = new Matrix();
-            result.m[0] = matrix.m[0];
-            result.m[1] = matrix.m[4];
-            result.m[2] = matrix.m[8];
-            result.m[3] = matrix.m[12];
-            result.m[4] = matrix.m[1];
-            result.m[5] = matrix.m[5];
-            result.m[6] = matrix.m[9];
-            result.m[7] = matrix.m[13];
-            result.m[8] = matrix.m[2];
-            result.m[9] = matrix.m[6];
-            result.m[10] = matrix.m[10];
-            result.m[11] = matrix.m[14];
-            result.m[12] = matrix.m[3];
-            result.m[13] = matrix.m[7];
-            result.m[14] = matrix.m[11];
-            result.m[15] = matrix.m[15];
+            result.v00 = matrix.v00;
+            result.v01 = matrix.v10;
+            result.v02 = matrix.v20;
+            result.v03 = matrix.v30;
+            result.v10 = matrix.v01;
+            result.v11 = matrix.v11;
+            result.v12 = matrix.v21;
+            result.v13 = matrix.v31;
+            result.v20 = matrix.v02;
+            result.v21 = matrix.v12;
+            result.v22 = matrix.v22;
+            result.v23 = matrix.v32;
+            result.v30 = matrix.v03;
+            result.v31 = matrix.v13;
+            result.v32 = matrix.v23;
+            result.v33 = matrix.v33;
 
             return result;
         };
@@ -223,11 +223,11 @@
             var projectionYZ = Matrix.Identity();
             var projectionXZ = Matrix.Identity();
 
-            projectionYZ.m[0] = 0;
-            projectionYZ.m[8] = 1;
+            projectionYZ.v00 = 0;
+            projectionYZ.v20 = 1;
 
-            projectionXZ.m[5] = 0;
-            projectionXZ.m[9] = 1;
+            projectionXZ.v11 = 0;
+            projectionXZ.v21 = 1;
 
             var projections = new Object(null);
             projections.xy = projectionXY;
@@ -244,9 +244,9 @@
             var v2 =  1 / Math.sqrt(3);
             var v3 = -1 / 2;
             var matrix = Matrix.Identity();
-            matrix.m[0] = v1; matrix.m[1] = 0; matrix.m[2]  = v1;
-            matrix.m[4] = v3; matrix.m[5] = 1; matrix.m[6]  = v3;
-            matrix.m[8] =     matrix.m[9] =    matrix.m[10] = v2;
+            matrix.v00 = v1; matrix.v01 = 0; matrix.v02  = v1;
+            matrix.v10 = v3; matrix.v11 = 1; matrix.v12  = v3;
+            matrix.v20 =     matrix.v21 =    matrix.v22 = v2;
 
             return function () {
                 return matrix;
@@ -257,9 +257,9 @@
             var v1 = Math.sqrt(2) / 2;
             var v2 = Math.sqrt(2 / 3);
             var matrix = Matrix.Identity();
-            matrix.m[0] = 1;  matrix.m[1] = 0;  matrix.m[2] = -v1;
-            matrix.m[4] = 0;  matrix.m[5] = 1;  matrix.m[6] = v1;
-            matrix.m[8] = v1; matrix.m[9] = v1; matrix.m[10] = v2;
+        matrix.v00 = 1;  matrix.v01 = 0;  matrix.v02 = -v1;
+            matrix.v10 = 0;  matrix.v11 = 1;  matrix.v12 = v1;
+            matrix.v20 = v1; matrix.v21 = v1; matrix.v22 = v2;
 
             return function () {
                 return matrix;
@@ -268,11 +268,11 @@
 
         Matrix.Oblique = (function () {
             var matrix = new Matrix(0);
-            matrix.m[1] = matrix.m[5] = matrix.m[15] = 1;
+            matrix.v01 = matrix.v11 = matrix.v33 = 1;
 
             return function (oblique) {
-                matrix.m[8] = oblique.l * Math.cos(oblique.alpha);
-                matrix.m[9] = oblique.l * Math.sin(oblique.alpha);
+                matrix.v20 = oblique.l * Math.cos(oblique.alpha);
+                matrix.v21 = oblique.l * Math.sin(oblique.alpha);
 
                 return matrix;
             }
