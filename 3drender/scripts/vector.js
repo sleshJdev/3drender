@@ -1,90 +1,110 @@
 /**
  * Created by slesh on 10/23/15.
  */
+"use strict";
 
 (function (JagaEngine) {
     JagaEngine.Vector = (function () {
-        function Vector(x, y, z, w) {
-            this.x0 = x || 0;
-            this.y0 = y || 0;
-            this.z0 = z || 0;
-            this.w0 = w || 1;
-
-            this.restore();
+        function Vector(initialX, initialY, initialZ) {
+            this.x = initialX;
+            this.y = initialY;
+            this.z = initialZ;
         }
 
-        Vector.prototype.commit = function () {
-            this.x0 = this.x;
-            this.y0 = this.y;
-            this.z0 = this.z;
-            this.w0 = this.w;
+        Vector.prototype.toString = function () {
+            return "{X: " + this.x + " Y:" + this.y + " Z:" + this.z + "}";
+        };
+        Vector.prototype.add = function (otherVector) {
+            return new Vector(this.x + otherVector.x, this.y + otherVector.y, this.z + otherVector.z);
+        };
+        Vector.prototype.subtract = function (otherVector) {
+            return new Vector(this.x - otherVector.x, this.y - otherVector.y, this.z - otherVector.z);
+        };
+        Vector.prototype.negate = function () {
+            return new Vector(-this.x, -this.y, -this.z);
+        };
+        Vector.prototype.scale = function (scale) {
+            return new Vector(this.x * scale, this.y * scale, this.z * scale);
+        };
+        Vector.prototype.equals = function (otherVector) {
+            return this.x === otherVector.x && this.y === otherVector.y && this.z === otherVector.z;
+        };
+        Vector.prototype.multiply = function (otherVector) {
+            return new Vector(this.x * otherVector.x, this.y * otherVector.y, this.z * otherVector.z);
+        };
+        Vector.prototype.divide = function (otherVector) {
+            return new Vector(this.x / otherVector.x, this.y / otherVector.y, this.z / otherVector.z);
+        };
+        Vector.prototype.length = function () {
+            return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        };
+        Vector.prototype.lengthSquared = function () {
+            return (this.x * this.x + this.y * this.y + this.z * this.z);
+        };
+        Vector.prototype.normalize = function () {
+            var len = this.length();
+            if (len === 0) {
+                return;
+            }
+            var num = 1.0 / len;
+            this.x *= num;
+            this.y *= num;
+            this.z *= num;
 
             return this;
         };
-
-        Vector.prototype.restore = function () {
-            this.x = this.x0;
-            this.y = this.y0;
-            this.z = this.z0;
-            this.w = this.w0;
-
-            return this;
+        Vector.FromArray = function FromArray(array, offset) {
+            if (!offset) {
+                offset = 0;
+            }
+            return new Vector(array[offset], array[offset + 1], array[offset + 2]);
         };
-
-        Vector.prototype.add = function (vector) {
-            this.x += vector.x;
-            this.y += vector.y;
-            this.z += vector.z;
-
-            return this;
+        Vector.Zero = function Zero() {
+            return new Vector(0, 0, 0);
         };
-
-        Vector.prototype.scale = function(factor){
-            this.x *= factor;
-            this.y *= factor;
-            this.z *= factor;
-
-            return this;
+        Vector.Up = function Up() {
+            return new Vector(0, 1.0, 0);
         };
-
-        Vector.prototype.multiply = function (vector) {
-            this.x *= vector.x;
-            this.y *= vector.y;
-            this.z *= vector.z;
-
-            return this;
+        Vector.Copy = function Copy(source) {
+            return new Vector(source.x, source.y, source.z);
         };
-
-        Vector.prototype.cross = function (left, right) {
+        Vector.TransformCoordinates = function TransformCoordinates(vector, transformation) {
+            var x = (vector.x * transformation.m[0]) + (vector.y * transformation.m[4]) + (vector.z * transformation.m[8]) + transformation.m[12];
+            var y = (vector.x * transformation.m[1]) + (vector.y * transformation.m[5]) + (vector.z * transformation.m[9]) + transformation.m[13];
+            var z = (vector.x * transformation.m[2]) + (vector.y * transformation.m[6]) + (vector.z * transformation.m[10]) + transformation.m[14];
+            var w = (vector.x * transformation.m[3]) + (vector.y * transformation.m[7]) + (vector.z * transformation.m[11]) + transformation.m[15];
+            return new Vector(x / w, y / w, z / w);
+        };
+        Vector.TransformNormal = function TransformNormal(vector, transformation) {
+            var x = (vector.x * transformation.m[0]) + (vector.y * transformation.m[4]) + (vector.z * transformation.m[8]);
+            var y = (vector.x * transformation.m[1]) + (vector.y * transformation.m[5]) + (vector.z * transformation.m[9]);
+            var z = (vector.x * transformation.m[2]) + (vector.y * transformation.m[6]) + (vector.z * transformation.m[10]);
+            return new Vector(x, y, z);
+        };
+        Vector.Dot = function Dot(left, right) {
+            return (left.x * right.x + left.y * right.y + left.z * right.z);
+        };
+        Vector.Cross = function Cross(left, right) {
             var x = left.y * right.z - left.z * right.y;
             var y = left.z * right.x - left.x * right.z;
             var z = left.x * right.y - left.y * right.x;
-
             return new Vector(x, y, z);
         };
-
-        Vector.prototype.transform = function (matrix) {
-            var x = this.x * matrix.v00 + this.y * matrix.v10 + this.z * matrix.v20 + this.w * matrix.v30;
-            var y = this.x * matrix.v01 + this.y * matrix.v11 + this.z * matrix.v21 + this.w * matrix.v31;
-            var z = this.x * matrix.v02 + this.y * matrix.v12 + this.z * matrix.v22 + this.w * matrix.v32;
-            var w = this.x * matrix.v03 + this.y * matrix.v13 + this.z * matrix.v23 + this.w * matrix.v33;
-
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.w = w;
-
-            return this;
+        Vector.Normalize = function Normalize(vector) {
+            var newVector = Vector.Copy(vector);
+            newVector.normalize();
+            return newVector;
         };
-
-        Vector.prototype.clone = function () {
-            return new Vector(this.x, this.y, this.z);
+        Vector.Distance = function Distance(value1, value2) {
+            return Math.sqrt(Vector.DistanceSquared(value1, value2));
         };
-
-        Vector.prototype.toString = function () {
-            return "{x: " + this.x + ", y: " + this.y + ", z: " + this.z + "}";
+        Vector.DistanceSquared = function DistanceSquared(value1, value2) {
+            var x = value1.x - value2.x;
+            var y = value1.y - value2.y;
+            var z = value1.z - value2.z;
+            return (x * x) + (y * y) + (z * z);
         };
-
         return Vector;
     })();
-})(JagaEngine);
+})(JagaEngine || (JagaEngine = Object.create(null)));
+
