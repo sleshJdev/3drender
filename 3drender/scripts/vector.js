@@ -93,6 +93,27 @@
             return this;
         };
 
+        Vector.prototype.subtract = function (otherVector) {
+            return new Vector(this.x - otherVector.x, this.y - otherVector.y, this.z - otherVector.z);
+        };
+
+        Vector.prototype.length = function () {
+            return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        };
+
+        Vector.prototype.normalize = function () {
+            var length = this.length();
+            if(length === 0) {
+                return;
+            }
+            var factor = 1.0 / length;
+            this.x *= factor;
+            this.y *= factor;
+            this.z *= factor;
+
+            return this;
+        };
+
         Vector.prototype.scale = function(factor){
             this.x *= factor;
             this.y *= factor;

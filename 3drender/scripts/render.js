@@ -6,11 +6,11 @@
 
 (function (JagaEngine) {
     JagaEngine.RenderType = Object.create(null);
-    JagaEngine.RenderType.ORTHOGONAL    = 0;
-    JagaEngine.RenderType.AXONOMETRIC   = 1;
-    JagaEngine.RenderType.OBLIQUE       = 2;
-    JagaEngine.RenderType.PERSPECTIVE   = 3;
-})(JagaEngine);
+    JagaEngine.RenderType.ORTHOGONAL = 0;
+    JagaEngine.RenderType.AXONOMETRIC = 1;
+    JagaEngine.RenderType.OBLIQUE = 2;
+    JagaEngine.RenderType.PERSPECTIVE = 3;
+})(JagaEngine || (JagaEngine = Object.create(null)));
 
 
 /*
@@ -24,13 +24,10 @@
             this.settings = settings;
             this.parameters = parameters;
             this.model = model;
-            if (this.model.constructor == Array) {
-                this.model.forEach(function (model) {
-                    model.state = JagaEngine.Matrix.Translation(model.origin);
-                })
-            } else {
-                this.model.state = JagaEngine.Matrix.Translation(this.model.origin);
-            }
+            this.models = (this.model.constructor == Array) ? model : [model];
+            this.models.forEach(function (model) {
+                model.state = JagaEngine.Matrix.Translation(model.origin);
+            });
             this.state = JagaEngine.Util.createSettings();
             //useful constants
             this.d2r = Math.PI / 180;
@@ -62,21 +59,22 @@
             this.drawContext.clearRect(0, 0, JagaEngine.canvasWidth, JagaEngine.canvasHeight);
         };
 
-        Render.prototype.updateGeometry = function () {
+        Render.prototype.updateState = function () {
             this.state.translate.add(this.settings.translate);
             this.state.rotate.add(this.settings.rotate);
             this.state.scale.multiply(this.settings.scale);
+        };
 
+        Render.prototype.updateGeometry = function () {
+            this.updateState();
             if (this.settings.isUpdateGeometry) {
                 this.settings.isUpdateGeometry = false;
-                if (this.model && this.model.constructor == Array) {
-                    this.model.forEach(function (model) {
-                        model.generateGeometry();
-                    });
-                } else {
-                    this.model.generateGeometry();
-                }
+                this.models.forEach(function (model) {
+                    model.generateGeometry();
+                });
+                return true;
             }
+            return false;
         };
 
         Render.prototype.buildTransformation = function () {
@@ -90,7 +88,7 @@
 
         return Render;
     })();
-})(JagaEngine);
+})(JagaEngine || (JagaEngine = Object.create(null)));
 
 
 /*
@@ -119,7 +117,7 @@
 
         return OrthogonalRender;
     })();
-})(JagaEngine);
+})(JagaEngine || (JagaEngine = Object.create(null)));
 
 
 /*
@@ -133,6 +131,7 @@
             this.projections = [JagaEngine.Matrix.Isometric(), JagaEngine.Matrix.Dimetric()];
 
         }
+
         AxonometricRender.prototype = Object.create(JagaEngine.Render.prototype);
 
         AxonometricRender.prototype.rendering = function () {
@@ -154,7 +153,7 @@
 
         return AxonometricRender;
     })();
-})(JagaEngine);
+})(JagaEngine || (JagaEngine = Object.create(null)));
 
 
 /*
@@ -170,7 +169,7 @@
 
         ObliqueRender.prototype.getProjection = function (oblique) {
             var copy = Object.create(null);
-            for(var property in oblique){
+            for (var property in oblique) {
                 copy[property] = oblique[property];
             }
             copy.alpha *= this.d2r;
@@ -188,7 +187,7 @@
 
         return ObliqueRender;
     })();
-})(JagaEngine);
+})(JagaEngine || (JagaEngine = Object.create(null)));
 
 
 /*
@@ -199,6 +198,9 @@
         function PerspectiveRender(drawContext, settings, parameters, model) {
             JagaEngine.Render.call(this, JagaEngine.RenderType.PERSPECTIVE, drawContext, settings, parameters, model);
             this.device = new JagaEngine.Device(drawContext);
+            this.camera = new JagaEngine.Camera();
+            this.camera.position = new JagaEngine.Vector(0, 0, 10);
+            this.camera.target = new JagaEngine.Vector(0, 0, 0);
         }
 
         PerspectiveRender.prototype = Object.create(JagaEngine.Render.prototype);
@@ -227,7 +229,7 @@
 
         PerspectiveRender.getProjection = function (perspective) {
             var copy = Object.create(null);
-            for(var property in perspective){
+            for (var property in perspective) {
                 copy[property] = perspective[property];
             }
             copy.fov *= this.d2r;
@@ -235,32 +237,24 @@
             return JagaEngine.Matrix.perspective(copy);
         };
 
-        PerspectiveRender.prototype.drawViewWindow = function (viewWindow) {
-            this.drawContext.strokeStyle = "white";
-            this.drawContext.beginPath();
-            this.drawContext.moveTo(viewWindow.left, viewWindow.top);
-            this.drawContext.lineTo(viewWindow.left + viewWindow.width, viewWindow.top);
-            this.drawContext.lineTo(viewWindow.left + viewWindow.width, viewWindow.top + viewWindow.height);
-            this.drawContext.lineTo(viewWindow.left, viewWindow.top + viewWindow.height);
-            this.drawContext.closePath();
-            this.drawContext.stroke();
+        PerspectiveRender.prototype.normalizeUpdateGeometry = function () {
+            if (JagaEngine.Render.prototype.updateGeometry.call(this)) {
+                this.model.vertices.forEach(function (vertex) {
+                    vertex.normalize();
+                });
+            }
         };
 
         PerspectiveRender.prototype.rendering = function () {
             var self = this;
-            self.updateGeometry();
-            self.clearCanvas();
-            self.device.clear();
-            self.model.project(self.drawContext, self.getProjector(self.settings.perspective));
-            self.model.faces.forEach(function (face) {
-                self.device.drawTriangle(face.a, face.b, face.c, face.color);
-            });
-            self.device.present();
+            self.normalizeUpdateGeometry();
             self.model.transform(this.buildTransformation()).commit();
-            self.drawViewWindow(self.settings.perspective.viewWindow);
+            self.device.clear();
+            this.device.render(this.camera, this.model, this.settings.perspective);
+            this.device.present();
             self.resetSettings();
         };
 
         return PerspectiveRender;
     })();
-})(JagaEngine);
+})(JagaEngine || (JagaEngine = Object.create(null)));

@@ -21,6 +21,7 @@
         Cone.prototype.generateGeometry = function () {
             var self  = this;
             this.peak = new JagaEngine.Vector(0, -this.parameters.height, 0);
+
             //generate vertices
             this.vertices = [];
             var current = new JagaEngine.Vector();

@@ -14,6 +14,28 @@
             this.v00 = this.v11 = this.v22 = this.v33 = diagonalValue == undefined ? 1 : diagonalValue;
         }
 
+        Matrix.FromValues = function FromValues(v00, v01, v02, v03, v10, v11, v12, v13, v20, v21, v22, v23, v30, v31, v32, v33) {
+            var result = new Matrix();
+            result.v00 = v00;
+            result.v01 = v01;
+            result.v02 = v02;
+            result.v03 = v03;
+            result.v10 = v10;
+            result.v11 = v11;
+            result.v12 = v12;
+            result.v13 = v13;
+            result.v20 = v20;
+            result.v21 = v21;
+            result.v22 = v22;
+            result.v23 = v23;
+            result.v30 = v30;
+            result.v31 = v31;
+            result.v32 = v32;
+            result.v33 = v33;
+
+            return result;
+        };
+
         Matrix.prototype.multiply = function (m) {
             var n = this, r = new Matrix();
 
@@ -161,13 +183,14 @@
         Matrix.LookAtLH = function LookAtLH(eye, target, up) {
             var zAxis = target.subtract(eye);
             zAxis.normalize();
-            var xAxis = Vector.Cross(up, zAxis);
+            var xAxis = JagaEngine.Vector.Cross(up, zAxis);
             xAxis.normalize();
-            var yAxis = Vector.Cross(zAxis, xAxis);
+            var yAxis = JagaEngine.Vector.Cross(zAxis, xAxis);
             yAxis.normalize();
-            var ex = -Vector.Dot(xAxis, eye);
-            var ey = -Vector.Dot(yAxis, eye);
-            var ez = -Vector.Dot(zAxis, eye);
+            var ex = -JagaEngine.Vector.Dot(xAxis, eye);
+            var ey = -JagaEngine.Vector.Dot(yAxis, eye);
+            var ez = -JagaEngine.Vector.Dot(zAxis, eye);
+
             return Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0, xAxis.y, yAxis.y, zAxis.y, 0, xAxis.z, yAxis.z, zAxis.z, 0, ex, ey, ez, 1);
         };
         Matrix.PerspectiveLH = function(width, height, znear, zfar) {
@@ -186,7 +209,7 @@
         };
 
         Matrix.PerspectiveFovLH = function(fov, aspect, znear, zfar) {
-            var matrix = Matrix.Zero();
+            var matrix = new Matrix(0);
             var tan = 1.0 / (Math.tan(fov * 0.5));
             matrix.v00 = tan / aspect;
             matrix.v01 = matrix.v02 = matrix.v03 = 0.0;

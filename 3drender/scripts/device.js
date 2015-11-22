@@ -1,7 +1,6 @@
 /**
  * Created by slesh on 11/14/15.
  */
-
 "use strict";
 
 (function (JagaEngine) {
@@ -35,29 +34,13 @@
         };
 
         Device.prototype.drawTriangle = function (p1, p2, p3, color) {
-            if (p1.y > p2.y) {
-                var temp = p2;
-                p2 = p1;
-                p1 = temp;
-            }
-            if (p2.y > p3.y) {
-                var temp = p2;
-                p2 = p3;
-                p3 = temp;
-            }
-            if (p1.y > p2.y) {
-                var temp = p2;
-                p2 = p1;
-                p1 = temp;
-            }
+            if (p1.y > p2.y) { var temp = p2; p2 = p1; p1 = temp; }
+            if (p2.y > p3.y) { var temp = p2; p2 = p3; p3 = temp; }
+            if (p1.y > p2.y) { var temp = p2; p2 = p1; p1 = temp; }
             var dp1p2 = 0,
                 dp1p3 = 0;
-            if (p2.y - p1.y > 0) {
-                dp1p2 = (p2.x - p1.x) / (p2.y - p1.y);
-            }
-            if (p3.y - p1.y > 0) {
-                dp1p3 = (p3.x - p1.x) / (p3.y - p1.y);
-            }
+            if (p2.y - p1.y > 0) { dp1p2 = (p2.x - p1.x) / (p2.y - p1.y); }
+            if (p3.y - p1.y > 0) { dp1p3 = (p3.x - p1.x) / (p3.y - p1.y); }
             if (dp1p2 > dp1p3) {
                 for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
                     if (y < p2.y) {
@@ -84,12 +67,8 @@
         };
 
         Device.prototype.clamp = function (value, min, max) {
-            if (typeof min === "undefined") {
-                min = 0;
-            }
-            if (typeof max === "undefined") {
-                max = 1;
-            }
+            if (typeof min === "undefined") { min = 0; }
+            if (typeof max === "undefined") { max = 1; }
 
             return Math.max(min, Math.min(value, max));
         };
@@ -116,18 +95,35 @@
             this.backbufferdata[index4 + 3] = color.a * 255;
         };
 
-        Device.prototype.render = function (camera, model) {
+        Device.prototype.project = function (vector, transformation) {
+            var point = JagaEngine.Vector.TransformCoordinates(vector, transformation);
+            var x = point.x * JagaEngine.canvasWidth + JagaEngine.canvasWidth / 2.0;
+            var y = -point.y * JagaEngine.canvasHeight + JagaEngine.canvasHeight / 2.0;
+
+            return (new JagaEngine.Vector(x, y, point.z));
+        };
+
+        Device.prototype.planeRender = function (model, transformation) {
+            var self = this;
+            model.faces.forEach(function (face) {
+                var pixelA = self.project(face.a, transformation);
+                var pixelB = self.project(face.b, transformation);
+                var pixelC = self.project(face.c, transformation);
+                self.drawTriangle(pixelA, pixelB, pixelC, face.color);
+            });
+        };
+
+        Device.prototype.render = function (camera, model, perspecrive) {
+            var self = this;
             var viewMatrix = JagaEngine.Matrix.LookAtLH(camera.position, camera.target, JagaEngine.Vector.Up());
-            var projectionMatrix = JagaEngine.Matrix.PerspectiveFovLH(0.78, JagaEngine.canvasWidth / JagaEngine.canvasHeight, 0.01, 1.0);
-            var worldMatrix = JagaEngine.Matrix.Rotation(model.Rotation).multiply(JagaEngine.Matrix.Translation(model.Position));
-            var transformMatrix = worldMatrix.multiply(viewMatrix).multiply(projectionMatrix);
-            for (var indexFaces = 0; indexFaces < model.faces.length; indexFaces++) {
-                var currentFace = model.faces[indexFaces];
-                var pixelA = this.project(currentFace.a, transformMatrix);
-                var pixelB = this.project(currentFace.b, transformMatrix);
-                var pixelC = this.project(currentFace.c, transformMatrix);
-                this.drawTriangle(pixelA, pixelB, pixelC, currentFace.color);
-            }
+            var projectionMatrix = JagaEngine.Matrix.PerspectiveFovLH(perspecrive.fov, perspecrive.aspect, perspecrive.nearPlane, perspecrive.farPlane);
+            var transformMatrix = viewMatrix.multiply(projectionMatrix);
+            model.faces.forEach(function (face) {
+                var pixelA = self.project(face.a, transformMatrix);
+                var pixelB = self.project(face.b, transformMatrix);
+                var pixelC = self.project(face.c, transformMatrix);
+                self.drawTriangle(pixelA, pixelB, pixelC, face.color);
+            });
         };
 
         return Device;

@@ -37,12 +37,6 @@
             settings.perspective.aspect = 1;
             settings.perspective.nearPlane = 10;
             settings.perspective.farPlane = 100;
-            settings.perspective.distance = 1;
-            settings.perspective.viewWindow = Object.create(null);
-            settings.perspective.viewWindow.top = 50;
-            settings.perspective.viewWindow.left = 100;
-            settings.perspective.viewWindow.width = 750;
-            settings.perspective.viewWindow.height = 550;
 
             settings.oblique = Object.create(null);
             settings.oblique.l = 2;

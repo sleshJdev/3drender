@@ -21,9 +21,19 @@ var JagaEngine = Object.create(null);
         };
         return Color;
     })();
+
+    JagaEngine.Camera = (function () {
+        function Camera() {
+            this.position = new JagaEngine.Vector();
+            this.target = new JagaEngine.Vector();
+        }
+
+        return Camera;
+    })();
 })(JagaEngine || (JagaEngine = Object.create(null)));
 
-JagaEngine.start = function(canvas, statusPanel){
+
+JagaEngine.start = function (canvas, statusPanel) {
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
     var context = canvas.getContext("2d");
@@ -45,7 +55,7 @@ JagaEngine.start = function(canvas, statusPanel){
     parameters = JagaEngine.Util.createParameters(50, 100, 150, 8, colors);
     renders.push(new JagaEngine.AxonometricRender(context, JagaEngine.Util.createSettings(), parameters,
         [new JagaEngine.Cone(parameters, new JagaEngine.Vector(200, 200, 100)),
-         new JagaEngine.Cone(parameters, new JagaEngine.Vector(400, 200, 100))]));
+            new JagaEngine.Cone(parameters, new JagaEngine.Vector(400, 200, 100))]));
 
     parameters = this.Util.createParameters(50, 100, 150, 8, colors);
     renders.push(new JagaEngine.ObliqueRender(context, this.Util.createSettings(), parameters,
@@ -62,7 +72,7 @@ JagaEngine.start = function(canvas, statusPanel){
     controller.displayStatus();
 };
 
-window.onload = function() {
+window.onload = function () {
     JagaEngine.start(document.querySelector("canvas"), document.querySelector(".status"));
 
     //var canvas = document.querySelector("canvas");
