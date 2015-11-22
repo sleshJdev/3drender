@@ -7,7 +7,10 @@
 (function (JagaEngine) {
     JagaEngine.Matrix = (function () {
         function Matrix() {
-            this.m = [];
+            this.v00 = 0; this.v01 = 0; this.v02 = 0; this.v03 = 0;
+            this.v10 = 0; this.v11 = 0; this.v12 = 0; this.v13 = 0;
+            this.v20 = 0; this.v21 = 0; this.v22 = 0; this.v23 = 0;
+            this.v30 = 0; this.v31 = 0; this.v32 = 0; this.v33 = 0;
         }
 
         Matrix.prototype.multiply = function (other) {
@@ -31,34 +34,15 @@
             return result;
         };
 
-        Matrix.FromValues = function (v00, v01, v02, v03, v10, v11, v12, v13, v20, v21, v22, f23, v30, v31, v32, v33) {
-            var result = new Matrix();
-            result.v00 = v00;
-            result.v01 = v01;
-            result.v02 = v02;
-            result.v03 = v03;
-            result.v10 = v10;
-            result.v11 = v11;
-            result.v12 = v12;
-            result.v13 = v13;
-            result.v20 = v20;
-            result.v21 = v21;
-            result.v22 = v22;
-            result.v23 = f23;
-            result.v30 = v30;
-            result.v31 = v31;
-            result.v32 = v32;
-            result.v33 = v33;
-
-            return result;
-        };
-
         Matrix.Identity = function () {
-            return Matrix.FromValues(1.0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 1.0);
+            var matrix = new Matrix();
+            matrix.v00 = matrix.v11 = matrix.v22 = matrix.v33 = 1;
+
+            return matrix
         };
 
         Matrix.Zero = function () {
-            return Matrix.FromValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            return new Matrix();
         };
 
         Matrix.RotationX = function (angle) {
