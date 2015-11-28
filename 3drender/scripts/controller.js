@@ -38,7 +38,13 @@
                         "PERSPECTIVE</br>&ang;Fov..............." + this.render.settings.perspective.fov + "&deg;" +
                         "</br>Aspect............." + this.render.settings.perspective.aspect.toFixed(1) +
                         "</br>Near Plane........." + this.render.settings.perspective.nearPlane +
-                        "</br>Far Plane.........." + this.render.settings.perspective.farPlane;
+                        "</br>Far Plane.........." + this.render.settings.perspective.farPlane +
+                        "</br>Camera Position X.." + this.render.camera.position.x +
+                        "</br>Camera Position Y.." + this.render.camera.position.y +
+                        "</br>Camera Position Z.." + this.render.camera.position.z +
+                        "</br>Camera Target X...." + this.render.camera.target.x +
+                        "</br>Camera Target Y...." + this.render.camera.target.y +
+                        "</br>Camera Target Z...." + this.render.camera.target.z;
 
                     break;
                 case JagaEngine.RenderType.ORTHOGONAL:
@@ -100,8 +106,8 @@
             /*
              rotating
              */
-            self.addListenerForKey(87/*"w"*/, false, false, false, function () { self.render.settings.rotate.x = -5; });
-            self.addListenerForKey(83/*"s"*/, false, false, false, function () { self.render.settings.rotate.x =  5; });
+            self.addListenerForKey(87/*"w"*/, false, false, false, function () { self.render.settings.rotate.x =  5; });
+            self.addListenerForKey(83/*"s"*/, false, false, false, function () { self.render.settings.rotate.x = -5; });
             self.addListenerForKey(68/*"d"*/, false, false, false, function () { self.render.settings.rotate.y =  5; });
             self.addListenerForKey(65/*"a"*/, false, false, false, function () { self.render.settings.rotate.y = -5; });
             self.addListenerForKey(69/*"e"*/, false, false, false, function () { self.render.settings.rotate.z =  5; });
@@ -177,14 +183,34 @@
             self.addListenerForKey(84/*t*/, false, false, false, createSwitcher("fov", [30, 60, 90, 120]));
             self.addListenerForKey(82/*r*/, false, false, false, createSwitcher("aspect", [1, 4 / 3, 16 / 9]));
 
-            self.addListenerForKey(70/*f*/, false, false, false, function () { self.render.settings.perspective.nearPlane +=  5; });
-            self.addListenerForKey(70/*f*/, true,  false, false, function () { self.render.settings.perspective.nearPlane += -5; });
+            self.addListenerForKey(70/*f*/, false, false, false, function () { self.render.settings.perspective.nearPlane +=  1; });
+            self.addListenerForKey(70/*f*/, true,  false, false, function () { self.render.settings.perspective.nearPlane += -1; });
 
-            self.addListenerForKey(71/*g*/, false, false, false, function () { self.render.settings.perspective.farPlane +=  5; });
-            self.addListenerForKey(71/*g*/, true,  false, false, function () { self.render.settings.perspective.farPlane += -5; });
+            self.addListenerForKey(71/*g*/, false, false, false, function () { self.render.settings.perspective.farPlane +=  1; });
+            self.addListenerForKey(71/*g*/, true,  false, false, function () { self.render.settings.perspective.farPlane += -1; });
 
             self.addListenerForKey(67/*c*/, false,  false, false, function () { self.render.settings.perspective.distance +=  1; });
             self.addListenerForKey(67/*c*/, true,   false, false, function () { self.render.settings.perspective.distance += -1; });
+
+            /*
+             translating target
+             */
+            self.addListenerForKey(39/*arrow-right*/, false, true, false, function () { self.render.camera.target.x +=  1; });
+            self.addListenerForKey(37/*arrow-left */, false, true, false, function () { self.render.camera.target.x += -1; });
+            self.addListenerForKey(38/*arrow-up   */, false, true, false, function () { self.render.camera.target.y += -1; });
+            self.addListenerForKey(40/*arrow-down */, false, true, false, function () { self.render.camera.target.y +=  1; });
+            self.addListenerForKey(38/*arrow-up   */, true,  true, false, function () { self.render.camera.target.z += -1; });
+            self.addListenerForKey(40/*arrow-down */, true,  true, false, function () { self.render.camera.target.z +=  1; });
+
+            /*
+             translating camera
+             */
+            self.addListenerForKey(39/*arrow-right*/, false, false, true, function () { self.render.camera.position.x +=  1; });
+            self.addListenerForKey(37/*arrow-left */, false, false, true, function () { self.render.camera.position.x += -1; });
+            self.addListenerForKey(38/*arrow-up   */, false, false, true, function () { self.render.camera.position.y += -1; });
+            self.addListenerForKey(40/*arrow-down */, false, false, true, function () { self.render.camera.position.y +=  1; });
+            self.addListenerForKey(38/*arrow-up   */, true,  false, true, function () { self.render.camera.position.z += -1; });
+            self.addListenerForKey(40/*arrow-down */, true,  false, true, function () { self.render.camera.position.z +=  1; });
         };
 
         return Controller;

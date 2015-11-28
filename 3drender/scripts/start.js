@@ -48,20 +48,20 @@ JagaEngine.start = function (canvas, statusPanel) {
     var renders = [],
         parameters;
 
-    parameters = JagaEngine.Util.createParameters(50, 100, 150, 8, colors);
+    parameters = JagaEngine.Util.createParameters(50, 100, 150, 9, colors);
     renders.push(new JagaEngine.OrthogonalRender(context, JagaEngine.Util.createSettings(), parameters,
         new JagaEngine.Cone(parameters, new JagaEngine.Vector(150, 200, 500))));
 
-    parameters = JagaEngine.Util.createParameters(50, 100, 150, 8, colors);
+    parameters = JagaEngine.Util.createParameters(50, 100, 150, 9, colors);
     renders.push(new JagaEngine.AxonometricRender(context, JagaEngine.Util.createSettings(), parameters,
-        [new JagaEngine.Cone(parameters, new JagaEngine.Vector(200, 200, 100)),
-            new JagaEngine.Cone(parameters, new JagaEngine.Vector(400, 200, 100))]));
+        [new JagaEngine.Cone(parameters, new JagaEngine.Vector(500, 200, 100)),
+         new JagaEngine.Cone(parameters, new JagaEngine.Vector(700, 200, 100))]));
 
-    parameters = this.Util.createParameters(50, 100, 150, 8, colors);
+    parameters = this.Util.createParameters(50, 100, 150, 9, colors);
     renders.push(new JagaEngine.ObliqueRender(context, this.Util.createSettings(), parameters,
-        new JagaEngine.Cone(parameters, new JagaEngine.Vector(300, 200, 100))));
+        new JagaEngine.Cone(parameters, new JagaEngine.Vector(500, 200, 100))));
 
-    parameters = JagaEngine.Util.createParameters(50, 100, 150, 8, colors);
+    parameters = JagaEngine.Util.createParameters(50, 100, 150, 9, colors);
     renders.push(new JagaEngine.PerspectiveRender(context, this.Util.createSettings(), parameters,
         new JagaEngine.Cone(parameters, new JagaEngine.Vector(0, 50, 350))));
 

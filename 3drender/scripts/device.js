@@ -97,8 +97,8 @@
 
         Device.prototype.project = function (vector, transformation) {
             var point = JagaEngine.Vector.TransformCoordinates(vector, transformation);
-            var x = point.x * JagaEngine.canvasWidth + JagaEngine.canvasWidth / 2.0;
-            var y = -point.y * JagaEngine.canvasHeight + JagaEngine.canvasHeight / 2.0;
+            var x =  point.x * JagaEngine.canvasWidth + JagaEngine.canvasWidth / 2.0;
+            var y =  point.y * JagaEngine.canvasHeight + JagaEngine.canvasHeight / 2.0;
 
             return (new JagaEngine.Vector(x, y, point.z));
         };

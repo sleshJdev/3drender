@@ -33,10 +33,10 @@
             settings.isUpdateGeometry = true;
 
             settings.perspective = Object.create(null);
-            settings.perspective.fov = 60;
+            settings.perspective.fov = 30;
             settings.perspective.aspect = 1;
-            settings.perspective.nearPlane = 10;
-            settings.perspective.farPlane = 100;
+            settings.perspective.nearPlane = 1;
+            settings.perspective.farPlane = 5;
 
             settings.oblique = Object.create(null);
             settings.oblique.l = 2;
