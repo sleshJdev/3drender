@@ -1,5 +1,9 @@
-body{
+body {
     background-color: black;
+}
+
+canvas{
+    margin: auto auto;
 }
 
 .status {
