@@ -44,7 +44,10 @@ window.onload = function () {
             "GEOMENTRY</br>Points............." + cfg.params.majorNumber +
             "</br>Height............." + cfg.params.height +
             "</br>Inner Radius......." + cfg.params.innerRadius +
-            "</br>Outer Radius......." + cfg.params.outerRadius;
+            "</br>Outer Radius......." + cfg.params.outerRadius + "<hr>" +
+            "LIGHT</br>Light X...." + cfg.light.x.toFixed(2) +
+            "</br>Light Y...." + cfg.light.y.toFixed(2) +
+            "</br>Light Z...." + cfg.light.z.toFixed(2);
         switch (cfg.projectionType) {
             case JagaEngine.AXONOMETRIC:
                 statusHtml += "<hr>" +
@@ -62,12 +65,10 @@ window.onload = function () {
                     "</br>Aspect............." + cfg.perspective.aspect.toFixed(1) +
                     "</br>Near Plane........." + cfg.perspective.znear +
                     "</br>Far Plane.........." + cfg.perspective.zfar +
+                    "</br>Distance.........." + cfg.perspective.distance.toFixed(2) +
                     "</br>Camera Position X.." + cfg.camera.position.x.toFixed(2) +
                     "</br>Camera Position Y.." + cfg.camera.position.y.toFixed(2) +
-                    "</br>Camera Position Z.." + cfg.camera.position.z.toFixed(2) +
-                    "</br>Light X...." + cfg.light.x.toFixed(2) +
-                    "</br>Light Y...." + cfg.light.y.toFixed(2) +
-                    "</br>Light Z...." + cfg.light.z.toFixed(2);
+                    "</br>Camera Position Z.." + cfg.camera.position.z.toFixed(2);
                 break;
             case JagaEngine.ORTOGONAL_XY:
             case JagaEngine.ORTOGONAL_YZ:

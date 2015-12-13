@@ -44,8 +44,8 @@
                 opc = vertices[majorNumber + i + 1];
                 facets.push(Model.buildFacet(opc, ipp, ipc, colors.base, 1));
                 facets.push(Model.buildFacet(opc, opp, ipp, colors.base, 1));
-                facets.push(Model.buildFacet(ipc, ipp, peak, colors.inner, 2));
-                facets.push(Model.buildFacet(opp, opc, peak, colors.outer, 3));
+                facets.push(Model.buildFacet(ipc, peak, ipp, colors.inner, 2));
+                facets.push(Model.buildFacet(opp, peak, opc, colors.outer, 3));
                 ipp = ipc;
                 opp = opc;
             }

@@ -38,7 +38,7 @@
         };
         Device.prototype.project = function (coord, transMat) {
             var point = BABYLON.Vector3.TransformCoordinates(coord, transMat);
-            var x = this.workingWidth * (point.x + 0.5);
+            var x = this.workingWidth  * ( point.x + 0.5);
             var y = this.workingHeight * (-point.y + 0.5);
             var z =  255 * (point.z + 0.5);
             return (new BABYLON.Vector3(x, y, z));
@@ -105,8 +105,10 @@
 
         Device.prototype.render = function (cfg, mesh) {
             var self = this,
-                normals = [], normal, center, end, color, ndotl, light,
-                pixelA, pixelB, pixelC, pixelWorldA, pixelWorldB, pixelWorldC, normalA, normalB, normalC,
+                normals = [], normal, center, end, color, ndotl,
+                pixelA, pixelB, pixelC,
+                pixelWorldA, pixelWorldB,
+                pixelWorldC, normalA, normalB, normalC,
                 worldMatrix, worldViewTransformation, transformMatrix;
             worldMatrix = BABYLON.Matrix.RotationYawPitchRoll(
                 cfg.rotation.y * JagaEngine.D2R,
@@ -148,12 +150,9 @@
                         cfg.perspective.zfar,
                         cfg.perspective.distance);
                     transformMatrix = worldMatrix.multiply(viewMatrix).multiply(perspectiveMatrix);
-                    worldViewTransformation = worldMatrix;
+                    worldViewTransformation = worldMatrix.multiply(viewMatrix);
                     break;
             }
-            //light = cfg.light.scale(1000);
-            //console.log(JSON.stringify(cfg.light));
-
             mesh.facets.forEach(function (facet) {
                 pixelA = self.project(facet.a, transformMatrix);
                 pixelB = self.project(facet.b, transformMatrix);
@@ -173,26 +172,26 @@
                 self.drawTriangle(pixelA, pixelB, pixelC, color);
             });
             self.present();
-            //self.workingContext.beginPath();
-            //self.workingContext.arc(light.x, light.y, 20, 0, 2 * Math.PI, false);
-            //self.workingContext.fillStyle = "yellow";
-            //self.workingContext.fill();
-            //self.workingContext.lineWidth = 10;
-            //self.workingContext.strokeStyle = '#003300';
-            //self.workingContext.stroke();
-            //self.workingContext.lineWidth = 2;
-            //normals.forEach(function (normal) {
-            //    var p1 = normal.start;
-            //    var p2 = normal.end;
-            //    self.workingContext.beginPath();
-            //    self.workingContext.moveTo(p1.x, p1.y);
-            //    self.workingContext.lineTo(p2.x, p2.y);
-            //    self.workingContext.stroke();
-            //    self.workingContext.fillStyle = "#ffffff";
-            //    self.workingContext.fillRect(p1.x - 2, p1.y - 2, 5, 5);
-            //    self.workingContext.fillStyle = "#ff00ff";
-            //    self.workingContext.fillRect(p2.x - 2, p2.y - 2, 5, 5);
-            //});
+            self.workingContext.beginPath();
+            self.workingContext.arc(cfg.light.x, cfg.light.y, 20, 0, 2 * Math.PI, false);
+            self.workingContext.fillStyle = "yellow";
+            self.workingContext.fill();
+            self.workingContext.lineWidth = 10;
+            self.workingContext.strokeStyle = '#003300';
+            self.workingContext.stroke();
+            self.workingContext.lineWidth = 2;
+            normals.forEach(function (normal) {
+                var p1 = normal.start;
+                var p2 = normal.end;
+                self.workingContext.beginPath();
+                self.workingContext.moveTo(p1.x, p1.y);
+                self.workingContext.lineTo(p2.x, p2.y);
+                self.workingContext.stroke();
+                self.workingContext.fillStyle = "#ffffff";
+                self.workingContext.fillRect(p1.x - 2, p1.y - 2, 5, 5);
+                self.workingContext.fillStyle = "#ff00ff";
+                self.workingContext.fillRect(p2.x - 2, p2.y - 2, 5, 5);
+            });
         };
         return Device;
     })();
