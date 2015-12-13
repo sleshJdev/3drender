@@ -10,7 +10,7 @@
 
         Model.generateVertices = function (majorNumber, radius) {
             var shift = 2 * Math.PI / majorNumber;
-            var vertex = BABYLON.Vector3.Zero();
+            var vertex = JagaEngine.Vector3.Zero();
             var vertices = [];
             for (var i = 0, angle = 0.0; i <= majorNumber; ++i, angle += shift) {
                 vertex.x = radius * Math.cos(angle);
@@ -44,8 +44,8 @@
                 opc = vertices[majorNumber + i + 1];
                 facets.push(Model.buildFacet(opc, ipp, ipc, colors.base, 1));
                 facets.push(Model.buildFacet(opc, opp, ipp, colors.base, 1));
-                facets.push(Model.buildFacet(ipc, peak, ipp, colors.inner, 2));
-                facets.push(Model.buildFacet(opp, peak, opc, colors.outer, 3));
+                facets.push(Model.buildFacet(ipc, ipp, peak, colors.inner, 2));
+                facets.push(Model.buildFacet(opp, opc, peak, colors.outer, 3));
                 ipp = ipc;
                 opp = opc;
             }
@@ -56,7 +56,7 @@
         Model.prototype.meshing = function (parameters) {
             var innerVertices = Model.generateVertices(parameters.majorNumber, parameters.innerRadius);
             var outerVertices = Model.generateVertices(parameters.majorNumber, parameters.outerRadius);
-            var peak = new BABYLON.Vector3(0, parameters.height, 0).normalize().scale(parameters.height / 1000.0);
+            var peak = new JagaEngine.Vector3(0, -parameters.height, 0).normalize().scale(parameters.height / 1000.0);
             this.vertices = innerVertices.concat(outerVertices);
             this.vertices.push(peak);
             this.facets = Model.buildFacets(this.vertices, peak, parameters.colors, parameters.majorNumber);

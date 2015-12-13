@@ -11,13 +11,12 @@
             this.workingHeight = canvas.height;
             this.workingContext = this.workingCanvas.getContext("2d");
             this.depthbuffer = new Array(this.workingWidth * this.workingHeight);
-            this.isShafowModeOn = false;
         }
 
         Device.prototype.clear = function () {
             this.workingContext.clearRect(0, 0, this.workingWidth, this.workingHeight);
             this.backbuffer = this.workingContext.getImageData(0, 0, this.workingWidth, this.workingHeight);
-            for(var i = 0; i < this.depthbuffer.length; this.depthbuffer[i++] = 10000000);
+            for (var i = 0; i < this.depthbuffer.length; this.depthbuffer[i++] = 100000000);
         };
         Device.prototype.present = function () {
             this.workingContext.putImageData(this.backbuffer, 0, 0);
@@ -26,7 +25,6 @@
             this.backbufferdata = this.backbuffer.data;
             var index = ((x >> 0) + (y >> 0) * this.workingWidth);
             var index4 = index * 4;
-            var alpha = color.a;
             if (this.depthbuffer[index] < z) {
                 return;
             }
@@ -34,14 +32,14 @@
             this.backbufferdata[index4] = color.r * 255;
             this.backbufferdata[index4 + 1] = color.g * 255;
             this.backbufferdata[index4 + 2] = color.b * 255;
-            this.backbufferdata[index4 + 3] = alpha * 255;
+            this.backbufferdata[index4 + 3] = color.a * 255;
         };
         Device.prototype.project = function (coord, transMat) {
-            var point = BABYLON.Vector3.TransformCoordinates(coord, transMat);
-            var x = this.workingWidth  * ( point.x + 0.5);
-            var y = this.workingHeight * (-point.y + 0.5);
-            var z =  255 * (point.z + 0.5);
-            return (new BABYLON.Vector3(x, y, z));
+            var point = JagaEngine.Vector3.TransformCoordinates(coord, transMat);
+            var x = this.workingWidth * (point.x + 0.5);
+            var y = this.workingHeight * (point.y + 0.5);
+            var z = 255 * (point.z + 0.5);
+            return (new JagaEngine.Vector3(x, y, z));
         };
         Device.prototype.drawPoint = function (point, color) {
             if (point.x >= 0 && point.y >= 0 && point.x < this.workingWidth && point.y < this.workingHeight) {
@@ -49,24 +47,33 @@
             }
         };
         Device.prototype.clamp = function (value, min, max) {
-            if (typeof min === "undefined") { min = 0; }
-            if (typeof max === "undefined") { max = 1; }
+            if (typeof min === "undefined") {
+                min = 0;
+            }
+            if (typeof max === "undefined") {
+                max = 1;
+            }
             return Math.max(min, Math.min(value, max));
         };
         Device.prototype.interpolate = function (min, max, gradient) {
             return min + (max - min) * this.clamp(gradient);
         };
-        Device.prototype.processScanLine = function (y, pa, pb, pc, pd, color) {
+        Device.prototype.processScanLine = function (y, pa, pb, pc, pd, color, fillColor) {
             var gradient1 = pa.y != pb.y ? (y - pa.y) / (pb.y - pa.y) : 1;
             var gradient2 = pc.y != pd.y ? (y - pc.y) / (pd.y - pc.y) : 1;
             var sx = this.interpolate(pa.x, pb.x, gradient1) >> 0;
             var ex = this.interpolate(pc.x, pd.x, gradient2) >> 0;
             var z1 = this.interpolate(pa.z, pb.z, gradient1);
             var z2 = this.interpolate(pc.z, pd.z, gradient2);
+            fillColor = fillColor === undefined ? color : fillColor;
             for (var x = sx; x < ex; x++) {
                 var gradient = (x - sx) / (ex - sx);
                 var z = this.interpolate(z1, z2, gradient);
-                this.drawPoint(new BABYLON.Vector3(x, y, z), color);
+                if (x === sx || x === ex - 1) {
+                    this.drawPoint(new JagaEngine.Vector3(x, y, z), color);
+                } else {
+                    this.drawPoint(new JagaEngine.Vector3(x, y, z), fillColor);
+                }
             }
         };
         Device.prototype.cross2D = function (x0, y0, x1, y1) {
@@ -75,75 +82,121 @@
         Device.prototype.lineSide2D = function (p, lf/*line from*/, lt/*line to*/) {
             return this.cross2D(p.x - lf.x, p.y - lf.y, lt.x - lf.x, lt.y - lf.y);
         };
-        Device.prototype.drawTriangle = function (p1, p2, p3, color) {
-            if (p1.y > p2.y) { var temp = p2; p2 = p1; p1 = temp; }
-            if (p1.y > p3.y) { var temp = p1; p1 = p3; p3 = temp; }
-            if (p2.y > p3.y) { var temp = p2; p2 = p3; p3 = temp; }
+        Device.prototype.drawTriangle = function (p1, p2, p3, color, fillColor) {
+            if (p1.y > p2.y) {
+                var temp = p2;
+                p2 = p1;
+                p1 = temp;
+            }
+            if (p2.y > p3.y) {
+                var temp = p2;
+                p2 = p3;
+                p3 = temp;
+            }
+            if (p1.y > p2.y) {
+                var temp = p2;
+                p2 = p1;
+                p1 = temp;
+            }
             if (this.lineSide2D(p2, p1, p3) > 0) {
                 for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
                     if (y < p2.y) {
-                        this.processScanLine(y, p1, p3, p1, p2, color);
+                        this.processScanLine(y, p1, p3, p1, p2, color, fillColor);
                     } else {
-                        this.processScanLine(y, p1, p3, p2, p3, color);
+                        this.processScanLine(y, p1, p3, p2, p3, color, fillColor);
                     }
                 }
             } else {
                 for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
                     if (y < p2.y) {
-                        this.processScanLine(y, p1, p2, p1, p3, color);
+                        this.processScanLine(y, p1, p2, p1, p3, color, fillColor);
                     } else {
-                        this.processScanLine(y, p2, p3, p1, p3, color);
+                        this.processScanLine(y, p2, p3, p1, p3, color, fillColor);
                     }
                 }
             }
         };
         Device.prototype.computeNDotL = function (vertex, normal, lightPosition) {
-            var lightDirection = lightPosition.subtract(vertex);
-
-            return Math.max(0, BABYLON.Vector3.Dot(normal.normalize(), lightDirection.normalize()));
+            return Math.max(0, JagaEngine.Vector3.Dot(normal.normalize(), lightPosition.subtract(vertex).normalize()));
         };
-
+        Device.prototype.bresenhamLine = (function () {
+            var steep, temp, dx, dy, dx2, error, totalError, x, y, point = JagaEngine.Vector3.Zero();
+            return function (a, b, color) {
+                steep = false;
+                if (Math.abs(a.x - b.x) < Math.abs(a.y - b.y)) {
+                    temp = a.x;
+                    a.x = a.y;
+                    a.y = temp;
+                    temp = b.x;
+                    b.x = b.y;
+                    b.y = temp;
+                    steep = true;
+                }
+                if (a.x > b.x) {
+                    temp = a;
+                    a = b;
+                    b = temp;
+                }
+                dy = b.y - a.y;
+                dx = b.x - a.x;
+                dx2 = 2 * dx;
+                error = 2 * Math.abs(dy);
+                totalError = 0;
+                for (x = a.x, y = a.y; x <= b.x; ++x) {
+                    totalError += error;
+                    if (totalError > dx) {
+                        totalError -= dx2;
+                        y += a.y < b.y ? 1 : -1;
+                    }
+                    if (steep) {
+                        point.x = y;
+                        point.y = x;
+                    }
+                    else {
+                        point.x = x;
+                        point.y = y;
+                    }
+                    this.drawPoint(point, color);
+                }
+            }
+        })();
         Device.prototype.render = function (cfg, mesh) {
-            var self = this,
-                normals = [], normal, center, end, color, ndotl,
-                pixelA, pixelB, pixelC,
-                pixelWorldA, pixelWorldB,
-                pixelWorldC, normalA, normalB, normalC,
-                worldMatrix, worldViewTransformation, transformMatrix;
-            worldMatrix = BABYLON.Matrix.RotationYawPitchRoll(
-                cfg.rotation.y * JagaEngine.D2R,
-                cfg.rotation.x * JagaEngine.D2R,
-                cfg.rotation.z * JagaEngine.D2R).multiply(BABYLON.Matrix.Translation(
-                    cfg.translation.x,
-                    cfg.translation.y,
-                    cfg.translation.z));
-            worldViewTransformation = worldMatrix;
-            switch (cfg.projectionType) {
+            var self = this;
+            var transformMatrix = JagaEngine.Matrix.RotationYawPitchRoll(-cfg.rotation.y * JagaEngine.D2R, -cfg.rotation.x * JagaEngine.D2R, cfg.rotation.z * JagaEngine.D2R);
+            mesh.vertices.forEach(function (vertex) {
+                vertex.rotateSelf(transformMatrix);
+            });
+            cfg.rotationTotal.x += cfg.rotation.x;
+            cfg.rotation.x = 0;
+            cfg.rotationTotal.y += cfg.rotation.y;
+            cfg.rotation.y = 0;
+            cfg.rotationTotal.z += cfg.rotation.z;
+            cfg.rotation.z = 0;
+
+            var worldMatrix = JagaEngine.Matrix.Translation(cfg.translation.x, -cfg.translation.y, cfg.translation.z);
+            var worldViewTransformation = worldMatrix;
+            switch (cfg.projection) {
                 case JagaEngine.ORTOGONAL_XY:
-                    transformMatrix = worldMatrix.multiply(BABYLON.Matrix.Orthogonal("xy"));
+                    transformMatrix = worldMatrix.multiply(JagaEngine.Matrix.Orthogonal("xy"));
                     break;
                 case JagaEngine.ORTOGONAL_YZ:
-                    transformMatrix = worldMatrix.multiply(BABYLON.Matrix.Orthogonal("yz"));
+                    transformMatrix = worldMatrix.multiply(JagaEngine.Matrix.Orthogonal("yz"));
                     break;
                 case JagaEngine.ORTOGONAL_XZ:
-                    transformMatrix = worldMatrix.multiply(BABYLON.Matrix.Orthogonal("xz"));
+                    transformMatrix = worldMatrix.multiply(JagaEngine.Matrix.Orthogonal("xz"));
                     break;
                 case JagaEngine.AXONOMETRIC:
-                    transformMatrix = worldMatrix.multiply(BABYLON.Matrix.Axonometric(
+                    transformMatrix = worldMatrix.multiply(JagaEngine.Matrix.Axonometric(
                         cfg.axonometric.phi * JagaEngine.D2R,
                         cfg.axonometric.psi * JagaEngine.D2R));
+                    worldViewTransformation = transformMatrix;
                     break;
                 case JagaEngine.OBLIQUE:
-                    transformMatrix = worldMatrix.multiply(BABYLON.Matrix.Oblique(
-                        cfg.oblique.l,
-                        cfg.oblique.alpha * JagaEngine.D2R));
+                    transformMatrix = worldMatrix.multiply(JagaEngine.Matrix.Oblique(cfg.oblique.l, cfg.oblique.alpha * JagaEngine.D2R));
                     break;
                 case JagaEngine.PERSPECTIVE:
-                    var viewMatrix = BABYLON.Matrix.LookAtLH(
-                        cfg.camera.position,
-                        cfg.camera.target,
-                        BABYLON.Vector3.Up());
-                    var perspectiveMatrix = BABYLON.Matrix.PerspectiveFovLH(
+                    var viewMatrix = JagaEngine.Matrix.LookAtLH(cfg.camera.position, cfg.camera.target, JagaEngine.Vector3.Up());
+                    var perspectiveMatrix = JagaEngine.Matrix.PerspectiveFovLH(
                         cfg.perspective.fov * JagaEngine.D2R,
                         self.workingWidth / self.workingHeight,
                         cfg.perspective.znear,
@@ -153,23 +206,35 @@
                     worldViewTransformation = worldMatrix.multiply(viewMatrix);
                     break;
             }
+            var normals = [], normal, center, end, color, ndotl,
+                pixelA, pixelB, pixelC, pixelWorldA, pixelWorldB, pixelWorldC, normalA, normalB, normalC;
             mesh.facets.forEach(function (facet) {
                 pixelA = self.project(facet.a, transformMatrix);
                 pixelB = self.project(facet.b, transformMatrix);
                 pixelC = self.project(facet.c, transformMatrix);
-                pixelWorldA = BABYLON.Vector3.TransformCoordinates(facet.a, worldViewTransformation);
-                pixelWorldB = BABYLON.Vector3.TransformCoordinates(facet.b, worldViewTransformation);
-                pixelWorldC = BABYLON.Vector3.TransformCoordinates(facet.c, worldViewTransformation);
-                normalA = BABYLON.Vector3.Cross(pixelWorldA, pixelWorldB);
-                normalB = BABYLON.Vector3.Cross(pixelWorldB, pixelWorldC);
-                normalC = BABYLON.Vector3.Cross(pixelWorldC, pixelWorldA);
-                center = pixelA.add(pixelB).add(pixelC).scale(1 / 3);
-                normal = normalA.add(normalB).add(normalC).scale(1 / 3);
-                end = center.add(normal.scale(20000));
-                normals.push({start: center, end: end});
-                ndotl = 0.25 + self.computeNDotL(center, normal, cfg.light);
-                color = new BABYLON.Color4(ndotl * facet.color.r, ndotl * facet.color.g, ndotl * facet.color.b, ndotl * facet.color.a);
-                self.drawTriangle(pixelA, pixelB, pixelC, color);
+                if (cfg.isfill) {
+                    pixelWorldA = JagaEngine.Vector3.TransformCoordinates(facet.a, worldViewTransformation);
+                    pixelWorldB = JagaEngine.Vector3.TransformCoordinates(facet.b, worldViewTransformation);
+                    pixelWorldC = JagaEngine.Vector3.TransformCoordinates(facet.c, worldViewTransformation);
+                    normalA = JagaEngine.Vector3.Cross(pixelWorldA, pixelWorldB);
+                    normalB = JagaEngine.Vector3.Cross(pixelWorldB, pixelWorldC);
+                    normalC = JagaEngine.Vector3.Cross(pixelWorldC, pixelWorldA);
+                    center = pixelA.add(pixelB).add(pixelC).scale(1 / 3);
+                    normal = normalA.add(normalB).add(normalC).scale(1 / 3);
+                    end = center.add(normal.scale(20000));
+                    normals.push({start: center, end: end});
+                    ndotl = 0.25 + self.computeNDotL(center, normal, cfg.light);
+                    color = new JagaEngine.Color4(ndotl * facet.color.r, ndotl * facet.color.g, ndotl * facet.color.b, ndotl * facet.color.a);
+                    self.drawTriangle(pixelA, pixelB, pixelC, color);
+                } else {
+                    if (cfg.ishidelines) {
+                        self.drawTriangle(pixelA, pixelB, pixelC, facet.color, JagaEngine.Colors.BLACK);
+                    } else {
+                        self.bresenhamLine(pixelA.clone(), pixelB.clone(), facet.color);
+                        self.bresenhamLine(pixelB.clone(), pixelC.clone(), facet.color);
+                        self.bresenhamLine(pixelC.clone(), pixelA.clone(), facet.color);
+                    }
+                }
             });
             self.present();
             self.workingContext.beginPath();

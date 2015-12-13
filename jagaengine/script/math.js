@@ -1,5 +1,5 @@
-var BABYLON;
-(function (BABYLON) {
+var JagaEngine;
+(function (JagaEngine) {
     var Color4 = (function () {
         function Color4(initialR, initialG, initialB, initialA) {
             this.r = initialR;
@@ -13,14 +13,21 @@ var BABYLON;
         };
         return Color4;
     })();
-    BABYLON.Color4 = Color4;
+    JagaEngine.Color4 = Color4;
     var Vector3 = (function () {
         function Vector3(x, y, z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
+        Vector3.prototype.rotateSelf = function (matrix) {
+            var newVector = Vector3.TransformCoordinates(this, matrix);
+            this.x = newVector.x;
+            this.y = newVector.y;
+            this.z = newVector.z;
 
+            return this;
+        };
         Vector3.prototype.toString = function () {
             return "{X: " + this.x + " Y:" + this.y + " Z:" + this.z + "}";
         };
@@ -125,7 +132,7 @@ var BABYLON;
         };
         return Vector3;
     })();
-    BABYLON.Vector3 = Vector3;
+    JagaEngine.Vector3 = Vector3;
     var Matrix = (function () {
         function Matrix() {
             this.m = [];
@@ -133,60 +140,54 @@ var BABYLON;
 
         Matrix.prototype.multiply = function (other) {
             var result = new Matrix();
-            result.m[0] = this.m[0] * other.m[0] + this.m[1] * other.m[4] + this.m[2] * other.m[8] + this.m[3] * other.m[12];
-            result.m[1] = this.m[0] * other.m[1] + this.m[1] * other.m[5] + this.m[2] * other.m[9] + this.m[3] * other.m[13];
-            result.m[2] = this.m[0] * other.m[2] + this.m[1] * other.m[6] + this.m[2] * other.m[10] + this.m[3] * other.m[14];
-            result.m[3] = this.m[0] * other.m[3] + this.m[1] * other.m[7] + this.m[2] * other.m[11] + this.m[3] * other.m[15];
-            result.m[4] = this.m[4] * other.m[0] + this.m[5] * other.m[4] + this.m[6] * other.m[8] + this.m[7] * other.m[12];
-            result.m[5] = this.m[4] * other.m[1] + this.m[5] * other.m[5] + this.m[6] * other.m[9] + this.m[7] * other.m[13];
-            result.m[6] = this.m[4] * other.m[2] + this.m[5] * other.m[6] + this.m[6] * other.m[10] + this.m[7] * other.m[14];
-            result.m[7] = this.m[4] * other.m[3] + this.m[5] * other.m[7] + this.m[6] * other.m[11] + this.m[7] * other.m[15];
-            result.m[8] = this.m[8] * other.m[0] + this.m[9] * other.m[4] + this.m[10] * other.m[8] + this.m[11] * other.m[12];
-            result.m[9] = this.m[8] * other.m[1] + this.m[9] * other.m[5] + this.m[10] * other.m[9] + this.m[11] * other.m[13];
-            result.m[10] = this.m[8] * other.m[2] + this.m[9] * other.m[6] + this.m[10] * other.m[10] + this.m[11] * other.m[14];
-            result.m[11] = this.m[8] * other.m[3] + this.m[9] * other.m[7] + this.m[10] * other.m[11] + this.m[11] * other.m[15];
-            result.m[12] = this.m[12] * other.m[0] + this.m[13] * other.m[4] + this.m[14] * other.m[8] + this.m[15] * other.m[12];
-            result.m[13] = this.m[12] * other.m[1] + this.m[13] * other.m[5] + this.m[14] * other.m[9] + this.m[15] * other.m[13];
+            result.m[0]  = this.m[0]  * other.m[0] + this.m[1]  * other.m[4] + this.m[2]  * other.m[8]  + this.m[3]  * other.m[12];
+            result.m[1]  = this.m[0]  * other.m[1] + this.m[1]  * other.m[5] + this.m[2]  * other.m[9]  + this.m[3]  * other.m[13];
+            result.m[2]  = this.m[0]  * other.m[2] + this.m[1]  * other.m[6] + this.m[2]  * other.m[10] + this.m[3]  * other.m[14];
+            result.m[3]  = this.m[0]  * other.m[3] + this.m[1]  * other.m[7] + this.m[2]  * other.m[11] + this.m[3]  * other.m[15];
+            result.m[4]  = this.m[4]  * other.m[0] + this.m[5]  * other.m[4] + this.m[6]  * other.m[8]  + this.m[7]  * other.m[12];
+            result.m[5]  = this.m[4]  * other.m[1] + this.m[5]  * other.m[5] + this.m[6]  * other.m[9]  + this.m[7]  * other.m[13];
+            result.m[6]  = this.m[4]  * other.m[2] + this.m[5]  * other.m[6] + this.m[6]  * other.m[10] + this.m[7]  * other.m[14];
+            result.m[7]  = this.m[4]  * other.m[3] + this.m[5]  * other.m[7] + this.m[6]  * other.m[11] + this.m[7]  * other.m[15];
+            result.m[8]  = this.m[8]  * other.m[0] + this.m[9]  * other.m[4] + this.m[10] * other.m[8]  + this.m[11] * other.m[12];
+            result.m[9]  = this.m[8]  * other.m[1] + this.m[9]  * other.m[5] + this.m[10] * other.m[9]  + this.m[11] * other.m[13];
+            result.m[10] = this.m[8]  * other.m[2] + this.m[9]  * other.m[6] + this.m[10] * other.m[10] + this.m[11] * other.m[14];
+            result.m[11] = this.m[8]  * other.m[3] + this.m[9]  * other.m[7] + this.m[10] * other.m[11] + this.m[11] * other.m[15];
+            result.m[12] = this.m[12] * other.m[0] + this.m[13] * other.m[4] + this.m[14] * other.m[8]  + this.m[15] * other.m[12];
+            result.m[13] = this.m[12] * other.m[1] + this.m[13] * other.m[5] + this.m[14] * other.m[9]  + this.m[15] * other.m[13];
             result.m[14] = this.m[12] * other.m[2] + this.m[13] * other.m[6] + this.m[14] * other.m[10] + this.m[15] * other.m[14];
             result.m[15] = this.m[12] * other.m[3] + this.m[13] * other.m[7] + this.m[14] * other.m[11] + this.m[15] * other.m[15];
+
             return result;
         };
+
         Matrix.FromValues = function FromValues(v00, v01, v02, v03, v10, v11, v12, v13, v20, v21, v22, v23, v30, v31, v32, v33) {
             var result = new Matrix();
-            result.m[0] = v00;
-            result.m[1] = v01;
-            result.m[2] = v02;
-            result.m[3] = v03;
-            result.m[4] = v10;
-            result.m[5] = v11;
-            result.m[6] = v12;
-            result.m[7] = v13;
-            result.m[8] = v20;
-            result.m[9] = v21;
-            result.m[10] = v22;
-            result.m[11] = v23;
-            result.m[12] = v30;
-            result.m[13] = v31;
-            result.m[14] = v32;
-            result.m[15] = v33;
+            result.m[0]  = v00; result.m[1]  = v01; result.m[2]  = v02; result.m[3]  = v03;
+            result.m[4]  = v10; result.m[5]  = v11; result.m[6]  = v12; result.m[7]  = v13;
+            result.m[8]  = v20; result.m[9]  = v21; result.m[10] = v22; result.m[11] = v23;
+            result.m[12] = v30; result.m[13] = v31; result.m[14] = v32; result.m[15] = v33;
+
             return result;
         };
+
         Matrix.Identity = function Identity() {
             return Matrix.FromValues(1.0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 1.0, 0, 0, 0, 0, 1.0);
         };
+
         Matrix.Zero = function Zero() {
             return Matrix.FromValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         };
+
         Matrix.Orthogonal = (function () {
+            var xy = Matrix.Identity();
             var yz = Matrix.Identity();
+            var xz = Matrix.Identity();
+
             yz.m[0] = yz.m[10] = 0;
             yz.m[2] = yz.m[8]  = 1;
 
-            var xz = Matrix.Identity();
             xz.m[5] = xz.m[10] = 0;
-            xz.m[6] = xz.m[9] = 1;
-
-            var xy = Matrix.Identity();
+            xz.m[6] = xz.m[9]  = 1;
 
             var matrix = Object.create(null);
             matrix.xy = xy;
@@ -197,6 +198,7 @@ var BABYLON;
                 return matrix[axes.toLowerCase().trim()];
             };
         })();
+
         Matrix.Axonometric = function (phi, psi) {
             var cphi = Math.cos(phi);
             var sphi = Math.sin(phi);
@@ -211,6 +213,7 @@ var BABYLON;
 
             return result;
         };
+
         Matrix.Oblique = function (l, alpha) {
             var result = Matrix.Identity();
             result.m[8] = l * Math.cos(alpha);
@@ -218,6 +221,7 @@ var BABYLON;
 
             return result;
         };
+
         Matrix.RotationX = function RotationX(angle) {
             var result = Matrix.Zero();
             var s = Math.sin(angle);
@@ -228,20 +232,24 @@ var BABYLON;
             result.m[10] = c;
             result.m[9] = -s;
             result.m[6] = s;
+
             return result;
         };
+
         Matrix.RotationY = function RotationY(angle) {
             var result = Matrix.Zero();
             var s = Math.sin(angle);
             var c = Math.cos(angle);
-            result.m[5] = 1.0;
+            result.m[5]  = 1.0;
             result.m[15] = 1.0;
-            result.m[0] = c;
-            result.m[2] = -s;
-            result.m[8] = s;
-            result.m[10] = c;
+            result.m[0]  =  c;
+            result.m[2]  = -s;
+            result.m[8]  =  s;
+            result.m[10] =  c;
+
             return result;
         };
+
         Matrix.RotationZ = function RotationZ(angle) {
             var result = Matrix.Zero();
             var s = Math.sin(angle);
@@ -252,32 +260,14 @@ var BABYLON;
             result.m[1] = s;
             result.m[4] = -s;
             result.m[5] = c;
+
             return result;
         };
-        Matrix.RotationAxis = function RotationAxis(axis, angle) {
-            var s = Math.sin(-angle);
-            var c = Math.cos(-angle);
-            var c1 = 1 - c;
-            axis.normalize();
-            var result = Matrix.Zero();
-            result.m[0] = (axis.x * axis.x) * c1 + c;
-            result.m[1] = (axis.x * axis.y) * c1 - (axis.z * s);
-            result.m[2] = (axis.x * axis.z) * c1 + (axis.y * s);
-            result.m[3] = 0.0;
-            result.m[4] = (axis.y * axis.x) * c1 + (axis.z * s);
-            result.m[5] = (axis.y * axis.y) * c1 + c;
-            result.m[6] = (axis.y * axis.z) * c1 - (axis.x * s);
-            result.m[7] = 0.0;
-            result.m[8] = (axis.z * axis.x) * c1 - (axis.y * s);
-            result.m[9] = (axis.z * axis.y) * c1 + (axis.x * s);
-            result.m[10] = (axis.z * axis.z) * c1 + c;
-            result.m[11] = 0.0;
-            result.m[15] = 1.0;
-            return result;
-        };
+
         Matrix.RotationYawPitchRoll = function RotationYawPitchRoll(yaw, pitch, roll) {
             return Matrix.RotationZ(roll).multiply(Matrix.RotationX(pitch)).multiply(Matrix.RotationY(yaw));
         };
+
         Matrix.Scaling = function Scaling(x, y, z) {
             var result = Matrix.Zero();
             result.m[0] = x;
@@ -286,6 +276,7 @@ var BABYLON;
             result.m[15] = 1.0;
             return result;
         };
+
         Matrix.Translation = function Translation(x, y, z) {
             var result = Matrix.Identity();
             result.m[12] = x;
@@ -293,31 +284,22 @@ var BABYLON;
             result.m[14] = z;
             return result;
         };
+
         Matrix.LookAtLH = function LookAtLH(eye, target, up) {
-            var zAxis = target.subtract(eye);
-            zAxis.normalize();
-            var xAxis = Vector3.Cross(up, zAxis);
-            xAxis.normalize();
-            var yAxis = Vector3.Cross(zAxis, xAxis);
-            yAxis.normalize();
+            var zAxis = target.subtract(eye).normalize();
+            var xAxis = Vector3.Cross(up, zAxis).normalize();
+            var yAxis = Vector3.Cross(zAxis, xAxis).normalize();
             var ex = -Vector3.Dot(xAxis, eye);
             var ey = -Vector3.Dot(yAxis, eye);
             var ez = -Vector3.Dot(zAxis, eye);
-            return Matrix.FromValues(xAxis.x, yAxis.x, zAxis.x, 0, xAxis.y, yAxis.y, zAxis.y, 0, xAxis.z, yAxis.z, zAxis.z, 0, ex, ey, ez, 1);
+
+            return Matrix.FromValues(
+                xAxis.x, yAxis.x, zAxis.x, 0,
+                xAxis.y, yAxis.y, zAxis.y, 0,
+                xAxis.z, yAxis.z, zAxis.z, 0,
+                ex,      ey,      ez,      1);
         };
-        Matrix.PerspectiveLH = function PerspectiveLH(width, height, znear, zfar, distance) {
-            var matrix = Matrix.Zero();
-            matrix.m[0] = (2.0 * znear) / width;
-            matrix.m[1] = matrix.m[2] = matrix.m[3] = 0.0;
-            matrix.m[5] = (2.0 * znear) / height;
-            matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0;
-            matrix.m[10] = -zfar / (znear - zfar);
-            matrix.m[8] = matrix.m[9] = 0.0;
-            matrix.m[11] = -1/distance;
-            matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0;
-            matrix.m[14] = (znear * zfar) / (znear - zfar);
-            return matrix;
-        };
+
         Matrix.PerspectiveFovLH = function PerspectiveFovLH(fov, aspect, znear, zfar, distance) {
             var matrix = Matrix.Zero();
             var tan = 1.0 / (Math.tan(fov * 0.5));
@@ -330,9 +312,11 @@ var BABYLON;
             matrix.m[11] = distance;
             matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0;
             matrix.m[14] = (znear * zfar) / (znear - zfar);
+
             return matrix;
         };
+
         return Matrix;
     })();
-    BABYLON.Matrix = Matrix;
-})(BABYLON || (BABYLON = {}));
+    JagaEngine.Matrix = Matrix;
+})(JagaEngine || (JagaEngine = Object.create(null)));

@@ -6,8 +6,8 @@
 (function (JagaEngine) {
     var Camera = (function () {
         function Camera() {
-            this.position = BABYLON.Vector3.Zero();
-            this.target = BABYLON.Vector3.Zero();
+            this.position = JagaEngine.Vector3.Zero();
+            this.target = JagaEngine.Vector3.Zero();
         }
 
         return Camera;

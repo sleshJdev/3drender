@@ -27,7 +27,7 @@
             var self = this;
 
             function handler(event) {
-                //console.log(event);
+                console.log(event);
                 var isDown = event.type == "keydown";
                 var id = "" + event.keyCode + event.shiftKey + event.ctrlKey + event.altKey;
                 if (id in self.events) {
@@ -102,11 +102,24 @@
             self.addListenerForKey(78/*n*/, false, false, false, function () { updateGeometry("majorNumber",  1); });
             self.addListenerForKey(78/*n*/, true,  false, false, function () { updateGeometry("majorNumber", -1); });
 
+            /*
+            mesh or fill
+             */
+            self.addListenerForKey(86/*v*/, false, false, false, function () { self.cfg.isfill = !self.cfg.isfill; });
+
+            /*
+            hide or show lines
+             */
+            self.addListenerForKey(66/*b*/, false, false, false, function () { self.cfg.ishidelines = !self.cfg.ishidelines; });
+
+            /*
+            choose specific projection type
+             */
             var projections = [JagaEngine.ORTOGONAL_XY, JagaEngine.ORTOGONAL_YZ, JagaEngine.ORTOGONAL_XZ,
                                JagaEngine.AXONOMETRIC,  JagaEngine.OBLIQUE,      JagaEngine.PERSPECTIVE];
             [49/*1*/, 50/*2*/, 51/*3*/, 52/*4*/, 53/*5*/, 54/*6*/].forEach(function (code, index) {
-                self.addListenerForKey(code, false, true, false, function () {
-                    self.cfg.projectionType = projections[index];
+                self.addListenerForKey(code, false, false, false, function () {
+                    self.cfg.projection = projections[index];
                 });
             });
 
@@ -150,13 +163,13 @@
             /*
              translating target
              */
-            //var targetOffset = 0.05;
-            //self.addListenerForKey(39/*arrow-right*/, false, true, false, function () { self.cfg.camera.target.x +=  targetOffset; });
-            //self.addListenerForKey(37/*arrow-left */, false, true, false, function () { self.cfg.camera.target.x += -targetOffset; });
-            //self.addListenerForKey(38/*arrow-up   */, false, true, false, function () { self.cfg.camera.target.y +=  targetOffset; });
-            //self.addListenerForKey(40/*arrow-down */, false, true, false, function () { self.cfg.camera.target.y += -targetOffset; });
-            //self.addListenerForKey(38/*arrow-up   */, true,  true, false, function () { self.cfg.camera.target.z += -targetOffset; });
-            //self.addListenerForKey(40/*arrow-down */, true,  true, false, function () { self.cfg.camera.target.z +=  targetOffset; });
+            var targetOffset = 0.05;
+            self.addListenerForKey(87/*"w"*/, false, false, true, function () { self.cfg.camera.target.y +=  targetOffset; });
+            self.addListenerForKey(83/*"s"*/, false, false, true, function () { self.cfg.camera.target.y += -targetOffset; });
+            self.addListenerForKey(68/*"d"*/, false, false, true, function () { self.cfg.camera.target.x +=  targetOffset; });
+            self.addListenerForKey(65/*"a"*/, false, false, true, function () { self.cfg.camera.target.x += -targetOffset; });
+            self.addListenerForKey(87/*"w"*/, true,  false, true, function () { self.cfg.camera.target.z +=  targetOffset; });
+            self.addListenerForKey(83/*"s"*/, true,  false, true, function () { self.cfg.camera.target.z += -targetOffset; });
 
             /*
              translating camera
