@@ -44,7 +44,7 @@
                 opc = vertices[majorNumber + i + 1];
                 facets.push(Model.buildFacet(opc, ipp, ipc, colors.base, 1));
                 facets.push(Model.buildFacet(opc, opp, ipp, colors.base, 1));
-                facets.push(Model.buildFacet(ipp, ipc, peak, colors.inner, 2));
+                facets.push(Model.buildFacet(ipc, ipp, peak, colors.inner, 2));
                 facets.push(Model.buildFacet(opp, opc, peak, colors.outer, 3));
                 ipp = ipc;
                 opp = opc;
@@ -56,10 +56,10 @@
         Model.prototype.meshing = function (parameters) {
             var innerVertices = Model.generateVertices(parameters.majorNumber, parameters.innerRadius);
             var outerVertices = Model.generateVertices(parameters.majorNumber, parameters.outerRadius);
+            var peak = new BABYLON.Vector3(0, parameters.height, 0).normalize().scale(parameters.height / 1000.0);
             this.vertices = innerVertices.concat(outerVertices);
-            var peak = new BABYLON.Vector3(0, -parameters.height, 0).normalize().scale(parameters.height / 1000.0);
-            this.facets = Model.buildFacets(this.vertices, peak, parameters.colors, parameters.majorNumber);
             this.vertices.push(peak);
+            this.facets = Model.buildFacets(this.vertices, peak, parameters.colors, parameters.majorNumber);
 
             return this;
         };

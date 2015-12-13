@@ -53,7 +53,13 @@ var BABYLON;
         };
         Vector3.prototype.clone = function () {
             return new Vector3(this.x, this.y, this.z);
-        }
+        };
+        Vector3.Swap = function (a, b) {
+            var temp;
+            temp = a.x; a.x = b.x; b.x = temp;
+            temp = a.y; a.y = b.y; b.y = temp;
+            temp = a.z; a.z = b.z; b.z = temp;
+        };
         Vector3.prototype.normalize = function () {
             var length = this.length();
             if (length === 0) {
@@ -171,6 +177,47 @@ var BABYLON;
         Matrix.Zero = function Zero() {
             return Matrix.FromValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         };
+        Matrix.Orthogonal = (function () {
+            var yz = Matrix.Identity();
+            yz.m[0] = yz.m[10] = 0;
+            yz.m[2] = yz.m[8]  = 1;
+
+            var xz = Matrix.Identity();
+            xz.m[5] = xz.m[10] = 0;
+            xz.m[6] = xz.m[9] = 1;
+
+            var xy = Matrix.Identity();
+
+            var matrix = Object.create(null);
+            matrix.xy = xy;
+            matrix.yz = yz;
+            matrix.xz = xz;
+
+            return function (axes) {
+                return matrix[axes.toLowerCase().trim()];
+            };
+        })();
+        Matrix.Axonometric = function (phi, psi) {
+            var cphi = Math.cos(phi);
+            var sphi = Math.sin(phi);
+            var cpsi = Math.cos(psi);
+            var spsi = Math.sin(psi);
+
+            var result = Matrix.Identity();
+            result.m[0]  = cpsi; result.m[1]  = sphi * spsi;  result.m[2]  = 0; result.m[3]  = 0;
+            result.m[4]  = 0;    result.m[5]  = cphi;         result.m[6]  = 0; result.m[7]  = 0;
+            result.m[8]  = sphi; result.m[9]  = -sphi * cpsi; result.m[10] = 1; result.m[11] = 0;
+            result.m[12] = 0;    result.m[13] = 0;            result.m[14] = 0; result.m[15] = 1;
+
+            return result;
+        };
+        Matrix.Oblique = function (l, alpha) {
+            var result = Matrix.Identity();
+            result.m[8] = l * Math.cos(alpha);
+            result.m[9] = l * Math.sin(alpha);
+
+            return result;
+        };
         Matrix.RotationX = function RotationX(angle) {
             var result = Matrix.Zero();
             var s = Math.sin(angle);
@@ -266,7 +313,7 @@ var BABYLON;
             matrix.m[4] = matrix.m[6] = matrix.m[7] = 0.0;
             matrix.m[10] = -zfar / (znear - zfar);
             matrix.m[8] = matrix.m[9] = 0.0;
-            matrix.m[11] = distance;
+            matrix.m[11] = -1/distance;
             matrix.m[12] = matrix.m[13] = matrix.m[15] = 0.0;
             matrix.m[14] = (znear * zfar) / (znear - zfar);
             return matrix;

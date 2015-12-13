@@ -16,8 +16,9 @@
             var event = Object.create(null);
             event.isDown = false;
             event.keyCode = keyCode;
-            event.hasShift = hasShift || false;
-            event.hasCtrl = hasCtrl || false;
+            event.hasShift = hasShift;
+            event.hasCtrl = hasCtrl;
+            event.hasAlt = hasAlt;
             event.action = action;
             this.events[id] = event;
         };
@@ -36,7 +37,8 @@
                         if (registeredEvent.isDown) {
                             var shift = event.shiftKey == registeredEvent.hasShift;
                             var ctrl = event.ctrlKey == registeredEvent.hasCtrl;
-                            if (ctrl || shift) {
+                            var alt = event.altKey == registeredEvent.hasAlt;
+                            if (ctrl || shift || alt) {
                                 registeredEvent.action(event);
                             }
                         }
@@ -100,10 +102,11 @@
             self.addListenerForKey(78/*n*/, false, false, false, function () { updateGeometry("majorNumber",  1); });
             self.addListenerForKey(78/*n*/, true,  false, false, function () { updateGeometry("majorNumber", -1); });
 
-            var projections = [JagaEngine.ORTOGONAL_XY, JagaEngine.ORTOGONAL_YZ, JagaEngine.ORTOGONAL_XZ, JagaEngine.AXONOMETRIC, JagaEngine.OBLIQUE, JagaEngine.PERSPECTIVE];
+            var projections = [JagaEngine.ORTOGONAL_XY, JagaEngine.ORTOGONAL_YZ, JagaEngine.ORTOGONAL_XZ,
+                               JagaEngine.AXONOMETRIC,  JagaEngine.OBLIQUE,      JagaEngine.PERSPECTIVE];
             [49/*1*/, 50/*2*/, 51/*3*/, 52/*4*/, 53/*5*/, 54/*6*/].forEach(function (code, index) {
                 self.addListenerForKey(code, false, true, false, function () {
-                    self.cfg.projection = projections[index];
+                    self.cfg.projectionType = projections[index];
                 });
             });
 
@@ -113,8 +116,8 @@
             var axonometricDelta = 5;
             self.addListenerForKey(77/*m*/, false, false, false, function () { self.cfg.axonometric.phi +=  axonometricDelta; });
             self.addListenerForKey(77/*m*/, true,  false, false, function () { self.cfg.axonometric.phi += -axonometricDelta; });
-            self.addListenerForKey(75/*k*/, false, false, false, function () { self.cfg.axonometric.theta +=  axonometricDelta; });
-            self.addListenerForKey(75/*k*/, true,  false, false, function () { self.cfg.axonometric.theta += -axonometricDelta; });
+            self.addListenerForKey(75/*k*/, false, false, false, function () { self.cfg.axonometric.psi +=  axonometricDelta; });
+            self.addListenerForKey(75/*k*/, true,  false, false, function () { self.cfg.axonometric.psi += -axonometricDelta; });
 
             /*
              oblique projection parameters
@@ -141,8 +144,8 @@
             self.addListenerForKey(70/*f*/, true,  false, false, function () { self.cfg.perspective.znear += -1; });
             self.addListenerForKey(71/*g*/, false, false, false, function () { self.cfg.perspective.zfar +=  1; });
             self.addListenerForKey(71/*g*/, true,  false, false, function () { self.cfg.perspective.zfar += -1; });
-            self.addListenerForKey(67/*c*/, false, false, false, function () { self.cfg.perspective.distance +=  0.5; });
-            self.addListenerForKey(67/*c*/, true,  false, false, function () { self.cfg.perspective.distance += -0.5; });
+            self.addListenerForKey(67/*c*/, false, false, false, function () { self.cfg.perspective.distance +=  0.1; });
+            self.addListenerForKey(67/*c*/, true,  false, false, function () { self.cfg.perspective.distance += -0.1; });
 
             /*
              translating target
@@ -158,15 +161,15 @@
             /*
              translating camera
              */
-            var cameraOffset = 1;
+            var cameraOffset = 0.1;
             self.addListenerForKey(39/*arrow-right*/, false, false, true, function () { self.cfg.camera.position.x +=  cameraOffset; });
             self.addListenerForKey(37/*arrow-left */, false, false, true, function () { self.cfg.camera.position.x += -cameraOffset; });
-            self.addListenerForKey(40/*arrow-down */, false, false, true, function () { self.cfg.camera.position.y +=  cameraOffset; });
-            self.addListenerForKey(38/*arrow-up   */, false, false, true, function () { self.cfg.camera.position.y += -cameraOffset; });
-            self.addListenerForKey(38/*arrow-up   */, true,  false, true, function () { self.cfg.camera.position.z += -cameraOffset; });
-            self.addListenerForKey(40/*arrow-down */, true,  false, true, function () { self.cfg.camera.position.z +=  cameraOffset; });
+            self.addListenerForKey(38/*arrow-up   */, false, false, true, function () { self.cfg.camera.position.y +=  cameraOffset; });
+            self.addListenerForKey(40/*arrow-down */, false, false, true, function () { self.cfg.camera.position.y += -cameraOffset; });
+            self.addListenerForKey(38/*arrow-up   */, true,  false, true, function () { self.cfg.camera.position.z +=  cameraOffset; });
+            self.addListenerForKey(40/*arrow-down */, true,  false, true, function () { self.cfg.camera.position.z += -cameraOffset; });
 
-            var lightOffset = 10;
+            var lightOffset = 0.01;
             self.addListenerForKey(39/*arrow-right*/, false, true, false, function () { self.cfg.light.x +=  lightOffset; });
             self.addListenerForKey(37/*arrow-left */, false, true, false, function () { self.cfg.light.x += -lightOffset; });
             self.addListenerForKey(40/*arrow-down */, false, true, false, function () { self.cfg.light.y +=  lightOffset; });
