@@ -35,8 +35,9 @@ JagaEngine.initialize = function () {
             distance: 1.0
         },
         light: new JagaEngine.Vector3(-1, 0, 0),
+        diffusion: 0,
         camera: null,
-        ishidelines: true,
+        ishidelines: false,
         isfill: false,
         isupdate: true,
         params: {

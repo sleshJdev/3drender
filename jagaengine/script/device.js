@@ -58,21 +58,28 @@
         Device.prototype.interpolate = function (min, max, gradient) {
             return min + (max - min) * this.clamp(gradient);
         };
-        Device.prototype.processScanLine = function (y, pa, pb, pc, pd, color, fillColor) {
+        Device.prototype.processScanLine = function (isfill, diffusion, y, pa, pb, pc, pd, a, b, c, d, color, background) {
             var gradient1 = pa.y != pb.y ? (y - pa.y) / (pb.y - pa.y) : 1;
             var gradient2 = pc.y != pd.y ? (y - pc.y) / (pd.y - pc.y) : 1;
             var sx = this.interpolate(pa.x, pb.x, gradient1) >> 0;
             var ex = this.interpolate(pc.x, pd.x, gradient2) >> 0;
             var z1 = this.interpolate(pa.z, pb.z, gradient1);
             var z2 = this.interpolate(pc.z, pd.z, gradient2);
-            fillColor = fillColor === undefined ? color : fillColor;
+            var n1 = this.interpolate(a, b, gradient1);
+            var n2 = this.interpolate(c, d, gradient2);
             for (var x = sx; x < ex; x++) {
                 var gradient = (x - sx) / (ex - sx);
                 var z = this.interpolate(z1, z2, gradient);
-                if (x === sx || x === ex - 1) {
-                    this.drawPoint(new JagaEngine.Vector3(x, y, z), color);
+                if (isfill) {
+                    var n = diffusion + this.interpolate(n1, n2, gradient);
+                    this.drawPoint(new JagaEngine.Vector3(x, y, z),
+                        new JagaEngine.Color4(n * color.r, n * color.g, n * color.b, n * color.a));
                 } else {
-                    this.drawPoint(new JagaEngine.Vector3(x, y, z), fillColor);
+                    if (x === sx || x === ex - 1) {
+                        this.drawPoint(new JagaEngine.Vector3(x, y, z), color);
+                    } else {
+                        this.drawPoint(new JagaEngine.Vector3(x, y, z), background);
+                    }
                 }
             }
         };
@@ -82,39 +89,44 @@
         Device.prototype.lineSide2D = function (p, lf/*line from*/, lt/*line to*/) {
             return this.cross2D(p.x - lf.x, p.y - lf.y, lt.x - lf.x, lt.y - lf.y);
         };
-        Device.prototype.drawTriangle = function (p1, p2, p3, color, fillColor) {
-            if (p1.y > p2.y) {
-                var temp = p2;
-                p2 = p1;
-                p1 = temp;
-            }
-            if (p2.y > p3.y) {
-                var temp = p2;
-                p2 = p3;
-                p3 = temp;
-            }
-            if (p1.y > p2.y) {
-                var temp = p2;
-                p2 = p1;
-                p1 = temp;
-            }
-            if (this.lineSide2D(p2, p1, p3) > 0) {
-                for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
-                    if (y < p2.y) {
-                        this.processScanLine(y, p1, p3, p1, p2, color, fillColor);
+        Device.prototype.drawTriangle = function (isfill, diffusion, a, b, c, na, nb, bc, color, background) {
+            if (a.y > b.y) { var temp = b; b = a; a = temp; }
+            if (a.y > c.y) { var temp = a; a = c; c = temp; }
+            if (b.y > c.y) { var temp = b; b = c; c = temp; }
+            if (this.lineSide2D(b, a, c) > 0) {
+                for (var y = a.y >> 0; y <= c.y >> 0; y++) {
+                    if (y < b.y) {
+                        this.processScanLine(isfill, diffusion, y, a, c, a, b, na, bc, na, nb, color, background);
                     } else {
-                        this.processScanLine(y, p1, p3, p2, p3, color, fillColor);
+                        this.processScanLine(isfill, diffusion, y, a, c, b, c, na, bc, nb, bc, color, background);
                     }
                 }
             } else {
-                for (var y = p1.y >> 0; y <= p3.y >> 0; y++) {
-                    if (y < p2.y) {
-                        this.processScanLine(y, p1, p2, p1, p3, color, fillColor);
+                for (var y = a.y >> 0; y <= c.y >> 0; y++) {
+                    if (y < b.y) {
+                        this.processScanLine(isfill, diffusion, y, a, b, a, c, na, nb, na, bc, color, background);
                     } else {
-                        this.processScanLine(y, p2, p3, p1, p3, color, fillColor);
+                        this.processScanLine(isfill, diffusion, y, b, c, a, c, nb, bc, na, bc, color, background);
                     }
                 }
             }
+            //var ab = b.y - a.y;
+            //var bc = c.y - b.y;
+            //var ac = c.y - a.y;
+            //for(var y = a.y; y < c.y; ++y){
+            //    var isFirstHalf = y < b.y;
+            //    var alpha = ac === 0 ? 0 : (y - a.y) / ac;
+            //    var beta  = isFirstHalf ? ab === 0 ? 0 : (y - a.y) / ab
+            //                            : bc === 0 ? 0 : (y - b.y) / bc;
+            //    var s = a.add(c.subtract(a).scale(alpha));
+            //    var e = isFirstHalf ? a.add(b.subtract(a).scale(beta))
+            //                        : c.add(c.subtract(b).scale(beta));
+            //    for(var x = s.x; x < e.x; ++x){
+            //        var phi = s.x === e.x ? 1 : (x - s.x) / (e.x - s.x);
+            //        var point = s.add(e.subtract(s).scale(phi));
+            //        this.drawPoint(new JagaEngine.Vector3(point.x, point.y, point.z), color);
+            //    }
+            //}
         };
         Device.prototype.computeNDotL = function (vertex, normal, lightPosition) {
             return Math.max(0, JagaEngine.Vector3.Dot(normal.normalize(), lightPosition.subtract(vertex).normalize()));
@@ -124,18 +136,12 @@
             return function (a, b, color) {
                 steep = false;
                 if (Math.abs(a.x - b.x) < Math.abs(a.y - b.y)) {
-                    temp = a.x;
-                    a.x = a.y;
-                    a.y = temp;
-                    temp = b.x;
-                    b.x = b.y;
-                    b.y = temp;
+                    temp = a.x; a.x = a.y; a.y = temp;
+                    temp = b.x; b.x = b.y; b.y = temp;
                     steep = true;
                 }
                 if (a.x > b.x) {
-                    temp = a;
-                    a = b;
-                    b = temp;
+                    temp = a; a = b; b = temp;
                 }
                 dy = b.y - a.y;
                 dx = b.x - a.x;
@@ -157,21 +163,17 @@
                         point.y = y;
                     }
                     this.drawPoint(point, color);
+
                 }
             }
         })();
         Device.prototype.render = function (cfg, mesh) {
             var self = this;
             var transformMatrix = JagaEngine.Matrix.RotationYawPitchRoll(-cfg.rotation.y * JagaEngine.D2R, -cfg.rotation.x * JagaEngine.D2R, cfg.rotation.z * JagaEngine.D2R);
-            mesh.vertices.forEach(function (vertex) {
-                vertex.rotateSelf(transformMatrix);
-            });
-            cfg.rotationTotal.x += cfg.rotation.x;
-            cfg.rotation.x = 0;
-            cfg.rotationTotal.y += cfg.rotation.y;
-            cfg.rotation.y = 0;
-            cfg.rotationTotal.z += cfg.rotation.z;
-            cfg.rotation.z = 0;
+            mesh.vertices.forEach(function (vertex) { vertex.rotateSelf(transformMatrix); });
+            cfg.rotationTotal.x += cfg.rotation.x; cfg.rotation.x = 0;
+            cfg.rotationTotal.y += cfg.rotation.y; cfg.rotation.y = 0;
+            cfg.rotationTotal.z += cfg.rotation.z; cfg.rotation.z = 0;
 
             var worldMatrix = JagaEngine.Matrix.Translation(cfg.translation.x, -cfg.translation.y, cfg.translation.z);
             var worldViewTransformation = worldMatrix;
@@ -206,33 +208,27 @@
                     worldViewTransformation = worldMatrix.multiply(viewMatrix);
                     break;
             }
-            var normals = [], normal, center, end, color, ndotl,
-                pixelA, pixelB, pixelC, pixelWorldA, pixelWorldB, pixelWorldC, normalA, normalB, normalC;
+            var normals = [], normal, a, b, c;
             mesh.facets.forEach(function (facet) {
-                pixelA = self.project(facet.a, transformMatrix);
-                pixelB = self.project(facet.b, transformMatrix);
-                pixelC = self.project(facet.c, transformMatrix);
+                a = self.project(facet.a, transformMatrix);
+                b = self.project(facet.b, transformMatrix);
+                c = self.project(facet.c, transformMatrix);
                 if (cfg.isfill) {
-                    pixelWorldA = JagaEngine.Vector3.TransformCoordinates(facet.a, worldViewTransformation);
-                    pixelWorldB = JagaEngine.Vector3.TransformCoordinates(facet.b, worldViewTransformation);
-                    pixelWorldC = JagaEngine.Vector3.TransformCoordinates(facet.c, worldViewTransformation);
-                    normalA = JagaEngine.Vector3.Cross(pixelWorldA, pixelWorldB);
-                    normalB = JagaEngine.Vector3.Cross(pixelWorldB, pixelWorldC);
-                    normalC = JagaEngine.Vector3.Cross(pixelWorldC, pixelWorldA);
-                    center = pixelA.add(pixelB).add(pixelC).scale(1 / 3);
-                    normal = normalA.add(normalB).add(normalC).scale(1 / 3);
-                    end = center.add(normal.scale(20000));
-                    normals.push({start: center, end: end});
-                    ndotl = 0.25 + self.computeNDotL(center, normal, cfg.light);
-                    color = new JagaEngine.Color4(ndotl * facet.color.r, ndotl * facet.color.g, ndotl * facet.color.b, ndotl * facet.color.a);
-                    self.drawTriangle(pixelA, pixelB, pixelC, color);
+                    normal = JagaEngine.Vector3.Cross(c.subtract(a), c.subtract(b));
+                    //normals.push({start: pixelA, end: pixelA.add(normal)});
+                    //normals.push({start: b, end: b.add(normal)});
+                    //normals.push({start: pixelC, end: pixelC.add(normal)});
+                    var na = self.computeNDotL(a, normal, cfg.light);
+                    var nb = self.computeNDotL(b, normal, cfg.light);
+                    var nc = self.computeNDotL(c, normal, cfg.light);
+                    self.drawTriangle(cfg.isfill, cfg.diffusion,  a, b, c, na, nb, nc, facet.color);
                 } else {
                     if (cfg.ishidelines) {
-                        self.drawTriangle(pixelA, pixelB, pixelC, facet.color, JagaEngine.Colors.BLACK);
+                        self.drawTriangle(cfg.isfill, cfg.diffusion, a, b, c, 1, 1, 1, facet.color, JagaEngine.Colors.BLACK);
                     } else {
-                        self.bresenhamLine(pixelA.clone(), pixelB.clone(), facet.color);
-                        self.bresenhamLine(pixelB.clone(), pixelC.clone(), facet.color);
-                        self.bresenhamLine(pixelC.clone(), pixelA.clone(), facet.color);
+                        self.bresenhamLine(a.clone(), b.clone(), facet.color);
+                        self.bresenhamLine(b.clone(), c.clone(), facet.color);
+                        self.bresenhamLine(c.clone(), a.clone(), facet.color);
                     }
                 }
             });
@@ -242,7 +238,7 @@
             self.workingContext.fillStyle = "yellow";
             self.workingContext.fill();
             self.workingContext.lineWidth = 10;
-            self.workingContext.strokeStyle = '#003300';
+            self.workingContext.strokeStyle = '#ff3300';
             self.workingContext.stroke();
             self.workingContext.lineWidth = 2;
             normals.forEach(function (normal) {

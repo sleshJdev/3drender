@@ -182,13 +182,17 @@
             self.addListenerForKey(38/*arrow-up   */, true,  false, true, function () { self.cfg.camera.position.z +=  cameraOffset; });
             self.addListenerForKey(40/*arrow-down */, true,  false, true, function () { self.cfg.camera.position.z += -cameraOffset; });
 
-            var lightOffset = 100;
+            var lightOffset = 50;
             self.addListenerForKey(39/*arrow-right*/, false, true, false, function () { self.cfg.light.x +=  lightOffset; });
             self.addListenerForKey(37/*arrow-left */, false, true, false, function () { self.cfg.light.x += -lightOffset; });
             self.addListenerForKey(40/*arrow-down */, false, true, false, function () { self.cfg.light.y +=  lightOffset; });
             self.addListenerForKey(38/*arrow-up   */, false, true, false, function () { self.cfg.light.y += -lightOffset; });
             self.addListenerForKey(38/*arrow-up   */, true,  true, false, function () { self.cfg.light.z +=  lightOffset; });
             self.addListenerForKey(40/*arrow-down */, true,  true, false, function () { self.cfg.light.z += -lightOffset; });
+
+
+            self.addListenerForKey(85/*u*/, false,  false, false, function () { self.cfg.diffusion +=  0.05; });
+            self.addListenerForKey(85/*u*/, true,   false, false, function () { self.cfg.diffusion += -0.05; });
         };
 
         return Controller;
